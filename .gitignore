@@ -1,0 +1,6 @@
+# Ignored files for Git
+
+MANIFEST
+build/*
+dist/*
+*.pyc

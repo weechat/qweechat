@@ -1,0 +1,29 @@
+QWeeChat installation
+=====================
+
+Required to run QWeeChat:
+- python 2.x >= 2.6
+- PyQt4 (python-qt4) or PySide (python.pyside.*)
+
+
+Run without install
+-------------------
+
+Extract files from archive and run qweechat.py:
+
+$ tar xvzf qweechat-x.y.tar.gz
+$ cd qweechat-x.y
+$ python src/qweechat/weechat.py
+
+
+Install
+-------
+
+Extract files from archive and install using script 'setup.py':
+
+$ tar xvzf qweechat-x.y.tar.gz
+$ cd qweechat-x.y
+$ python setup.py install
+
+
+See AUTHORS for support, feel free to contact us for any problem.
