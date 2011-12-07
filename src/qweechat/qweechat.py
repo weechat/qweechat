@@ -42,7 +42,7 @@ from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
 
-NAME = 'qweechat'
+NAME = 'QWeeChat'
 VERSION = '0.1-dev'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL= 'flashcode@flashtux.org'
