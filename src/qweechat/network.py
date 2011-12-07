@@ -118,7 +118,7 @@ class Network(QtCore.QObject):
             self._socket.abort()
 
     def send_to_weechat(self, message):
-        self._socket.write(message)
+        self._socket.write(str(message))
 
     def status_icon(self, status):
         icon = {self.status_disconnected: 'dialog-close.png',
