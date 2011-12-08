@@ -30,30 +30,31 @@ from chat import ChatTextEdit
 from input import InputLineEdit
 
 
-class BufferListWidget(QtGui.QListWidget):
-    """Widget with list of buffers."""
+class GenericListWidget(QtGui.QListWidget):
+    """Generic QListWidget with dynamic size."""
 
     def __init__(self, *args):
         apply(QtGui.QListWidget.__init__, (self,) + args)
+        self.setMaximumWidth(100)
+        self.setTextElideMode(QtCore.Qt.ElideNone)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setMinimumWidth(120)
-        self.setMaximumWidth(200)
-        # TODO: do a dynamic size for widget
-        #self.setMinimumWidth(self.sizeHintForColumn(0))
-        #self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
-        #self.setResizeMode(QtGui.QListView.Adjust)
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         pal = self.palette()
         pal.setColor(QtGui.QPalette.Highlight, QtGui.QColor('#ddddff'))
         pal.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('black'))
         self.setPalette(pal)
 
-    # TODO: do a dynamic size for widget
-    def sizeHint(self):
-        s = QtCore.QSize()
-        s.setHeight(super(BufferListWidget,self).sizeHint().height())
-        s.setWidth(self.sizeHintForColumn(0))
-        return s
+    def addItem(self, *args):
+        """Re-implement addItem to set dynamic size after add."""
+        apply(QtGui.QListWidget.addItem, (self,) + args)
+        self.setMaximumWidth(self.sizeHintForColumn(0) + 4)
+
+
+class BufferListWidget(GenericListWidget):
+    """Widget with list of buffers."""
+
+    def __init__(self, *args):
+        apply(GenericListWidget.__init__, (self,) + args)
 
     def switch_prev_buffer(self):
         if self.currentRow() > 0:
@@ -82,9 +83,7 @@ class BufferWidget(QtGui.QWidget):
         self.chat_nicklist.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.chat = ChatTextEdit()
         self.chat_nicklist.addWidget(self.chat)
-        self.nicklist = QtGui.QListWidget()
-        self.nicklist.setMaximumWidth(100)
-        self.nicklist.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.nicklist = GenericListWidget()
         if not display_nicklist:
             self.nicklist.setVisible(False)
         self.chat_nicklist.addWidget(self.nicklist)
