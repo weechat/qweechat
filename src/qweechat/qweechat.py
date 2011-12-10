@@ -48,6 +48,9 @@ AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL= 'flashcode@flashtux.org'
 WEECHAT_SITE = 'http://www.weechat.org/'
 
+# number of lines in buffer for debug window
+DEBUG_NUM_LINES = 50
+
 
 class MainWindow(QtGui.QMainWindow):
     """Main window."""
@@ -57,12 +60,11 @@ class MainWindow(QtGui.QMainWindow):
 
         self.config = config.read()
 
-        self.debug_dialog = DebugDialog(self)
-        self.debug_dialog.input.textSent.connect(self.debug_input_text_sent)
-        self.debug_dialog.finished.connect(self.debug_dialog_closed)
-
         self.resize(1000, 600)
         self.setWindowTitle(NAME)
+
+        self.debug_dialog = None
+        self.debug_lines = []
 
         # network
         self.network = Network()
@@ -151,14 +153,24 @@ class MainWindow(QtGui.QMainWindow):
         if self.network.is_connected():
             message = 'input %s %s\n' % (full_name, text)
             self.network.send_to_weechat(message)
-            self.debug_dialog.chat.display(0, '<==', message, color='red')
+            self.debug_display(0, '<==', message, color='red')
 
     def open_preferences_dialog(self):
         pass # TODO
 
+    def debug_display(self, *args, **kwargs):
+        self.debug_lines.append((args, kwargs))
+        self.debug_lines = self.debug_lines[-DEBUG_NUM_LINES:]
+        if self.debug_dialog:
+            self.debug_dialog.chat.display(*args, **kwargs)
+
     def open_debug_dialog(self):
-        self.debug_dialog.chat.scroll_bottom()
-        self.debug_dialog.show()
+        if not self.debug_dialog:
+            self.debug_dialog = DebugDialog(self)
+            self.debug_dialog.input.textSent.connect(self.debug_input_text_sent)
+            self.debug_dialog.finished.connect(self.debug_dialog_closed)
+            self.debug_dialog.display_lines(self.debug_lines)
+            self.debug_dialog.chat.scroll_bottom()
 
     def debug_input_text_sent(self, text):
         if self.network.is_connected():
@@ -169,10 +181,10 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 text = '(debug) %s' % text
             self.network.send_to_weechat(text + '\n')
-            self.debug_dialog.chat.display(0, '<==', text, color='red')
+            self.debug_display(0, '<==', text, color='red')
 
     def debug_dialog_closed(self, result):
-        self.debug_dialog.hide()
+        self.debug_dialog = None
 
     def open_about_dialog(self):
         messages = ['<b>%s</b> %s' % (NAME, VERSION),
@@ -198,7 +210,7 @@ class MainWindow(QtGui.QMainWindow):
     def network_status_changed(self, status, extra):
         if self.config.getboolean('look', 'statusbar'):
             self.statusBar().showMessage(status)
-        self.debug_dialog.chat.display(0, '', status, color='blue')
+        self.debug_display(0, '', status, color='blue')
         self.network_status_set(status, extra)
 
     def network_status_set(self, status, extra):
@@ -221,24 +233,24 @@ class MainWindow(QtGui.QMainWindow):
             self.actions['disconnect'].setEnabled(True)
 
     def network_message_from_weechat(self, message):
-        self.debug_dialog.chat.display(0, '==>',
-                                       'message (%d bytes):\n%s'
-                                       % (len(message), protocol.hex_and_ascii(message, 20)),
-                                       color='green')
+        self.debug_display(0, '==>',
+                           'message (%d bytes):\n%s'
+                           % (len(message), protocol.hex_and_ascii(message, 20)),
+                           color='green')
         proto = protocol.Protocol()
         message = proto.decode(str(message))
         if message.uncompressed:
-            self.debug_dialog.chat.display(0, '==>',
-                                           'message uncompressed (%d bytes):\n%s'
-                                           % (message.size_uncompressed,
-                                              protocol.hex_and_ascii(message.uncompressed, 20)),
-                                           color='green')
-        self.debug_dialog.chat.display(0, '', 'Message: %s' % message)
+            self.debug_display(0, '==>',
+                               'message uncompressed (%d bytes):\n%s'
+                               % (message.size_uncompressed,
+                                  protocol.hex_and_ascii(message.uncompressed, 20)),
+                               color='green')
+        self.debug_display(0, '', 'Message: %s' % message)
         self.parse_message(message)
 
     def parse_message(self, message):
         if message.msgid.startswith('debug'):
-            self.debug_dialog.chat.display(0, '', '(debug message, ignored)')
+            self.debug_display(0, '', '(debug message, ignored)')
             return
         if message.msgid == 'listbuffers':
             for obj in message.objects:
@@ -279,7 +291,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def closeEvent(self, event):
         self.network.disconnect_weechat()
-        self.debug_dialog.close()
+        if self.debug_dialog:
+            self.debug_dialog.close()
         config.write(self.config)
         QtGui.QMainWindow.closeEvent(self, event)
 

@@ -45,3 +45,8 @@ class DebugDialog(QtGui.QDialog):
         vbox.addWidget(self.input)
 
         self.setLayout(vbox)
+        self.show()
+
+    def display_lines(self, lines):
+        for line in lines:
+            self.chat.display(*line[0], **line[1])
