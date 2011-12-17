@@ -44,10 +44,26 @@ class GenericListWidget(QtGui.QListWidget):
         pal.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('black'))
         self.setPalette(pal)
 
+    def auto_resize(self):
+        size = self.sizeHintForColumn(0)
+        if size > 0:
+            size += 4
+        self.setMaximumWidth(size)
+
+    def clear(self, *args):
+        """Re-implement clear to set dynamic size after clear."""
+        apply(QtGui.QListWidget.clear, (self,) + args)
+        self.auto_resize()
+
     def addItem(self, *args):
         """Re-implement addItem to set dynamic size after add."""
         apply(QtGui.QListWidget.addItem, (self,) + args)
-        self.setMaximumWidth(self.sizeHintForColumn(0) + 4)
+        self.auto_resize()
+
+    def insertItem(self, *args):
+        """Re-implement insertItem to set dynamic size after insert."""
+        apply(QtGui.QListWidget.insertItem, (self,) + args)
+        self.auto_resize()
 
 
 class BufferListWidget(GenericListWidget):
@@ -77,6 +93,7 @@ class BufferWidget(QtGui.QWidget):
 
         # title
         self.title = QtGui.QLineEdit()
+        self.title.setFocusPolicy(QtCore.Qt.NoFocus)
 
         # splitter with chat + nicklist
         self.chat_nicklist = QtGui.QSplitter()
@@ -126,6 +143,7 @@ class Buffer(QtCore.QObject):
     def __init__(self, data={}):
         QtCore.QObject.__init__(self)
         self.data = data
+        self.nicklist = []
         self.widget = BufferWidget(display_nicklist=self.data.get('nicklist', 0))
         if self.data and self.data['title']:
             self.widget.set_title(self.data['title'])
@@ -142,4 +160,21 @@ class Buffer(QtCore.QObject):
 
     def add_nick(self, prefix, nick):
         """Add a nick to nicklist."""
-        self.widget.nicklist.addItem('%s%s' % (prefix, nick))
+        prefix_color = { '': '', ' ': '', '+': 'yellow' }
+        self.nicklist.append((prefix, nick))
+        color = prefix_color.get(prefix, 'green')
+        if color:
+            icon = QtGui.QIcon('data/icons/bullet_%s_8x8.png' % color)
+        else:
+            pixmap = QtGui.QPixmap(8, 8)
+            pixmap.fill()
+            icon = QtGui.QIcon(pixmap)
+        item = QtGui.QListWidgetItem(icon, nick)
+        #item.setFont('monospace')
+        self.widget.nicklist.addItem(item)
+        self.widget.nicklist.setVisible(True)
+
+    def remove_all_nicks(self):
+        """Remove all nicks from nicklist."""
+        self.nicklist = []
+        self.widget.nicklist.clear()
