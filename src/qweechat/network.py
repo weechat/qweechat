@@ -29,9 +29,10 @@ QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
 
 _PROTO_INIT_CMDS = ['init password=%(password)s,compression=gzip',
-                    '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,nicklist,title',
+                    '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,nicklist,title',
                     '(listlines) hdata buffer:gui_buffers(*)/own_lines/first_line(*)/data date,displayed,prefix,message',
                     '(nicklist) nicklist',
+                    'sync',
                     '']
 
 

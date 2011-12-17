@@ -261,33 +261,95 @@ class MainWindow(QtGui.QMainWindow):
                         self.stacked_buffers.removeWidget(buf)
                     self.buffers = []
                     for item in obj.value['items']:
-                        self.list_buffers.addItem('%d. %s' % (item['number'], item['full_name']))
-                        self.buffers.append(Buffer(item))
-                        self.stacked_buffers.addWidget(self.buffers[-1].widget)
-                        self.buffers[-1].bufferInput.connect(self.buffer_input)
-                        self.buffers[-1].widget.input.bufferSwitchPrev.connect(self.list_buffers.switch_prev_buffer)
-                        self.buffers[-1].widget.input.bufferSwitchNext.connect(self.list_buffers.switch_next_buffer)
+                        buf = self.create_buffer(item)
+                        self.insert_buffer(len(self.buffers), buf)
                     self.list_buffers.setCurrentRow(0)
                     self.buffers[0].widget.input.setFocus()
-        elif message.msgid == 'listlines':
+        elif message.msgid in ('listlines', '_buffer_line_added'):
             for obj in message.objects:
                 if obj.objtype == 'hda' and obj.value['path'][-1] == 'line_data':
                     for item in obj.value['items']:
-                        pointer = item['__path'][0]
-                        buf = filter(lambda b: b.pointer() == pointer, self.buffers)
-                        if buf:
-                            buf[0].widget.chat.display(item['date'],
-                                                       color.remove(item['prefix']),
-                                                       color.remove(item['message']))
-        elif message.msgid == 'nicklist':
+                        if message.msgid == 'listlines':
+                            ptrbuf = item['__path'][0]
+                        else:
+                            ptrbuf = item['buffer']
+                        index = [i for i, b in enumerate(self.buffers) if b.pointer() == ptrbuf]
+                        if index:
+                            self.buffers[index[0]].widget.chat.display(item['date'],
+                                                                       color.remove(item['prefix']),
+                                                                       color.remove(item['message']))
+        elif message.msgid in ('_nicklist', 'nicklist'):
+            buffer_nicklist = {}
             for obj in message.objects:
-                if obj.objtype == 'hda' and obj.value['path'][-1] == 'nick_group':
+                if obj.objtype == 'hda' and obj.value['path'][-1] == 'nicklist_item':
                     for item in obj.value['items']:
-                        if not item['group'] and item['visible']:
-                            pointer = item['__path'][0]
-                            buf = filter(lambda b: b.pointer() == pointer, self.buffers)
-                            if buf:
-                                buf[0].add_nick(item['prefix'], item['name'])
+                        index = [i for i, b in enumerate(self.buffers) if b.pointer() == item['__path'][0]]
+                        if index:
+                            if not item['__path'][0] in buffer_nicklist:
+                                self.buffers[index[0]].remove_all_nicks()
+                            buffer_nicklist[item['__path'][0]] = True
+                            if not item['group'] and item['visible']:
+                                self.buffers[index[0]].add_nick(item['prefix'], item['name'])
+        elif message.msgid == '_buffer_opened':
+            for obj in message.objects:
+                if obj.objtype == 'hda' and obj.value['path'][-1] == 'buffer':
+                    for item in obj.value['items']:
+                        buf = self.create_buffer(item)
+                        index = self.find_buffer_index_for_insert(item['next_buffer'])
+                        self.insert_buffer(index, buf)
+        elif message.msgid.startswith('_buffer_'):
+            for obj in message.objects:
+                if obj.objtype == 'hda' and obj.value['path'][-1] == 'buffer':
+                    for item in obj.value['items']:
+                        index = [i for i, b in enumerate(self.buffers) if b.pointer() == item['__path'][0]]
+                        if index:
+                            index = index[0]
+                            if message.msgid in ('_buffer_moved', '_buffer_merged'):
+                                buf = self.buffers[index]
+                                buf.data['number'] = item['number']
+                                self.remove_buffer(index)
+                                index2 = self.find_buffer_index_for_insert(item['next_buffer'])
+                                self.insert_buffer(index2, buf)
+                            elif message.msgid == '_buffer_renamed':
+                                self.buffers[index].data['full_name'] = item['full_name']
+                                self.buffers[index].data['short_name'] = item['short_name']
+                            elif message.msgid == '_buffer_title_changed':
+                                self.buffers[index].data['title'] = item['title']
+                                self.buffers[index].widget.set_title(item['title'])
+                            elif message.msgid == '_buffer_closing':
+                                self.remove_buffer(index)
+
+    def create_buffer(self, item):
+        buf = Buffer(item)
+        buf.bufferInput.connect(self.buffer_input)
+        buf.widget.input.bufferSwitchPrev.connect(self.list_buffers.switch_prev_buffer)
+        buf.widget.input.bufferSwitchNext.connect(self.list_buffers.switch_next_buffer)
+        return buf
+
+    def insert_buffer(self, index, buf):
+        self.buffers.insert(index, buf)
+        self.list_buffers.insertItem(index, '%d. %s' % (buf.data['number'], buf.data['full_name']))
+        self.stacked_buffers.insertWidget(index, buf.widget)
+
+    def remove_buffer(self, index):
+        if self.list_buffers.currentRow == index and index > 0:
+            self.list_buffers.setCurrentRow(index - 1)
+        self.list_buffers.takeItem(index)
+        self.stacked_buffers.removeWidget(self.stacked_buffers.widget(index))
+        self.buffers.pop(index)
+
+    def find_buffer_index_for_insert(self, next_buffer):
+        index = -1
+        if next_buffer == '0x0':
+            index = len(self.buffers)
+        else:
+            index = [i for i, b in enumerate(self.buffers) if b.pointer() == next_buffer]
+            if index:
+                index = index[0]
+        if index < 0:
+            print('Warning: unable to find position for buffer, using end of list by default')
+            index = len(self.buffers)
+        return index
 
     def closeEvent(self, event):
         self.network.disconnect_weechat()
