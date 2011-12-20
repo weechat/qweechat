@@ -315,7 +315,10 @@ class MainWindow(QtGui.QMainWindow):
                                 self.buffers[index].data['short_name'] = item['short_name']
                             elif message.msgid == '_buffer_title_changed':
                                 self.buffers[index].data['title'] = item['title']
-                                self.buffers[index].widget.set_title(item['title'])
+                                self.buffers[index].update_title()
+                            elif message.msgid.startswith('_buffer_localvar_'):
+                                self.buffers[index].data['local_variables'] = item['local_variables']
+                                self.buffers[index].update_prompt()
                             elif message.msgid == '_buffer_closing':
                                 self.remove_buffer(index)
 

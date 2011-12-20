@@ -106,17 +106,13 @@ class BufferWidget(QtGui.QWidget):
         self.chat_nicklist.addWidget(self.nicklist)
 
         # prompt + input
-        hbox_edit = QtGui.QHBoxLayout()
-        hbox_edit.setContentsMargins(0, 0, 0, 0)
-        hbox_edit.setSpacing(0)
-        self.prompt = QtGui.QLabel('FlashCode')
-        self.prompt.setContentsMargins(0, 0, 5, 0)
-        hbox_edit.addWidget(self.prompt)
+        self.hbox_edit = QtGui.QHBoxLayout()
+        self.hbox_edit.setContentsMargins(0, 0, 0, 0)
+        self.hbox_edit.setSpacing(0)
         self.input = InputLineEdit(self.chat)
-        hbox_edit.addWidget(self.input)
+        self.hbox_edit.addWidget(self.input)
         prompt_input = QtGui.QWidget()
-        prompt_input.setLayout(hbox_edit)
-        prompt_input.setContentsMargins(0, 0, 0, 0)
+        prompt_input.setLayout(self.hbox_edit)
 
         # vbox with title + chat/nicklist + prompt/input
         vbox = QtGui.QVBoxLayout()
@@ -134,6 +130,15 @@ class BufferWidget(QtGui.QWidget):
         if not title is None:
             self.title.setText(title)
 
+    def set_prompt(self, prompt):
+        """Set prompt."""
+        if self.hbox_edit.count() > 1:
+            self.hbox_edit.takeAt(0)
+        if not prompt is None:
+            label = QtGui.QLabel(prompt)
+            label.setContentsMargins(0, 0, 5, 0)
+            self.hbox_edit.insertWidget(0, label)
+
 
 class Buffer(QtCore.QObject):
     """A WeeChat buffer."""
@@ -145,13 +150,27 @@ class Buffer(QtCore.QObject):
         self.data = data
         self.nicklist = []
         self.widget = BufferWidget(display_nicklist=self.data.get('nicklist', 0))
-        if self.data and self.data['title']:
-            self.widget.set_title(self.data['title'])
+        self.update_title()
+        self.update_prompt()
         self.widget.input.textSent.connect(self.input_text_sent)
 
     def pointer(self):
         """Return pointer on buffer."""
         return self.data.get('__path', [''])[0]
+
+    def update_title(self):
+        """Update title."""
+        try:
+            self.widget.set_title(self.data['title'])
+        except:
+            self.widget.set_title(None)
+
+    def update_prompt(self):
+        """Update prompt."""
+        try:
+            self.widget.set_prompt(self.data['local_variables']['nick'])
+        except:
+            self.widget.set_prompt(None)
 
     def input_text_sent(self, text):
         """Called when text has to be sent to buffer."""
