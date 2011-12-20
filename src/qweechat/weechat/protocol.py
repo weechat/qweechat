@@ -64,7 +64,7 @@ class WeechatObject:
 
     def __str__(self):
         self._obj_cb = {'hda': self._str_value_hdata,
-                        'lis': self._str_value_infolist,
+                        'inl': self._str_value_infolist,
                         }
         return '%s: %s' % (self.objtype, self._obj_cb.get(self.objtype, self._str_value_other)())
 
@@ -104,10 +104,20 @@ class Protocol:
                         'buf': self._obj_buffer,
                         'ptr': self._obj_ptr,
                         'tim': self._obj_time,
+                        'htb': self._obj_hashtable,
                         'hda': self._obj_hdata,
                         'inf': self._obj_info,
-                        'lis': self._obj_infolist,
+                        'inl': self._obj_infolist,
                         }
+
+    def _obj_type(self):
+        """Read type in data (3 chars)."""
+        if len(self.data) < 3:
+            self.data = ''
+            return ''
+        objtype = str(self.data[0:3])
+        self.data = self.data[3:]
+        return objtype
 
     def _obj_len_data(self, length_size):
         """Read length (1 or 4 bytes), then value with this length."""
@@ -177,6 +187,18 @@ class Protocol:
             return None
         return str(value)
 
+    def _obj_hashtable(self):
+        """Read a hashtable in data (type for keys + type for values + count + items)."""
+        type_keys = self._obj_type()
+        type_values = self._obj_type()
+        count = self._obj_int()
+        hashtable = {}
+        for i in xrange(0, count):
+            key = self._obj_cb[type_keys]()
+            value = self._obj_cb[type_values]()
+            hashtable[key] = value
+        return hashtable
+
     def _obj_hdata(self):
         """Read a hdata in data."""
         path = self._obj_str()
@@ -227,15 +249,6 @@ class Protocol:
                 variables[var_name] = var_value
             items.append(variables)
         return {'name': name, 'items': items}
-
-    def _obj_type(self):
-        """Read type in data (3 chars)."""
-        if len(self.data) < 3:
-            self.data = ''
-            return ''
-        objtype = str(self.data[0:3])
-        self.data = self.data[3:]
-        return objtype
 
     def decode(self, data):
         """Decode binary data and return list of objects."""
