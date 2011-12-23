@@ -24,11 +24,12 @@
 #
 
 import os, ConfigParser
+import weechat.color as color
 
 CONFIG_DIR = '%s/.qweechat' % os.getenv('HOME')
 CONFIG_FILENAME = '%s/qweechat.conf' % CONFIG_DIR
 
-CONFIG_DEFAULT_SECTIONS = ('relay', 'look')
+CONFIG_DEFAULT_SECTIONS = ('relay', 'look', 'color')
 CONFIG_DEFAULT_OPTIONS = (('relay.server', ''),
                           ('relay.port', ''),
                           ('relay.password', ''),
@@ -36,9 +37,51 @@ CONFIG_DEFAULT_OPTIONS = (('relay.server', ''),
                           ('look.debug', 'off'),
                           ('look.statusbar', 'off'))
 
+# Default colors for WeeChat color options (option name, #rgb value)
+CONFIG_DEFAULT_COLOR_OPTIONS = (('separator', '#000066'), # 0
+                                ('chat', '#000000'), # 1
+                                ('chat_time', '#999999'), # 2
+                                ('chat_time_delimiters', '#000000'), # 3
+                                ('chat_prefix_error', '#FF6633'), # 4
+                                ('chat_prefix_network', '#990099'), # 5
+                                ('chat_prefix_action', '#000000'), # 6
+                                ('chat_prefix_join', '#00CC00'), # 7
+                                ('chat_prefix_quit', '#CC0000'), # 8
+                                ('chat_prefix_more', '#CC00FF'), # 9
+                                ('chat_prefix_suffix', '#330099'), # 10
+                                ('chat_buffer', '#000000'), # 11
+                                ('chat_server', '#000000'), # 12
+                                ('chat_channel', '#000000'), # 13
+                                ('chat_nick', '#000000'), # 14
+                                ('chat_nick_self', '*#000000'), # 15
+                                ('chat_nick_other', '#000000'), # 16
+                                ('', '#000000'), # 17 (nick1 -- obsolete)
+                                ('', '#000000'), # 18 (nick2 -- obsolete)
+                                ('', '#000000'), # 19 (nick3 -- obsolete)
+                                ('', '#000000'), # 20 (nick4 -- obsolete)
+                                ('', '#000000'), # 21 (nick5 -- obsolete)
+                                ('', '#000000'), # 22 (nick6 -- obsolete)
+                                ('', '#000000'), # 23 (nick7 -- obsolete)
+                                ('', '#000000'), # 24 (nick8 -- obsolete)
+                                ('', '#000000'), # 25 (nick9 -- obsolete)
+                                ('', '#000000'), # 26 (nick10 -- obsolete)
+                                ('chat_host', '#666666'), # 27
+                                ('chat_delimiters', '#9999FF'), # 28
+                                ('chat_highlight', '#3399CC'), # 29
+                                ('chat_read_marker', '#000000'), # 30
+                                ('chat_text_found', '#000000'), # 31
+                                ('chat_value', '#000000'), # 32
+                                ('chat_prefix_buffer', '#000000'), # 33
+                                ('chat_tags', '#000000'), # 34
+                                ('chat_inactive_window', '#000000'), # 35
+                                ('chat_inactive_buffer', '#000000'), # 36
+                                ('chat_prefix_buffer_inactive_buffer', '#000000')) # 37
+config_color_options = []
+
 
 def read():
     """Read config file."""
+    global config_color_options
     config = ConfigParser.RawConfigParser()
     if os.path.isfile(CONFIG_FILENAME):
         config.read(CONFIG_FILENAME)
@@ -51,6 +94,19 @@ def read():
         section, name = option[0].split('.', 1)
         if not config.has_option(section, name):
             config.set(section, name, option[1])
+    section = 'color'
+    for option in reversed(CONFIG_DEFAULT_COLOR_OPTIONS):
+        if option[0] and not config.has_option(section, option[0]):
+            config.set(section, option[0], option[1])
+
+    # build list of color options
+    config_color_options = []
+    for option in CONFIG_DEFAULT_COLOR_OPTIONS:
+        if option[0]:
+            config_color_options.append(config.get('color', option[0]))
+        else:
+            config_color_options.append('#000000')
+
     return config
 
 def write(config):
@@ -59,3 +115,7 @@ def write(config):
         os.mkdir(CONFIG_DIR, 0755)
     with open(CONFIG_FILENAME, 'wb') as cfg:
         config.write(cfg)
+
+def color_options():
+    global config_color_options
+    return config_color_options

@@ -35,7 +35,6 @@ QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
 import config
 import weechat.protocol as protocol
-import weechat.color as color
 from network import Network
 from connection import ConnectionDialog
 from buffer import BufferListWidget, Buffer
@@ -153,7 +152,7 @@ class MainWindow(QtGui.QMainWindow):
         if self.network.is_connected():
             message = 'input %s %s\n' % (full_name, text)
             self.network.send_to_weechat(message)
-            self.debug_display(0, '<==', message, color='red')
+            self.debug_display(0, '<==', message, forcecolor='#AA0000')
 
     def open_preferences_dialog(self):
         pass # TODO
@@ -180,8 +179,8 @@ class MainWindow(QtGui.QMainWindow):
                 text = '(debug_%s)%s' % (text[1:pos], text[pos+1:])
             else:
                 text = '(debug) %s' % text
+            self.debug_display(0, '<==', text, forcecolor='#AA0000')
             self.network.send_to_weechat(text + '\n')
-            self.debug_display(0, '<==', text, color='red')
 
     def debug_dialog_closed(self, result):
         self.debug_dialog = None
@@ -210,7 +209,7 @@ class MainWindow(QtGui.QMainWindow):
     def network_status_changed(self, status, extra):
         if self.config.getboolean('look', 'statusbar'):
             self.statusBar().showMessage(status)
-        self.debug_display(0, '', status, color='blue')
+        self.debug_display(0, '', status, forcecolor='#0000AA')
         self.network_status_set(status, extra)
 
     def network_status_set(self, status, extra):
@@ -236,7 +235,7 @@ class MainWindow(QtGui.QMainWindow):
         self.debug_display(0, '==>',
                            'message (%d bytes):\n%s'
                            % (len(message), protocol.hex_and_ascii(message, 20)),
-                           color='green')
+                           forcecolor='#008800')
         proto = protocol.Protocol()
         message = proto.decode(str(message))
         if message.uncompressed:
@@ -244,7 +243,7 @@ class MainWindow(QtGui.QMainWindow):
                                'message uncompressed (%d bytes):\n%s'
                                % (message.size_uncompressed,
                                   protocol.hex_and_ascii(message.uncompressed, 20)),
-                               color='green')
+                               forcecolor='#008800')
         self.debug_display(0, '', 'Message: %s' % message)
         self.parse_message(message)
 
@@ -276,8 +275,8 @@ class MainWindow(QtGui.QMainWindow):
                         index = [i for i, b in enumerate(self.buffers) if b.pointer() == ptrbuf]
                         if index:
                             self.buffers[index[0]].widget.chat.display(item['date'],
-                                                                       color.remove(item['prefix']),
-                                                                       color.remove(item['message']))
+                                                                       item['prefix'],
+                                                                       item['message'])
         elif message.msgid in ('_nicklist', 'nicklist'):
             buffer_nicklist = {}
             for obj in message.objects:

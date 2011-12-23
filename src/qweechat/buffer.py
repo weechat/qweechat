@@ -98,7 +98,7 @@ class BufferWidget(QtGui.QWidget):
         # splitter with chat + nicklist
         self.chat_nicklist = QtGui.QSplitter()
         self.chat_nicklist.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.chat = ChatTextEdit()
+        self.chat = ChatTextEdit(debug=False)
         self.chat_nicklist.addWidget(self.chat)
         self.nicklist = GenericListWidget()
         if not display_nicklist:

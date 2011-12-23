@@ -37,7 +37,7 @@ class DebugDialog(QtGui.QDialog):
         self.resize(640, 480)
         self.setWindowTitle('Debug console')
 
-        self.chat = ChatTextEdit()
+        self.chat = ChatTextEdit(debug=True)
         self.input = InputLineEdit(self.chat)
 
         vbox = QtGui.QVBoxLayout()
