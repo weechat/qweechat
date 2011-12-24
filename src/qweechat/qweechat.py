@@ -42,7 +42,7 @@ from debug import DebugDialog
 from about import AboutDialog
 
 NAME = 'QWeeChat'
-VERSION = '0.1-dev'
+VERSION = '0.0.1-dev'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL= 'flashcode@flashtux.org'
 WEECHAT_SITE = 'http://www.weechat.org/'

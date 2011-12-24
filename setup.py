@@ -26,7 +26,7 @@ def listfiles(dir):
     return ['%s/%s' % (dir, f) for f in os.listdir(dir)]
 
 setup(name='qweechat',
-      version='0.1-dev',
+      version='0.0.1-dev',
       description='Qt remote GUI for WeeChat',
       long_description='Qt remote GUI for WeeChat',
       author='Sébastien Helleu',
