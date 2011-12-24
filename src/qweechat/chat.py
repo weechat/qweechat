@@ -35,7 +35,7 @@ class ChatTextEdit(QtGui.QTextEdit):
     """Chat area."""
 
     def __init__(self, debug, *args):
-        apply(QtGui.QTextEdit.__init__, (self,) + args)
+        QtGui.QTextEdit.__init__(*(self,) + args)
         self.debug = debug
         self.readOnly = True
         self.setFocusPolicy(QtCore.Qt.NoFocus)

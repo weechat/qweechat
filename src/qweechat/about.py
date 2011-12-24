@@ -32,7 +32,7 @@ class AboutDialog(QtGui.QDialog):
     """About dialog."""
 
     def __init__(self, name, messages, *args):
-        apply(QtGui.QDialog.__init__, (self,) + args)
+        QtGui.QDialog.__init__(*(self,) + args)
         self.setModal(True)
         self.setWindowTitle(name)
 

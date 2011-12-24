@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
     """Main window."""
 
     def __init__(self, *args):
-        apply(QtGui.QMainWindow.__init__, (self,) + args)
+        QtGui.QMainWindow.__init__(*(self,) + args)
 
         self.config = config.read()
 

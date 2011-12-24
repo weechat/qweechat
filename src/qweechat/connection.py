@@ -31,7 +31,7 @@ class ConnectionDialog(QtGui.QDialog):
     """Connection window with server/port/password fields."""
 
     def __init__(self, values, *args):
-        apply(QtGui.QDialog.__init__, (self,) + args)
+        QtGui.QDialog.__init__(*(self,) + args)
         self.values = values
         self.setModal(True)
 

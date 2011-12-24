@@ -33,7 +33,7 @@ class DebugDialog(QtGui.QDialog):
     """Debug dialog."""
 
     def __init__(self, *args):
-        apply(QtGui.QDialog.__init__, (self,) + args)
+        QtGui.QDialog.__init__(*(self,) + args)
         self.resize(640, 480)
         self.setWindowTitle('Debug console')
 

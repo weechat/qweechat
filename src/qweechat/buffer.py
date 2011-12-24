@@ -34,7 +34,7 @@ class GenericListWidget(QtGui.QListWidget):
     """Generic QListWidget with dynamic size."""
 
     def __init__(self, *args):
-        apply(QtGui.QListWidget.__init__, (self,) + args)
+        QtGui.QListWidget.__init__(*(self,) + args)
         self.setMaximumWidth(100)
         self.setTextElideMode(QtCore.Qt.ElideNone)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -52,17 +52,17 @@ class GenericListWidget(QtGui.QListWidget):
 
     def clear(self, *args):
         """Re-implement clear to set dynamic size after clear."""
-        apply(QtGui.QListWidget.clear, (self,) + args)
+        QtGui.QListWidget.clear(*(self,) + args)
         self.auto_resize()
 
     def addItem(self, *args):
         """Re-implement addItem to set dynamic size after add."""
-        apply(QtGui.QListWidget.addItem, (self,) + args)
+        QtGui.QListWidget.addItem(*(self,) + args)
         self.auto_resize()
 
     def insertItem(self, *args):
         """Re-implement insertItem to set dynamic size after insert."""
-        apply(QtGui.QListWidget.insertItem, (self,) + args)
+        QtGui.QListWidget.insertItem(*(self,) + args)
         self.auto_resize()
 
 
@@ -70,7 +70,7 @@ class BufferListWidget(GenericListWidget):
     """Widget with list of buffers."""
 
     def __init__(self, *args):
-        apply(GenericListWidget.__init__, (self,) + args)
+        GenericListWidget.__init__(*(self,) + args)
 
     def switch_prev_buffer(self):
         if self.currentRow() > 0:

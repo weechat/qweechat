@@ -43,7 +43,7 @@ class Network(QtCore.QObject):
     messageFromWeechat = qt_compat.Signal(QtCore.QByteArray)
 
     def __init__(self, *args):
-        apply(QtCore.QObject.__init__, (self,) + args)
+        QtCore.QObject.__init__(*(self,) + args)
         self.status_disconnected = 'disconnected'
         self.status_connecting = 'connecting...'
         self.status_connected = 'connected'
