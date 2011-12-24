@@ -98,7 +98,7 @@ class MainWindow(QtGui.QMainWindow):
                        'quit'       : ['application-exit.png', 'Quit application', 'Ctrl+Q', self.close],
                        }
         self.actions = {}
-        for name, action in actions_def.iteritems():
+        for name, action in list(actions_def.items()):
             self.actions[name] = QtGui.QAction(QtGui.QIcon('data/icons/%s' % action[0]), name.capitalize(), self)
             self.actions[name].setStatusTip(action[1])
             self.actions[name].setShortcut(action[2])

@@ -49,14 +49,14 @@ class WeechatObject:
                  '  path: %s' % str(self.value['path'])]
         for i, item in enumerate(self.value['items']):
             lines.append('  item %d:' % (i + 1))
-            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in iter(sorted(item.iteritems()))]))
+            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in sorted(item.items())]))
         return '\n'.join(lines)
 
     def _str_value_infolist(self):
         lines = ['', '  name: %s' % self.value['name']]
         for i, item in enumerate(self.value['items']):
             lines.append('  item %d:' % (i + 1))
-            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in iter(sorted(item.iteritems()))]))
+            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in sorted(item.items())]))
         return '\n'.join(lines)
 
     def _str_value_other(self):
