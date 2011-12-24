@@ -75,7 +75,7 @@ class Color():
             index = int(color)
             return '\x01(Fr%s)' % self.color_options[index]
         except:
-            print 'Error decoding WeeChat color "%s"' % color
+            print('Error decoding WeeChat color "%s"' % color)
             return ''
 
     def _convert_terminal_color(self, fg_bg, attrs, color):
@@ -83,7 +83,7 @@ class Color():
             index = int(color)
             return '\x01(%s%s#%s)' % (fg_bg, attrs, self._rgb_color(index))
         except:
-            print 'Error decoding terminal color "%s"' % color
+            print('Error decoding terminal color "%s"' % color)
             return ''
 
     def _convert_color_attr(self, fg_bg, color):
@@ -104,7 +104,7 @@ class Color():
             index = int(color)
             return self._convert_terminal_color(fg_bg, attrs, WEECHAT_BASIC_COLORS[index][1])
         except:
-            print 'Error decoding color "%s"' % color
+            print('Error decoding color "%s"' % color)
             return ''
 
     def _attrcode_to_char(self, code):
