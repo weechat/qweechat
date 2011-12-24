@@ -193,7 +193,7 @@ class Protocol:
         type_values = self._obj_type()
         count = self._obj_int()
         hashtable = {}
-        for i in xrange(0, count):
+        for i in range(0, count):
             key = self._obj_cb[type_keys]()
             value = self._obj_cb[type_values]()
             hashtable[key] = value
@@ -213,10 +213,10 @@ class Protocol:
             keys_types.append(items)
             dict_keys[items[0]] = items[1]
         items = []
-        for i in xrange(0, count):
+        for i in range(0, count):
             item = {}
             pointers = []
-            for p in xrange(0, len(list_path)):
+            for p in range(0, len(list_path)):
                 pointers.append(self._obj_ptr())
             for key, objtype in keys_types:
                 item[key] = self._obj_cb[objtype]()
@@ -239,10 +239,10 @@ class Protocol:
         name = self._obj_str()
         count_items = self._obj_int()
         items = []
-        for i in xrange(0, count_items):
+        for i in range(0, count_items):
             count_vars = self._obj_int()
             variables = {}
-            for v in xrange(0, count_vars):
+            for v in range(0, count_vars):
                 var_name = self._obj_str()
                 var_type = self._obj_type()
                 var_value = self._obj_cb[var_type]()
@@ -284,7 +284,7 @@ def hex_and_ascii(data, bytes_per_line=10):
     if num_lines == 0:
         return ''
     lines = []
-    for i in xrange(0, num_lines):
+    for i in range(0, num_lines):
         str_hex = []
         str_ascii = []
         for char in data[i*bytes_per_line:(i*bytes_per_line)+bytes_per_line]:
