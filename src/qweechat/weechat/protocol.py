@@ -87,7 +87,7 @@ class WeechatMessage:
         if self.compression != 0:
             return 'size: %d/%d (%d%%), id=\'%s\', objects:\n%s' % (
                 self.size, self.size_uncompressed,
-                100 - ((self.size * 100) / self.size_uncompressed),
+                100 - ((self.size * 100) // self.size_uncompressed),
                 self.msgid, self.objects)
         else:
             return 'size: %d, id=\'%s\', objects:\n%s' % (self.size, self.msgid, self.objects)
@@ -280,7 +280,7 @@ class Protocol:
 
 def hex_and_ascii(data, bytes_per_line=10):
     """Convert a QByteArray to hex + ascii output."""
-    num_lines = ((len(data) - 1) / bytes_per_line) + 1
+    num_lines = ((len(data) - 1) // bytes_per_line) + 1
     if num_lines == 0:
         return ''
     lines = []
