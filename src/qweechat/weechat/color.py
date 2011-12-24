@@ -163,8 +163,8 @@ class Color():
         else:
             return RE_COLOR.sub(self._convert_color, text)
 
-    def remove(self, text):
-        """Remove colors in a WeeChat string."""
-        if not text:
-            return ''
-        return re.sub(RE_COLOR, '', text)
+def remove(text):
+    """Remove colors in a WeeChat string."""
+    if not text:
+        return ''
+    return re.sub(RE_COLOR, '', text)

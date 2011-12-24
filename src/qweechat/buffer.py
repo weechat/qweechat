@@ -28,6 +28,7 @@ QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
 from chat import ChatTextEdit
 from input import InputLineEdit
+import weechat.color as color
 
 
 class GenericListWidget(QtGui.QListWidget):
@@ -161,7 +162,7 @@ class Buffer(QtCore.QObject):
     def update_title(self):
         """Update title."""
         try:
-            self.widget.set_title(self.data['title'])
+            self.widget.set_title(color.remove(self.data['title']))
         except:
             self.widget.set_title(None)
 
