@@ -112,7 +112,7 @@ def read():
 def write(config):
     """Write config file."""
     if not os.path.exists(CONFIG_DIR):
-        os.mkdir(CONFIG_DIR, 0755)
+        os.mkdir(CONFIG_DIR, 0o0755)
     with open(CONFIG_FILENAME, 'wb') as cfg:
         config.write(cfg)
 
