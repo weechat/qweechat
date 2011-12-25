@@ -303,7 +303,9 @@ class MainWindow(QtGui.QMainWindow):
                         index = [i for i, b in enumerate(self.buffers) if b.pointer() == item['__path'][0]]
                         if index:
                             index = index[0]
-                            if message.msgid in ('_buffer_moved', '_buffer_merged'):
+                            if message.msgid == '_buffer_type_changed':
+                                self.buffers[index].data['type'] = item['type']
+                            elif message.msgid in ('_buffer_moved', '_buffer_merged', '_buffer_unmerged'):
                                 buf = self.buffers[index]
                                 buf.data['number'] = item['number']
                                 self.remove_buffer(index)
