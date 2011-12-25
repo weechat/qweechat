@@ -13,7 +13,7 @@ Extract files from archive and run qweechat.py:
 
 $ tar xvzf qweechat-x.y.tar.gz
 $ cd qweechat-x.y
-$ python src/qweechat/weechat.py
+$ python src/qweechat/qweechat.py
 
 
 Run with install
