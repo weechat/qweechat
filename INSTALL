@@ -26,4 +26,25 @@ $ cd qweechat-x.y
 $ python setup.py install
 
 
+WeeChat setup
+-------------
+
+You have to add a relay port in WeeChat, for example on port 1234:
+
+----------------------------------------
+/relay add weechat.* 1234
+/set relay.network.password "mypass"
+----------------------------------------
+
+
+Connect to WeeChat
+------------------
+
+In QWeeChat, click on connect and enter fields:
+
+* 'server': the IP address or hostname of your machine with WeeChat running
+* 'port': the relay port (defined in WeeeChat)
+* 'password': the relay password (defined in WeeChat)
+
+
 See AUTHORS for support, feel free to contact us for any problem.
