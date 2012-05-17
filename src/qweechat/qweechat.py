@@ -187,7 +187,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_about_dialog(self):
         messages = ['<b>%s</b> %s' % (NAME, VERSION),
-                    '&copy; 2011 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
+                    '&copy; 2011-2012 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
                     'WeeChat site: <a href="%s">%s</a>' % (WEECHAT_SITE, WEECHAT_SITE),
                     '']
