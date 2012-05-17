@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2012 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -28,8 +28,8 @@ import qt_compat
 QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
 
-_PROTO_INIT_CMDS = ['init password=%(password)s,compression=gzip',
-                    '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,type,nicklist,title,local_variables',
+_PROTO_INIT_CMD  = ['init password=%(password)s,compression=gzip']
+_PROTO_SYNC_CMDS = ['(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,type,nicklist,title,local_variables',
                     '(listlines) hdata buffer:gui_buffers(*)/own_lines/first_line(*)/data date,displayed,prefix,message',
                     '(nicklist) nicklist',
                     'sync',
@@ -61,7 +61,7 @@ class Network(QtCore.QObject):
         """Slot: socket connected."""
         self.statusChanged.emit(self.status_connected, None)
         if self._password:
-            self._socket.write('\n'.join(_PROTO_INIT_CMDS) % {'password': str(self._password)})
+            self._socket.write('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS) % {'password': str(self._password)})
 
     def _socket_error(self, error):
         """Slot: socket error."""
@@ -120,6 +120,12 @@ class Network(QtCore.QObject):
 
     def send_to_weechat(self, message):
         self._socket.write(str(message))
+
+    def desync_weechat(self):
+        self._socket.write('desync\n')
+
+    def sync_weechat(self):
+        self._socket.write('\n'.join(_PROTO_SYNC_CMDS))
 
     def status_icon(self, status):
         icon = {self.status_disconnected: 'dialog-close.png',

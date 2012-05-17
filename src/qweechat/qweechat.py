@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2012 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -322,6 +322,10 @@ class MainWindow(QtGui.QMainWindow):
                                 self.buffers[index].update_prompt()
                             elif message.msgid == '_buffer_closing':
                                 self.remove_buffer(index)
+        elif message.msgid == '_upgrade':
+            self.network.desync_weechat()
+        elif message.msgid == '_upgrade_ended':
+            self.network.sync_weechat()
 
     def create_buffer(self, item):
         buf = Buffer(item)
