@@ -114,7 +114,10 @@ class Network(QtCore.QObject):
 
     def disconnect_weechat(self):
         if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
-            if self._socket.state() != QtNetwork.QAbstractSocket.ConnectedState:
+            if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
+                self._socket.write('quit\n')
+                self._socket.waitForBytesWritten(1000)
+            else:
                 self.statusChanged.emit(self.status_disconnected, None)
             self._socket.abort()
 
