@@ -108,6 +108,7 @@ class Protocol:
                         'hda': self._obj_hdata,
                         'inf': self._obj_info,
                         'inl': self._obj_infolist,
+                        'arr': self._obj_array,
                         }
 
     def _obj_type(self):
@@ -249,6 +250,15 @@ class Protocol:
                 variables[var_name] = var_value
             items.append(variables)
         return {'name': name, 'items': items}
+
+    def _obj_array(self):
+        """Read an array of values in data."""
+        type_values = self._obj_type()
+        count_values = self._obj_int()
+        values = []
+        for i in range(0, count_values):
+            values.append(self._obj_cb[type_values]())
+        return values
 
     def decode(self, data):
         """Decode binary data and return list of objects."""
