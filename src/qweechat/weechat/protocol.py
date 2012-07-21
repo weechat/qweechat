@@ -186,7 +186,7 @@ class Protocol:
         value = self._obj_len_data(1)
         if value is None:
             return None
-        return str(value)
+        return int(str(value))
 
     def _obj_hashtable(self):
         """Read a hashtable in data (type for keys + type for values + count + items)."""
