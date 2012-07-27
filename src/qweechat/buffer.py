@@ -162,7 +162,7 @@ class Buffer(QtCore.QObject):
     def update_title(self):
         """Update title."""
         try:
-            self.widget.set_title(color.remove(self.data['title']))
+            self.widget.set_title(color.remove(self.data['title'].decode('utf-8')))
         except:
             self.widget.set_title(None)
 
