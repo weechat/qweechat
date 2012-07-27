@@ -139,6 +139,7 @@ class MainWindow(QtGui.QMainWindow):
         if self.config.getboolean('relay', 'autoconnect'):
             self.network.connect_weechat(self.config.get('relay', 'server'),
                                          self.config.get('relay', 'port'),
+                                         self.config.get('relay', 'ssl') == 'on',
                                          self.config.get('relay', 'password'))
 
         self.show()
@@ -195,7 +196,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_connection_dialog(self):
         values = {}
-        for option in ('server', 'port', 'password'):
+        for option in ('server', 'port', 'ssl', 'password'):
             values[option] = self.config.get('relay', option)
         self.connection_dialog = ConnectionDialog(values, self)
         self.connection_dialog.dialog_buttons.accepted.connect(self.connect_weechat)
@@ -203,6 +204,7 @@ class MainWindow(QtGui.QMainWindow):
     def connect_weechat(self):
         self.network.connect_weechat(self.connection_dialog.fields['server'].text(),
                                      self.connection_dialog.fields['port'].text(),
+                                     self.connection_dialog.fields['ssl'].isChecked(),
                                      self.connection_dialog.fields['password'].text())
         self.connection_dialog.close()
 
@@ -214,14 +216,15 @@ class MainWindow(QtGui.QMainWindow):
 
     def network_status_set(self, status, extra):
         pal = self.network_status.palette()
-        if self.network.is_connected():
+        if status == self.network.status_connected:
             pal.setColor(self.network_status.foregroundRole(), QtGui.QColor('green'))
         else:
             pal.setColor(self.network_status.foregroundRole(), QtGui.QColor('#aa0000'))
+        ssl = ' (SSL)' if status != self.network.status_disconnected and self.network.is_ssl() else ''
         self.network_status.setPalette(pal)
         icon = self.network.status_icon(status)
         if icon:
-            self.network_status.setText('<img src="data/icons/%s"> %s' % (icon, status.capitalize()))
+            self.network_status.setText('<img src="data/icons/%s"> %s' % (icon, status.capitalize() + ssl))
         else:
             self.network_status.setText(status.capitalize())
         if status == self.network.status_disconnected:
@@ -236,16 +239,20 @@ class MainWindow(QtGui.QMainWindow):
                            'message (%d bytes):\n%s'
                            % (len(message), protocol.hex_and_ascii(message, 20)),
                            forcecolor='#008800')
-        proto = protocol.Protocol()
-        message = proto.decode(str(message))
-        if message.uncompressed:
-            self.debug_display(0, '==>',
-                               'message uncompressed (%d bytes):\n%s'
-                               % (message.size_uncompressed,
-                                  protocol.hex_and_ascii(message.uncompressed, 20)),
-                               forcecolor='#008800')
-        self.debug_display(0, '', 'Message: %s' % message)
-        self.parse_message(message)
+        try:
+            proto = protocol.Protocol()
+            message = proto.decode(str(message))
+            if message.uncompressed:
+                self.debug_display(0, '==>',
+                                   'message uncompressed (%d bytes):\n%s'
+                                   % (message.size_uncompressed,
+                                      protocol.hex_and_ascii(message.uncompressed, 20)),
+                                   forcecolor='#008800')
+            self.debug_display(0, '', 'Message: %s' % message)
+            self.parse_message(message)
+        except:
+            print("Error while decoding message from WeeChat")
+            self.network.disconnect_weechat()
 
     def parse_message(self, message):
         if message.msgid.startswith('debug'):

@@ -49,9 +49,10 @@ class Network(QtCore.QObject):
         self.status_connected = 'connected'
         self._server = None
         self._port = None
+        self._ssl = None
         self._password = None
         self._buffer = QtCore.QByteArray()
-        self._socket = QtNetwork.QTcpSocket()
+        self._socket = QtNetwork.QSslSocket()
         self._socket.connected.connect(self._socket_connected)
         self._socket.error.connect(self._socket_error)
         self._socket.readyRead.connect(self._socket_read)
@@ -61,7 +62,7 @@ class Network(QtCore.QObject):
         """Slot: socket connected."""
         self.statusChanged.emit(self.status_connected, None)
         if self._password:
-            self._socket.write('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS) % {'password': str(self._password)})
+            self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS) % {'password': str(self._password)})
 
     def _socket_error(self, error):
         """Slot: socket error."""
@@ -69,8 +70,7 @@ class Network(QtCore.QObject):
 
     def _socket_read(self):
         """Slot: data available on socket."""
-        avail = self._socket.bytesAvailable()
-        bytes = self._socket.read(avail)
+        bytes = self._socket.readAll()
         self._buffer.append(bytes)
         while len(self._buffer) >= 4:
             remainder = None
@@ -84,6 +84,8 @@ class Network(QtCore.QObject):
                 remainder = self._buffer[length:]
                 self._buffer = self._buffer[0:length]
             self.messageFromWeechat.emit(self._buffer)
+            if not self.is_connected():
+                return
             self._buffer.clear()
             if remainder:
                 self._buffer.append(remainder)
@@ -92,30 +94,38 @@ class Network(QtCore.QObject):
         """Slot: socket disconnected."""
         self._server = None
         self._port = None
+        self._ssl = None
         self._password = None
         self.statusChanged.emit(self.status_disconnected, None)
 
     def is_connected(self):
         return self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState
 
-    def connect_weechat(self, server, port, password):
+    def is_ssl(self):
+        return self._ssl
+
+    def connect_weechat(self, server, port, ssl, password):
         self._server = server
         try:
             self._port = int(port)
         except:
             self._port = 0
+        self._ssl = ssl
         self._password = password
         if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
             return
         if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
             self._socket.abort()
         self._socket.connectToHost(self._server, self._port)
+        if self._ssl:
+            self._socket.ignoreSslErrors()
+            self._socket.startClientEncryption()
         self.statusChanged.emit(self.status_connecting, None)
 
     def disconnect_weechat(self):
         if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
             if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
-                self._socket.write('quit\n')
+                self.send_to_weechat('quit\n')
                 self._socket.waitForBytesWritten(1000)
             else:
                 self.statusChanged.emit(self.status_disconnected, None)
@@ -125,10 +135,10 @@ class Network(QtCore.QObject):
         self._socket.write(str(message))
 
     def desync_weechat(self):
-        self._socket.write('desync\n')
+        self.send_to_weechat('desync\n')
 
     def sync_weechat(self):
-        self._socket.write('\n'.join(_PROTO_SYNC_CMDS))
+        self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS))
 
     def status_icon(self, status):
         icon = {self.status_disconnected: 'dialog-close.png',

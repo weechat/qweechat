@@ -42,11 +42,17 @@ class ConnectionDialog(QtGui.QDialog):
         for y, field in enumerate(('server', 'port', 'password')):
             grid.addWidget(QtGui.QLabel(field.capitalize()), y, 0)
             lineEdit = QtGui.QLineEdit()
+            lineEdit.setFixedWidth(200)
             if field == 'password':
                 lineEdit.setEchoMode(QtGui.QLineEdit.Password)
             lineEdit.insert(self.values[field])
             grid.addWidget(lineEdit, y, 1)
             self.fields[field] = lineEdit
+            if field == 'port':
+                ssl = QtGui.QCheckBox('SSL')
+                ssl.setChecked(self.values['ssl'] == 'on')
+                grid.addWidget(ssl, y, 2)
+                self.fields['ssl'] = ssl
 
         self.dialog_buttons = QtGui.QDialogButtonBox()
         self.dialog_buttons.setStandardButtons(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)

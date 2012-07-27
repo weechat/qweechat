@@ -32,6 +32,7 @@ CONFIG_FILENAME = '%s/qweechat.conf' % CONFIG_DIR
 CONFIG_DEFAULT_SECTIONS = ('relay', 'look', 'color')
 CONFIG_DEFAULT_OPTIONS = (('relay.server', ''),
                           ('relay.port', ''),
+                          ('relay.ssl', 'off'),
                           ('relay.password', ''),
                           ('relay.autoconnect', 'off'),
                           ('look.debug', 'off'),
