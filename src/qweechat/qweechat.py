@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011-2012 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -188,7 +188,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_about_dialog(self):
         messages = ['<b>%s</b> %s' % (NAME, VERSION),
-                    '&copy; 2011-2012 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
+                    '&copy; 2011-2013 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
                     'WeeChat site: <a href="%s">%s</a>' % (WEECHAT_SITE, WEECHAT_SITE),
                     '']
