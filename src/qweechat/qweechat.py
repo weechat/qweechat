@@ -190,6 +190,8 @@ class MainWindow(QtGui.QMainWindow):
         messages = ['<b>%s</b> %s' % (NAME, VERSION),
                     '&copy; 2011-2013 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
+                    'Running with %s' % ('PySide' if qt_compat.uses_pyside else 'PyQt4'),
+                    '',
                     'WeeChat site: <a href="%s">%s</a>' % (WEECHAT_SITE, WEECHAT_SITE),
                     '']
         self.about_dialog = AboutDialog(NAME, messages, self)

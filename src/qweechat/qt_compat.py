@@ -9,20 +9,21 @@ from __future__ import with_statement
 from __future__ import division
 
 _TRY_PYSIDE = True
+uses_pyside = False
 
 try:
     if not _TRY_PYSIDE:
         raise ImportError()
     import PySide.QtCore as _QtCore
     QtCore = _QtCore
-    USES_PYSIDE = True
+    uses_pyside = True
 except ImportError:
     import sip
     sip.setapi('QString', 2)
     sip.setapi('QVariant', 2)
     import PyQt4.QtCore as _QtCore
     QtCore = _QtCore
-    USES_PYSIDE = False
+    uses_pyside = False
 
 
 def _pyside_import_module(moduleName):
@@ -35,7 +36,7 @@ def _pyqt4_import_module(moduleName):
     return getattr(pyside, moduleName)
 
 
-if USES_PYSIDE:
+if uses_pyside:
     import_module = _pyside_import_module
 
     Signal = QtCore.Signal
