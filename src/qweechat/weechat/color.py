@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# color.py - remove/replace colors in WeeChat strings
+#
 # Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
@@ -17,10 +19,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
-#
-
-#
-# Remove or replace colors in WeeChat strings.
 #
 
 import re

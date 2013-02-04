@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# protocol.py - decode binary messages received from WeeChat/relay
+#
 # Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
@@ -20,10 +22,8 @@
 #
 
 #
-# Decode binary messages received from WeeChat/relay.
-#
-# For info about protocol and format of messages, please read document "WeeChat Relay Protocol",
-# available at:  http://www.weechat.org/doc/
+# For info about protocol and format of messages, please read document
+# "WeeChat Relay Protocol", available at:  http://www.weechat.org/doc/
 #
 # History:
 #

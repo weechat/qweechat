@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# qweechat.py - WeeChat remote GUI using Qt toolkit
+#
 # Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
@@ -20,8 +22,7 @@
 #
 
 #
-# QWeeChat - WeeChat remote GUI using Qt toolkit.
-# (this script requires WeeChat 0.3.7 or newer, running on local or remote host)
+# This script requires WeeChat 0.3.7 or newer, running on local or remote host.
 #
 # History:
 #
