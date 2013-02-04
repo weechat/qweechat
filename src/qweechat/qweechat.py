@@ -254,7 +254,7 @@ class MainWindow(QtGui.QMainWindow):
             self.debug_display(0, '', 'Message: %s' % message)
             self.parse_message(message)
         except:
-            print("Error while decoding message from WeeChat")
+            print('Error while decoding message from WeeChat')
             self.network.disconnect_weechat()
 
     def parse_message(self, message):
