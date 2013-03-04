@@ -11,9 +11,11 @@ Run without install
 
 Extract files from archive and run qweechat.py:
 
+----------------------------------------
 $ tar xvzf qweechat-x.y.tar.gz
 $ cd qweechat-x.y
 $ python src/qweechat/qweechat.py
+----------------------------------------
 
 
 Run with install
@@ -21,9 +23,22 @@ Run with install
 
 Extract files from archive and install using script 'setup.py':
 
+----------------------------------------
 $ tar xvzf qweechat-x.y.tar.gz
 $ cd qweechat-x.y
-$ python setup.py install
+----------------------------------------
+
+To install in your home:
+
+----------------------------------------
+$ python setup.py install --home=~/qweechat
+----------------------------------------
+
+To install in system directories (as root):
+
+----------------------------------------
+# python setup.py install
+----------------------------------------
 
 
 WeeChat setup
@@ -45,6 +60,8 @@ In QWeeChat, click on connect and enter fields:
 * 'server': the IP address or hostname of your machine with WeeChat running
 * 'port': the relay port (defined in WeeeChat)
 * 'password': the relay password (defined in WeeChat)
+
+Options can be changed in file '~/.qweechat/qweechat.conf'.
 
 
 See AUTHORS for support, feel free to contact us for any problem.
