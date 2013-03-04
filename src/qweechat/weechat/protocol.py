@@ -34,9 +34,12 @@
 import struct, zlib
 
 class WeechatObject:
-    def __init__(self, objtype, value):
+    def __init__(self, objtype, value, separator='\n'):
         self.objtype = objtype;
         self.value = value
+        self.separator = separator
+        self.indent = '  ' if separator == '\n' else ''
+        self.separator1 = '\n%s' % self.indent if separator == '\n' else ''
 
     def _str_value(self, v):
         if type(v) is str and not v is None:
@@ -44,19 +47,17 @@ class WeechatObject:
         return str(v)
 
     def _str_value_hdata(self):
-        lines = ['',
-                 '  keys: %s' % str(self.value['keys']),
-                 '  path: %s' % str(self.value['path'])]
+        lines = ['%skeys: %s%s%spath: %s' % (self.separator1, str(self.value['keys']), self.separator, self.indent, str(self.value['path']))]
         for i, item in enumerate(self.value['items']):
-            lines.append('  item %d:' % (i + 1))
-            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in sorted(item.items())]))
+            lines.append('  item %d:%s%s' % ((i + 1), self.separator,
+                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in sorted(item.items())])))
         return '\n'.join(lines)
 
     def _str_value_infolist(self):
-        lines = ['', '  name: %s' % self.value['name']]
+        lines = ['%sname: %s' % (self.separator1, self.value['name'])]
         for i, item in enumerate(self.value['items']):
-            lines.append('  item %d:' % (i + 1))
-            lines.append('\n'.join(['    %s: %s' % (key, self._str_value(value)) for key, value in sorted(item.items())]))
+            lines.append('  item %d:%s%s' % ((i + 1), self.separator,
+                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in sorted(item.items())])))
         return '\n'.join(lines)
 
     def _str_value_other(self):
@@ -70,8 +71,11 @@ class WeechatObject:
 
 
 class WeechatObjects(list):
+    def __init__(self, separator='\n'):
+        self.separator = separator
+
     def __str__(self):
-        return '\n'.join([str(obj) for obj in self])
+        return self.separator.join([str(obj) for obj in self])
 
 
 class WeechatMessage:
@@ -260,7 +264,7 @@ class Protocol:
             values.append(self._obj_cb[type_values]())
         return values
 
-    def decode(self, data):
+    def decode(self, data, separator='\n'):
         """Decode binary data and return list of objects."""
         self.data = data
         size = len(self.data)
@@ -280,11 +284,11 @@ class Protocol:
         if msgid is None:
             msgid = ''
         # read objects
-        objects = WeechatObjects()
+        objects = WeechatObjects(separator=separator)
         while len(self.data) > 0:
             objtype = self._obj_type()
             value = self._obj_cb[objtype]()
-            objects.append(WeechatObject(objtype, value))
+            objects.append(WeechatObject(objtype, value, separator=separator))
         return WeechatMessage(size, size_uncompressed, compression, uncompressed, msgid, objects)
 
 

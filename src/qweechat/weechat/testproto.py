@@ -37,7 +37,7 @@
 import os, sys, socket, select, struct, time
 import protocol  # WeeChat/relay protocol
 
-options = { 'h': False, 'v': False, '6': False }
+options = { 'h': 0, 'v': 0, '6': 0 }
 hostname = None
 port = None
 
@@ -45,7 +45,7 @@ def usage():
     """Display usage."""
     print('\nSyntax: python %s [-h] [-v] [-6] <hostname> <port>\n' % sys.argv[0])
     print('  -h              display this help')
-    print('  -v              verbose mode (display raw messages received)')
+    print('  -v              verbose mode: long objects view (two -v: display raw messages)')
     print('  -6              connect using IPv6')
     print('  hostname, port  hostname (or IP address) and port of machine running WeeChat relay')
     print('')
@@ -90,9 +90,9 @@ def decode(message):
     global options
     try:
         proto = protocol.Protocol()
-        message = proto.decode(message)
+        message = proto.decode(message, separator='\n' if options['v'] else ', ')
         print('')
-        if options['v'] and message.uncompressed:
+        if options['v'] >= 2 and message.uncompressed:
             # display raw message
             print('\x1b[32m--> message uncompressed (%d bytes):\n%s\x1b[0m'
                   % (message.size_uncompressed,
@@ -166,7 +166,8 @@ if len(sys.argv) < 3:
 try:
     for arg in sys.argv[1:]:
         if arg[0] == '-':
-            options[arg[1:]] = True
+            for opt in arg[1:]:
+                options[opt] = options.get(opt, 0) + 1
         elif hostname:
             port = int(arg)
         else:
