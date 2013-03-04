@@ -6,22 +6,22 @@ Developers
 
 * General code
 
-** Sébastien Helleu <flashcode@flashtux.org>
-*** Web: http://www.weechat.org/
-*** IRC: 'FlashCode' on irc.freenode.net
+** Sébastien Helleu (FlashCode) <flashcode@flashtux.org>
 
 
 Contributors
 ------------
 
-* Florian Besser <fbesser@gmail.com>, IRC: 'Banton'
+Alphabetically:
+
+* Florian Besser (Banton)
+* Gryllida A (gry)
 
 
 Contact
 -------
 
-Whole team is connected to IRC:
-server: 'irc.freenode.net', channels: '#weechat' (english) and '#weechat-fr' (french)
+Developers are connected to IRC:
 
-
-See README file for license detail.
+* server: 'irc.freenode.net'
+* channels: '#weechat' (english) and '#weechat-fr' (french)
