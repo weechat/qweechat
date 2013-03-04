@@ -32,7 +32,7 @@ WeeChat setup
 You have to add a relay port in WeeChat, for example on port 1234:
 
 ----------------------------------------
-/relay add weechat.* 1234
+/relay add weechat 1234
 /set relay.network.password "mypass"
 ----------------------------------------
 
