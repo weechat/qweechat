@@ -72,7 +72,7 @@ class InputLineEdit(QtGui.QLineEdit):
             QtGui.QLineEdit.keyPressEvent(self, event)
 
     def _input_return_pressed(self):
-        self._history.append(str(self.text()))
+        self._history.append(self.text().encode('utf-8'))
         self._history_index = len(self._history)
         self.textSent.emit(self.text())
         self.clear()

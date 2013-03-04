@@ -130,7 +130,7 @@ class Network(QtCore.QObject):
             self._socket.abort()
 
     def send_to_weechat(self, message):
-        self._socket.write(str(message))
+        self._socket.write(message.encode('utf-8'))
 
     def desync_weechat(self):
         self.send_to_weechat('desync\n')
