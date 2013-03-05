@@ -31,7 +31,16 @@
 #     start dev
 #
 
-import struct, zlib
+import collections, struct, zlib
+
+if hasattr(collections, 'OrderedDict'):
+    # python >= 2.7
+    class WeechatDict(collections.OrderedDict):
+        def __str__(self):
+            return '{%s}' % ', '.join(['%s: %s' % (repr(key), repr(self[key])) for key in self])
+else:
+    # python <= 2.6
+    WeechatDict = dict
 
 class WeechatObject:
     def __init__(self, objtype, value, separator='\n'):
@@ -50,14 +59,14 @@ class WeechatObject:
         lines = ['%skeys: %s%s%spath: %s' % (self.separator1, str(self.value['keys']), self.separator, self.indent, str(self.value['path']))]
         for i, item in enumerate(self.value['items']):
             lines.append('  item %d:%s%s' % ((i + 1), self.separator,
-                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in sorted(item.items())])))
+                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in item.items()])))
         return '\n'.join(lines)
 
     def _str_value_infolist(self):
         lines = ['%sname: %s' % (self.separator1, self.value['name'])]
         for i, item in enumerate(self.value['items']):
             lines.append('  item %d:%s%s' % ((i + 1), self.separator,
-                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in sorted(item.items())])))
+                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in item.items()])))
         return '\n'.join(lines)
 
     def _str_value_other(self):
@@ -197,7 +206,7 @@ class Protocol:
         type_keys = self._obj_type()
         type_values = self._obj_type()
         count = self._obj_int()
-        hashtable = {}
+        hashtable = WeechatDict()
         for i in range(0, count):
             key = self._obj_cb[type_keys]()
             value = self._obj_cb[type_values]()
@@ -212,14 +221,15 @@ class Protocol:
         list_path = path.split('/')
         list_keys = keys.split(',')
         keys_types = []
-        dict_keys = {}
+        dict_keys = WeechatDict()
         for key in list_keys:
             items = key.split(':')
             keys_types.append(items)
             dict_keys[items[0]] = items[1]
         items = []
         for i in range(0, count):
-            item = {}
+            item = WeechatDict()
+            item['__path'] = []
             pointers = []
             for p in range(0, len(list_path)):
                 pointers.append(self._obj_ptr())
@@ -246,7 +256,7 @@ class Protocol:
         items = []
         for i in range(0, count_items):
             count_vars = self._obj_int()
-            variables = {}
+            variables = WeechatDict()
             for v in range(0, count_vars):
                 var_name = self._obj_str()
                 var_type = self._obj_type()
