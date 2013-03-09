@@ -147,7 +147,7 @@ class Buffer(QtCore.QObject):
     def __init__(self, data={}):
         QtCore.QObject.__init__(self)
         self.data = data
-        self.nicklist = []
+        self.nicklist = {}
         self.widget = BufferWidget(display_nicklist=self.data.get('nicklist', 0))
         self.update_title()
         self.update_prompt()
@@ -176,23 +176,51 @@ class Buffer(QtCore.QObject):
         if self.data:
             self.bufferInput.emit(self.data['full_name'], text)
 
-    def add_nick(self, prefix, nick):
-        """Add a nick to nicklist."""
-        prefix_color = { '': '', ' ': '', '+': 'yellow' }
-        self.nicklist.append((prefix, nick))
-        color = prefix_color.get(prefix, 'green')
-        if color:
-            icon = QtGui.QIcon('data/icons/bullet_%s_8x8.png' % color)
+    def nicklist_add_item(self, parent, group, prefix, name, visible):
+        """Add a group/nick in nicklist."""
+        if group:
+            self.nicklist[name] = { 'visible': visible,
+                                    'nicks': [] }
         else:
-            pixmap = QtGui.QPixmap(8, 8)
-            pixmap.fill()
-            icon = QtGui.QIcon(pixmap)
-        item = QtGui.QListWidgetItem(icon, nick)
-        #item.setFont('monospace')
-        self.widget.nicklist.addItem(item)
-        self.widget.nicklist.setVisible(True)
+            self.nicklist[parent]['nicks'].append({ 'prefix': prefix,
+                                                    'name': name,
+                                                    'visible': visible })
 
-    def remove_all_nicks(self):
-        """Remove all nicks from nicklist."""
-        self.nicklist = []
+    def nicklist_remove_item(self, parent, group, name):
+        """Remove a group/nick from nicklist."""
+        if group:
+            if name in self.nicklist:
+                del self.nicklist[name]
+        else:
+            if parent in self.nicklist:
+                self.nicklist[parent]['nicks'] = [nick for nick in self.nicklist[parent]['nicks'] if nick['name'] != name]
+
+    def nicklist_update_item(self, parent, group, prefix, name, visible):
+        """Update a group/nick in nicklist."""
+        if group:
+            if name in self.nicklist:
+                self.nicklist[name]['visible'] = visible
+        else:
+            if parent in self.nicklist:
+                for nick in self.nicklist[parent]['nicks']:
+                    if nick['name'] == name:
+                        nick['prefix'] = prefix
+                        nick['visible'] = visible
+                        break
+
+    def nicklist_refresh(self):
+        """Refresh nicklist."""
         self.widget.nicklist.clear()
+        for group in sorted(self.nicklist):
+            for nick in sorted(self.nicklist[group]['nicks'], key=lambda n:n['name']):
+                prefix_color = { '': '', ' ': '', '+': 'yellow' }
+                color = prefix_color.get(nick['prefix'], 'green')
+                if color:
+                    icon = QtGui.QIcon('data/icons/bullet_%s_8x8.png' % color)
+                else:
+                    pixmap = QtGui.QPixmap(8, 8)
+                    pixmap.fill()
+                    icon = QtGui.QIcon(pixmap)
+                item = QtGui.QListWidgetItem(icon, nick['name'])
+                self.widget.nicklist.addItem(item)
+                self.widget.nicklist.setVisible(True)

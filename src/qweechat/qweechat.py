@@ -30,7 +30,7 @@
 #     start dev
 #
 
-import sys, struct
+import sys, struct, traceback
 import qt_compat
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
@@ -254,7 +254,7 @@ class MainWindow(QtGui.QMainWindow):
             self.debug_display(0, '', 'Message: %s' % message)
             self.parse_message(message)
         except:
-            print('Error while decoding message from WeeChat')
+            print('Error while decoding message from WeeChat:\n%s' % traceback.format_exc())
             self.network.disconnect_weechat()
 
     def parse_message(self, message):
@@ -288,17 +288,40 @@ class MainWindow(QtGui.QMainWindow):
                                                                        item['prefix'],
                                                                        item['message'])
         elif message.msgid in ('_nicklist', 'nicklist'):
-            buffer_nicklist = {}
+            buffer_refresh = {}
             for obj in message.objects:
                 if obj.objtype == 'hda' and obj.value['path'][-1] == 'nicklist_item':
+                    group = '__root'
                     for item in obj.value['items']:
                         index = [i for i, b in enumerate(self.buffers) if b.pointer() == item['__path'][0]]
                         if index:
-                            if not item['__path'][0] in buffer_nicklist:
-                                self.buffers[index[0]].remove_all_nicks()
-                            buffer_nicklist[item['__path'][0]] = True
-                            if not item['group'] and item['visible']:
-                                self.buffers[index[0]].add_nick(item['prefix'], item['name'])
+                            if not index[0] in buffer_refresh:
+                                self.buffers[index[0]].nicklist = {}
+                            buffer_refresh[index[0]] = True
+                            if item['group']:
+                                group = item['name']
+                            self.buffers[index[0]].nicklist_add_item(group, item['group'], item['prefix'], item['name'], item['visible'])
+            for index in buffer_refresh:
+                self.buffers[index].nicklist_refresh()
+        elif message.msgid == '_nicklist_diff':
+            buffer_refresh = {}
+            for obj in message.objects:
+                if obj.objtype == 'hda' and obj.value['path'][-1] == 'nicklist_item':
+                    group = '__root'
+                    for item in obj.value['items']:
+                        index = [i for i, b in enumerate(self.buffers) if b.pointer() == item['__path'][0]]
+                        if index:
+                            buffer_refresh[index[0]] = True
+                            if item['_diff'] == ord('^'):
+                                group = item['name']
+                            elif item['_diff'] == ord('+'):
+                                self.buffers[index[0]].nicklist_add_item(group, item['group'], item['prefix'], item['name'], item['visible'])
+                            elif item['_diff'] == ord('-'):
+                                self.buffers[index[0]].nicklist_remove_item(group, item['group'], item['name'])
+                            elif item['_diff'] == ord('*'):
+                                self.buffers[index[0]].nicklist_update_item(group, item['group'], item['prefix'], item['name'], item['visible'])
+            for index in buffer_refresh:
+                self.buffers[index].nicklist_refresh()
         elif message.msgid == '_buffer_opened':
             for obj in message.objects:
                 if obj.objtype == 'hda' and obj.value['path'][-1] == 'buffer':
