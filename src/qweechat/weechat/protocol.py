@@ -287,6 +287,8 @@ class Protocol:
             size_uncompressed = len(uncompressed) + 5
             uncompressed = '%s%s%s' % (struct.pack('>i', size_uncompressed), struct.pack('b', 0), uncompressed)
             self.data = uncompressed
+        else:
+            uncompressed = self.data[:]
         # skip length and compression flag
         self.data = self.data[5:]
         # read id
