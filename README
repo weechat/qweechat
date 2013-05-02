@@ -4,7 +4,7 @@ QWeeChat readme
 
 QWeeChat is a Qt remote GUI for WeeChat written in Python.
 It requires WeeChat (version >= 0.3.7) on local or remote machine, with
-relay plugin enabled and listening on a port for protocol "weechat".
+relay plugin enabled and listening on a port with protocol "weechat".
 
 
 Features
