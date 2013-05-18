@@ -369,7 +369,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def insert_buffer(self, index, buf):
         self.buffers.insert(index, buf)
-        self.list_buffers.insertItem(index, '%d. %s' % (buf.data['number'], buf.data['full_name']))
+        self.list_buffers.insertItem(index, '%d. %s' % (buf.data['number'], buf.data['full_name'].decode('utf-8')))
         self.stacked_buffers.insertWidget(index, buf.widget)
 
     def remove_buffer(self, index):
