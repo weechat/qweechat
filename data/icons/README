@@ -10,8 +10,8 @@ Files: weechat_icon_32.png, bullet_green_8x8.png, bullet_yellow_8x8.png
 
 
 Files: application-exit.png, dialog-close.png, dialog-ok-apply.png,
-       edit-find.png, help-about.png, network-connect.png, network-disconnect.png,
-       preferences-other.png
+       document-save.png, edit-find.png, help-about.png, network-connect.png,
+       network-disconnect.png, preferences-other.png
 
   Files come from Debian package "oxygen-icon-theme":
 

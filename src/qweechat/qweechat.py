@@ -96,7 +96,7 @@ class MainWindow(QtGui.QMainWindow):
                        'debug'          : ['edit-find.png', 'Debug console window', 'Ctrl+B', self.open_debug_dialog],
                        'preferences'    : ['preferences-other.png', 'Preferences', 'Ctrl+P', self.open_preferences_dialog],
                        'about'          : ['help-about.png', 'About', 'Ctrl+H', self.open_about_dialog],
-                       'save connection': ['', 'Save connection configuration', 'Ctrl+S', self.save_connection],
+                       'save connection': ['document-save.png', 'Save connection configuration', 'Ctrl+S', self.save_connection],
                        'quit'           : ['application-exit.png', 'Quit application', 'Ctrl+Q', self.close],
                        }
         self.actions = {}
