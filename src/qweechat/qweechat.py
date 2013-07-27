@@ -91,12 +91,13 @@ class MainWindow(QtGui.QMainWindow):
             self.statusBar().visible = True
 
         # actions for menu and toolbar
-        actions_def = {'connect'    : ['network-connect.png', 'Connect to WeeChat', 'Ctrl+O', self.open_connection_dialog],
-                       'disconnect' : ['network-disconnect.png', 'Disconnect from WeeChat', 'Ctrl+D', self.network.disconnect_weechat],
-                       'debug'      : ['edit-find.png', 'Debug console window', 'Ctrl+B', self.open_debug_dialog],
-                       'preferences': ['preferences-other.png', 'Preferences', 'Ctrl+P', self.open_preferences_dialog],
-                       'about'      : ['help-about.png', 'About', 'Ctrl+H', self.open_about_dialog],
-                       'quit'       : ['application-exit.png', 'Quit application', 'Ctrl+Q', self.close],
+        actions_def = {'connect'        : ['network-connect.png', 'Connect to WeeChat', 'Ctrl+O', self.open_connection_dialog],
+                       'disconnect'     : ['network-disconnect.png', 'Disconnect from WeeChat', 'Ctrl+D', self.network.disconnect_weechat],
+                       'debug'          : ['edit-find.png', 'Debug console window', 'Ctrl+B', self.open_debug_dialog],
+                       'preferences'    : ['preferences-other.png', 'Preferences', 'Ctrl+P', self.open_preferences_dialog],
+                       'about'          : ['help-about.png', 'About', 'Ctrl+H', self.open_about_dialog],
+                       'save connection': ['', 'Save connection configuration', 'Ctrl+S', self.save_connection],
+                       'quit'           : ['application-exit.png', 'Quit application', 'Ctrl+Q', self.close],
                        }
         self.actions = {}
         for name, action in list(actions_def.items()):
@@ -109,7 +110,7 @@ class MainWindow(QtGui.QMainWindow):
         self.menu = self.menuBar()
         menu_file = self.menu.addMenu('&File')
         menu_file.addActions([self.actions['connect'], self.actions['disconnect'],
-                              self.actions['preferences'], self.actions['quit']])
+                              self.actions['preferences'], self.actions['save connection'], self.actions['quit']])
         menu_window = self.menu.addMenu('&Window')
         menu_window.addAction(self.actions['debug'])
         menu_help = self.menu.addMenu('&Help')
@@ -158,6 +159,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_preferences_dialog(self):
         pass # TODO
+
+    def save_connection(self):
+        if self.network:
+            options = self.network.get_options()
+            for option in options.keys():
+                self.config.set('relay', option, options[option])
 
     def debug_display(self, *args, **kwargs):
         self.debug_lines.append((args, kwargs))

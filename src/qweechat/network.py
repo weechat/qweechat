@@ -143,3 +143,9 @@ class Network(QtCore.QObject):
                 self.status_connecting: 'dialog-close.png',
                 self.status_connected: 'dialog-ok-apply.png'}
         return icon.get(status, '')
+
+    def get_options(self):
+        return {'server': self._server,
+                'port': self._port,
+                'ssl': 'on' if self._ssl else 'off',
+                'password': self._password}
