@@ -74,7 +74,14 @@ CONFIG_DEFAULT_COLOR_OPTIONS = (('separator', '#000066'), # 0
                                 ('chat_tags', '#000000'), # 34
                                 ('chat_inactive_window', '#000000'), # 35
                                 ('chat_inactive_buffer', '#000000'), # 36
-                                ('chat_prefix_buffer_inactive_buffer', '#000000')) # 37
+                                ('chat_prefix_buffer_inactive_buffer', '#000000'), # 37
+                                ('chat_nick_offline', '#000000'), # 38
+                                ('chat_nick_offline_highlight', '#000000'), # 39
+                                ('chat_nick_prefix', '#000000'), # 40
+                                ('chat_nick_suffix', '#000000'), # 41
+                                ('emphasis', '#000000'), # 42
+                                ('chat_day_change', '#000000'), #43
+                            )
 config_color_options = []
 
 
