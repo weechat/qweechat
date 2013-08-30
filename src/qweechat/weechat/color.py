@@ -28,7 +28,7 @@ RE_COLOR_STD = r'(?:%s\d{2})' % RE_COLOR_ATTRS
 RE_COLOR_EXT = r'(?:@%s\d{5})' % RE_COLOR_ATTRS
 RE_COLOR_ANY = r'(?:%s|%s)' % (RE_COLOR_STD, RE_COLOR_EXT)
 # \x19: color code, \x1A: set attribute, \x1B: remove attribute, \x1C: reset
-RE_COLOR = re.compile(r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|\\*%s(,%s)?|@\d{5}|b.|\x1C))|\x1A.|\x1B.|\x1C'
+RE_COLOR = re.compile(r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|E|\\*%s(,%s)?|@\d{5}|b.|\x1C))|\x1A.|\x1B.|\x1C'
                       % (RE_COLOR_ANY, RE_COLOR_ANY, RE_COLOR_ANY))
 
 TERMINAL_COLORS = \
@@ -130,6 +130,9 @@ class Color():
                 return s
             elif color[1] == '@':
                 # direct ncurses pair number, ignored
+                return ''
+            elif color[1] == 'E':
+                # text emphasis, ignored
                 return ''
             if color[1:].isdigit():
                 return self._convert_weechat_color(int(color[1:]))
