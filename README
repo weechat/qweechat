@@ -1,21 +1,17 @@
-QWeeChat readme
-===============
+= QWeeChat readme
+Sébastien Helleu <flashcode@flashtux.org>
 
 
 QWeeChat is a Qt remote GUI for WeeChat written in Python.
 It requires WeeChat (version >= 0.3.7) on local or remote machine, with
 relay plugin enabled and listening on a port with protocol "weechat".
 
+== Features
 
-Features
---------
-
-* multi-platform (GNU/Linux, *BSD, Mac OS X, QNX, Windows & other)
+* multi-platform (GNU/Linux, *BSD, Mac OS X, QNX, Windows & others)
 * free software, released under GPLv3
 
-
-Copyright
----------
+== Copyright
 
 Copyright (C) 2011-2013 Sébastien Helleu <flashcode@flashtux.org>
 

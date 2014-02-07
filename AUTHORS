@@ -1,16 +1,13 @@
-QWeeChat authors
-================
+= QWeeChat authors
+Sébastien Helleu <flashcode@flashtux.org>
 
-Developers
-----------
+
+== Developers
 
 * General code
-
 ** Sébastien Helleu (FlashCode) <flashcode@flashtux.org>
 
-
-Contributors
-------------
+== Contributors
 
 Alphabetically:
 
@@ -18,11 +15,9 @@ Alphabetically:
 * Gryllida A (gry)
 * howaboutudance
 
-
-Contact
--------
+== Contact
 
 Developers are connected to IRC:
 
 * server: 'irc.freenode.net'
-* channels: '#weechat' (english) and '#weechat-fr' (french)
+* channels: '#weechat' (English) and '#weechat-fr' (French)
