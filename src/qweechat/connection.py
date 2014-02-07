@@ -26,7 +26,7 @@ QtGui = qt_compat.import_module('QtGui')
 
 
 class ConnectionDialog(QtGui.QDialog):
-    """Connection window with server/port/password fields."""
+    """Connection window."""
 
     def __init__(self, values, *args):
         QtGui.QDialog.__init__(*(self,) + args)
@@ -37,12 +37,16 @@ class ConnectionDialog(QtGui.QDialog):
         grid.setSpacing(10)
 
         self.fields = {}
-        for y, field in enumerate(('server', 'port', 'password')):
+        for y, field in enumerate(('server', 'port', 'password', 'lines')):
             grid.addWidget(QtGui.QLabel(field.capitalize()), y, 0)
             lineEdit = QtGui.QLineEdit()
             lineEdit.setFixedWidth(200)
             if field == 'password':
                 lineEdit.setEchoMode(QtGui.QLineEdit.Password)
+            if field == 'lines':
+                validator = QtGui.QIntValidator(0, 2147483647, self)
+                lineEdit.setValidator(validator)
+                lineEdit.setFixedWidth(80)
             lineEdit.insert(self.values[field])
             grid.addWidget(lineEdit, y, 1)
             self.fields[field] = lineEdit
@@ -56,6 +60,6 @@ class ConnectionDialog(QtGui.QDialog):
         self.dialog_buttons.setStandardButtons(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         self.dialog_buttons.rejected.connect(self.close)
 
-        grid.addWidget(self.dialog_buttons, 3, 0, 1, 2)
+        grid.addWidget(self.dialog_buttons, 4, 0, 1, 2)
         self.setLayout(grid)
         self.show()

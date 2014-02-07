@@ -142,7 +142,8 @@ class MainWindow(QtGui.QMainWindow):
             self.network.connect_weechat(self.config.get('relay', 'server'),
                                          self.config.get('relay', 'port'),
                                          self.config.getboolean('relay', 'ssl'),
-                                         self.config.get('relay', 'password'))
+                                         self.config.get('relay', 'password'),
+                                         self.config.get('relay', 'lines'))
 
         self.show()
 
@@ -206,7 +207,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_connection_dialog(self):
         values = {}
-        for option in ('server', 'port', 'ssl', 'password'):
+        for option in ('server', 'port', 'ssl', 'password', 'lines'):
             values[option] = self.config.get('relay', option)
         self.connection_dialog = ConnectionDialog(values, self)
         self.connection_dialog.dialog_buttons.accepted.connect(self.connect_weechat)
@@ -215,7 +216,8 @@ class MainWindow(QtGui.QMainWindow):
         self.network.connect_weechat(self.connection_dialog.fields['server'].text(),
                                      self.connection_dialog.fields['port'].text(),
                                      self.connection_dialog.fields['ssl'].isChecked(),
-                                     self.connection_dialog.fields['password'].text())
+                                     self.connection_dialog.fields['password'].text(),
+                                     int(self.connection_dialog.fields['lines'].text()))
         self.connection_dialog.close()
 
     def network_status_changed(self, status, extra):
@@ -283,6 +285,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.buffers[0].widget.input.setFocus()
         elif message.msgid in ('listlines', '_buffer_line_added'):
             for obj in message.objects:
+                lines = []
                 if obj.objtype == 'hda' and obj.value['path'][-1] == 'line_data':
                     for item in obj.value['items']:
                         if message.msgid == 'listlines':
@@ -291,9 +294,11 @@ class MainWindow(QtGui.QMainWindow):
                             ptrbuf = item['buffer']
                         index = [i for i, b in enumerate(self.buffers) if b.pointer() == ptrbuf]
                         if index:
-                            self.buffers[index[0]].widget.chat.display(item['date'],
-                                                                       item['prefix'],
-                                                                       item['message'])
+                            lines.append((item['date'], item['prefix'], item['message']))
+                if message.msgid == 'listlines':
+                    lines.reverse()
+                for line in lines:
+                    self.buffers[index[0]].widget.chat.display(*line)
         elif message.msgid in ('_nicklist', 'nicklist'):
             buffer_refresh = {}
             for obj in message.objects:

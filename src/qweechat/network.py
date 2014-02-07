@@ -25,10 +25,11 @@ import struct
 import qt_compat
 QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
+import config
 
 _PROTO_INIT_CMD  = ['init password=%(password)s']
 _PROTO_SYNC_CMDS = ['(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,type,nicklist,title,local_variables',
-                    '(listlines) hdata buffer:gui_buffers(*)/own_lines/first_line(*)/data date,displayed,prefix,message',
+                    '(listlines) hdata buffer:gui_buffers(*)/own_lines/last_line(-%(lines)d)/data date,displayed,prefix,message',
                     '(nicklist) nicklist',
                     'sync',
                     '']
@@ -49,6 +50,7 @@ class Network(QtCore.QObject):
         self._port = None
         self._ssl = None
         self._password = None
+        self._lines = config.CONFIG_DEFAULT_RELAY_LINES
         self._buffer = QtCore.QByteArray()
         self._socket = QtNetwork.QSslSocket()
         self._socket.connected.connect(self._socket_connected)
@@ -60,7 +62,9 @@ class Network(QtCore.QObject):
         """Slot: socket connected."""
         self.statusChanged.emit(self.status_connected, None)
         if self._password:
-            self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS) % {'password': str(self._password)})
+            self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
+                                 % {'password': str(self._password),
+                                    'lines': self._lines})
 
     def _socket_error(self, error):
         """Slot: socket error."""
@@ -102,7 +106,7 @@ class Network(QtCore.QObject):
     def is_ssl(self):
         return self._ssl
 
-    def connect_weechat(self, server, port, ssl, password):
+    def connect_weechat(self, server, port, ssl, password, lines):
         self._server = server
         try:
             self._port = int(port)
@@ -110,6 +114,10 @@ class Network(QtCore.QObject):
             self._port = 0
         self._ssl = ssl
         self._password = password
+        try:
+            self._lines = int(lines)
+        except:
+            self._lines = config.CONFIG_DEFAULT_RELAY_LINES
         if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
             return
         if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
@@ -148,4 +156,5 @@ class Network(QtCore.QObject):
         return {'server': self._server,
                 'port': self._port,
                 'ssl': 'on' if self._ssl else 'off',
-                'password': self._password}
+                'password': self._password,
+                'lines': str(self._lines)}
