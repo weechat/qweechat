@@ -141,7 +141,7 @@ class MainWindow(QtGui.QMainWindow):
         if self.config.getboolean('relay', 'autoconnect'):
             self.network.connect_weechat(self.config.get('relay', 'server'),
                                          self.config.get('relay', 'port'),
-                                         self.config.get('relay', 'ssl') == 'on',
+                                         self.config.getboolean('relay', 'ssl'),
                                          self.config.get('relay', 'password'))
 
         self.show()
