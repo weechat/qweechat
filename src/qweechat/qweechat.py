@@ -3,7 +3,7 @@
 #
 # qweechat.py - WeeChat remote GUI using Qt toolkit
 #
-# Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2014 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -26,7 +26,7 @@
 #
 # History:
 #
-# 2011-05-27, Sebastien Helleu <flashcode@flashtux.org>:
+# 2011-05-27, Sébastien Helleu <flashcode@flashtux.org>:
 #     start dev
 #
 
@@ -46,7 +46,7 @@ NAME = 'QWeeChat'
 VERSION = '0.0.1-dev'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL= 'flashcode@flashtux.org'
-WEECHAT_SITE = 'http://www.weechat.org/'
+WEECHAT_SITE = 'http://weechat.org/'
 
 # number of lines in buffer for debug window
 DEBUG_NUM_LINES = 50
@@ -196,7 +196,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_about_dialog(self):
         messages = ['<b>%s</b> %s' % (NAME, VERSION),
-                    '&copy; 2011-2013 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
+                    '&copy; 2011-2014 %s &lt;<a href="mailto:%s">%s</a>&gt;' % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
                     'Running with %s' % ('PySide' if qt_compat.uses_pyside else 'PyQt4'),
                     '',

@@ -13,7 +13,7 @@ relay plugin enabled and listening on a port with protocol "weechat".
 
 == Copyright
 
-Copyright (C) 2011-2013 Sébastien Helleu <flashcode@flashtux.org>
+Copyright (C) 2011-2014 Sébastien Helleu <flashcode@flashtux.org>
 
 This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 

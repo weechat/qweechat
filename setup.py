@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011-2013 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2014 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -31,7 +31,7 @@ setup(name='qweechat',
       long_description='Qt remote GUI for WeeChat',
       author='Sébastien Helleu',
       author_email='flashcode@flashtux.org',
-      url='http://www.weechat.org/',
+      url='http://weechat.org/',
       license='GPL3',
       classifiers = ['Development Status :: 2 - Pre-Alpha',
                      'Environment :: X11 Applications :: Qt',

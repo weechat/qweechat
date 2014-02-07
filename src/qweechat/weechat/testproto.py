@@ -3,7 +3,7 @@
 #
 # testproto.py - command-line program for testing protocol WeeChat/relay
 #
-# Copyright (C) 2013 Sebastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2013-2014 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
