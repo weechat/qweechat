@@ -51,7 +51,7 @@ You have to add a relay port in WeeChat, for example on port 1234:
 In QWeeChat, click on connect and enter fields:
 
 * 'server': the IP address or hostname of your machine with WeeChat running
-* 'port': the relay port (defined in WeeeChat)
+* 'port': the relay port (defined in WeeChat)
 * 'password': the relay password (defined in WeeChat)
 
 Options can be changed in file '~/.qweechat/qweechat.conf'.
