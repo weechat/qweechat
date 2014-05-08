@@ -28,33 +28,53 @@ RE_COLOR_STD = r'(?:%s\d{2})' % RE_COLOR_ATTRS
 RE_COLOR_EXT = r'(?:@%s\d{5})' % RE_COLOR_ATTRS
 RE_COLOR_ANY = r'(?:%s|%s)' % (RE_COLOR_STD, RE_COLOR_EXT)
 # \x19: color code, \x1A: set attribute, \x1B: remove attribute, \x1C: reset
-RE_COLOR = re.compile(r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|E|\\*%s(,%s)?|@\d{5}|b.|\x1C))|\x1A.|\x1B.|\x1C'
-                      % (RE_COLOR_ANY, RE_COLOR_ANY, RE_COLOR_ANY))
+RE_COLOR = re.compile(
+    r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|E|\\*%s(,%s)?|@\d{5}|b.|\x1C))|\x1A.|'
+    r'\x1B.|\x1C'
+    % (RE_COLOR_ANY, RE_COLOR_ANY, RE_COLOR_ANY))
 
 TERMINAL_COLORS = \
-    '000000cd000000cd00cdcd000000cdcd00cd00cdcde5e5e54d4d4dff000000ff00ffff000000ffff00ff00ffffffffff' \
-    '00000000002a0000550000800000aa0000d4002a00002a2a002a55002a80002aaa002ad400550000552a005555005580' \
-    '0055aa0055d400800000802a0080550080800080aa0080d400aa0000aa2a00aa5500aa8000aaaa00aad400d40000d42a' \
-    '00d45500d48000d4aa00d4d42a00002a002a2a00552a00802a00aa2a00d42a2a002a2a2a2a2a552a2a802a2aaa2a2ad4' \
-    '2a55002a552a2a55552a55802a55aa2a55d42a80002a802a2a80552a80802a80aa2a80d42aaa002aaa2a2aaa552aaa80' \
-    '2aaaaa2aaad42ad4002ad42a2ad4552ad4802ad4aa2ad4d455000055002a5500555500805500aa5500d4552a00552a2a' \
-    '552a55552a80552aaa552ad455550055552a5555555555805555aa5555d455800055802a5580555580805580aa5580d4' \
-    '55aa0055aa2a55aa5555aa8055aaaa55aad455d40055d42a55d45555d48055d4aa55d4d480000080002a800055800080' \
-    '8000aa8000d4802a00802a2a802a55802a80802aaa802ad480550080552a8055558055808055aa8055d480800080802a' \
-    '8080558080808080aa8080d480aa0080aa2a80aa5580aa8080aaaa80aad480d40080d42a80d45580d48080d4aa80d4d4' \
-    'aa0000aa002aaa0055aa0080aa00aaaa00d4aa2a00aa2a2aaa2a55aa2a80aa2aaaaa2ad4aa5500aa552aaa5555aa5580' \
-    'aa55aaaa55d4aa8000aa802aaa8055aa8080aa80aaaa80d4aaaa00aaaa2aaaaa55aaaa80aaaaaaaaaad4aad400aad42a' \
-    'aad455aad480aad4aaaad4d4d40000d4002ad40055d40080d400aad400d4d42a00d42a2ad42a55d42a80d42aaad42ad4' \
-    'd45500d4552ad45555d45580d455aad455d4d48000d4802ad48055d48080d480aad480d4d4aa00d4aa2ad4aa55d4aa80' \
-    'd4aaaad4aad4d4d400d4d42ad4d455d4d480d4d4aad4d4d40808081212121c1c1c2626263030303a3a3a4444444e4e4e' \
-    '5858586262626c6c6c7676768080808a8a8a9494949e9e9ea8a8a8b2b2b2bcbcbcc6c6c6d0d0d0dadadae4e4e4eeeeee'
+    '000000cd000000cd00cdcd000000cdcd00cd00cdcde5e5e5' \
+    '4d4d4dff000000ff00ffff000000ffff00ff00ffffffffff' \
+    '00000000002a0000550000800000aa0000d4002a00002a2a' \
+    '002a55002a80002aaa002ad400550000552a005555005580' \
+    '0055aa0055d400800000802a0080550080800080aa0080d4' \
+    '00aa0000aa2a00aa5500aa8000aaaa00aad400d40000d42a' \
+    '00d45500d48000d4aa00d4d42a00002a002a2a00552a0080' \
+    '2a00aa2a00d42a2a002a2a2a2a2a552a2a802a2aaa2a2ad4' \
+    '2a55002a552a2a55552a55802a55aa2a55d42a80002a802a' \
+    '2a80552a80802a80aa2a80d42aaa002aaa2a2aaa552aaa80' \
+    '2aaaaa2aaad42ad4002ad42a2ad4552ad4802ad4aa2ad4d4' \
+    '55000055002a5500555500805500aa5500d4552a00552a2a' \
+    '552a55552a80552aaa552ad455550055552a555555555580' \
+    '5555aa5555d455800055802a5580555580805580aa5580d4' \
+    '55aa0055aa2a55aa5555aa8055aaaa55aad455d40055d42a' \
+    '55d45555d48055d4aa55d4d480000080002a800055800080' \
+    '8000aa8000d4802a00802a2a802a55802a80802aaa802ad4' \
+    '80550080552a8055558055808055aa8055d480800080802a' \
+    '8080558080808080aa8080d480aa0080aa2a80aa5580aa80' \
+    '80aaaa80aad480d40080d42a80d45580d48080d4aa80d4d4' \
+    'aa0000aa002aaa0055aa0080aa00aaaa00d4aa2a00aa2a2a' \
+    'aa2a55aa2a80aa2aaaaa2ad4aa5500aa552aaa5555aa5580' \
+    'aa55aaaa55d4aa8000aa802aaa8055aa8080aa80aaaa80d4' \
+    'aaaa00aaaa2aaaaa55aaaa80aaaaaaaaaad4aad400aad42a' \
+    'aad455aad480aad4aaaad4d4d40000d4002ad40055d40080' \
+    'd400aad400d4d42a00d42a2ad42a55d42a80d42aaad42ad4' \
+    'd45500d4552ad45555d45580d455aad455d4d48000d4802a' \
+    'd48055d48080d480aad480d4d4aa00d4aa2ad4aa55d4aa80' \
+    'd4aaaad4aad4d4d400d4d42ad4d455d4d480d4d4aad4d4d4' \
+    '0808081212121c1c1c2626263030303a3a3a4444444e4e4e' \
+    '5858586262626c6c6c7676768080808a8a8a9494949e9e9e' \
+    'a8a8a8b2b2b2bcbcbcc6c6c6d0d0d0dadadae4e4e4eeeeee'
 
 # WeeChat basic colors (color name, index in terminal colors)
-WEECHAT_BASIC_COLORS = (('default', 0), ('black', 0), ('darkgray', 8), ('red', 1),
-                        ('lightred', 9), ('green', 2), ('lightgreen', 10), ('brown', 3),
-                        ('yellow', 11), ('blue', 4), ('lightblue', 12), ('magenta', 5),
-                        ('lightmagenta', 13), ('cyan', 6), ('lightcyan', 14), ('gray', 7),
-                        ('white', 0))
+WEECHAT_BASIC_COLORS = (
+    ('default', 0), ('black', 0), ('darkgray', 8), ('red', 1),
+    ('lightred', 9), ('green', 2), ('lightgreen', 10), ('brown', 3),
+    ('yellow', 11), ('blue', 4), ('lightblue', 12), ('magenta', 5),
+    ('lightmagenta', 13), ('cyan', 6), ('lightcyan', 14), ('gray', 7),
+    ('white', 0))
+
 
 class Color():
     def __init__(self, color_options, debug=False):
@@ -90,23 +110,25 @@ class Color():
             extended = True
             color = color[1:]
         attrs = ''
-        keep_attrs = False
+        # keep_attrs = False
         while color.startswith(('*', '!', '/', '_', '|')):
-            if color[0] == '|':
-                keep_attrs = True
+            # TODO: manage the "keep attributes" flag
+            # if color[0] == '|':
+            #    keep_attrs = True
             attrs += color[0]
             color = color[1:]
         if extended:
             return self._convert_terminal_color(fg_bg, attrs, color)
         try:
             index = int(color)
-            return self._convert_terminal_color(fg_bg, attrs, WEECHAT_BASIC_COLORS[index][1])
+            return self._convert_terminal_color(fg_bg, attrs,
+                                                WEECHAT_BASIC_COLORS[index][1])
         except:
             print('Error decoding color "%s"' % color)
             return ''
 
     def _attrcode_to_char(self, code):
-        codes = { '\x01': '*', '\x02': '!', '\x03': '/', '\x04': '_' }
+        codes = {'\x01': '*', '\x02': '!', '\x03': '/', '\x04': '_'}
         return codes.get(code, '')
 
     def _convert_color(self, match):
@@ -163,6 +185,7 @@ class Color():
             return RE_COLOR.sub(self._convert_color_debug, text)
         else:
             return RE_COLOR.sub(self._convert_color, text)
+
 
 def remove(text):
     """Remove colors in a WeeChat string."""

@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# testproto.py - command-line program for testing protocol WeeChat/relay
+# testproto.py - command-line program for testing WeeChat/relay protocol
 #
 # Copyright (C) 2013-2014 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -21,6 +20,10 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Command-line program for testing WeeChat/relay protocol.
+"""
+
 from __future__ import print_function
 
 import argparse
@@ -35,8 +38,11 @@ import traceback
 
 import protocol  # WeeChat/relay protocol
 
+NAME = 'qweechat-testproto'
 
-class TestProto:
+
+class TestProto(object):
+    """Test of WeeChat/relay protocol."""
 
     def __init__(self, args):
         self.args = args
@@ -110,11 +116,11 @@ class TestProto:
         Return True if OK (it's OK if stdin has no commands),
         False if error.
         """
-        inr, outr, exceptr = select.select([sys.stdin], [], [], 0)
+        inr = select.select([sys.stdin], [], [], 0)[0]
         if inr:
             data = os.read(sys.stdin.fileno(), 4096)
             if data:
-                if not test.send(data.strip()):
+                if not self.send(data.strip()):
                     #self.sock.close()
                     return False
             # open stdin to read user commands
@@ -136,11 +142,10 @@ class TestProto:
         sys.stdout.flush()
         try:
             while not self.has_quit:
-                inr, outr, exceptr = select.select([sys.stdin, self.sock],
-                                                   [], [], 1)
-                for fd in inr:
-                    if fd == sys.stdin:
-                        buf = os.read(fd.fileno(), 4096)
+                inr = select.select([sys.stdin, self.sock], [], [], 1)[0]
+                for _file in inr:
+                    if _file == sys.stdin:
+                        buf = os.read(_file.fileno(), 4096)
                         if buf:
                             message += buf
                             if '\n' in message:
@@ -152,7 +157,7 @@ class TestProto:
                                 sys.stdout.write(prompt + message)
                                 sys.stdout.flush()
                     else:
-                        buf = fd.recv(4096)
+                        buf = _file.recv(4096)
                         if buf:
                             recvbuf += buf
                             while len(recvbuf) >= 4:
@@ -186,19 +191,20 @@ class TestProto:
         self.sock.close()
 
 
-if __name__ == "__main__":
+def main():
+    """Main function."""
     # parse command line arguments
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         fromfile_prefix_chars='@',
-        description='Command-line program for testing protocol WeeChat/relay.',
+        description='Command-line program for testing WeeChat/relay protocol.',
         epilog='''
-Environment variable "TESTPROTO_OPTIONS" can be set with default options.
+Environment variable "QWEECHAT_PROTO_OPTIONS" can be set with default options.
 Argument "@file.txt" can be used to read default options in a file.
 
 Some commands can be piped to the script, for example:
-  echo "init password=xxxx" | python {0} localhost 5000
-  python {0} localhost 5000 < commands.txt
+  echo "init password=xxxx" | {name} localhost 5000
+  {name} localhost 5000 < commands.txt
 
 The script returns:
   0: OK
@@ -206,7 +212,7 @@ The script returns:
   3: connection error
   4: send error (message sent to WeeChat)
   5: decode error (message received from WeeChat)
-'''.format(sys.argv[0]))
+'''.format(name=NAME))
     parser.add_argument('-6', '--ipv6', action='store_true',
                         help='connect using IPv6')
     parser.add_argument('-v', '--verbose', action='count', default=0,
@@ -220,10 +226,10 @@ The script returns:
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
-    args = parser.parse_args(
-        shlex.split(os.getenv('TESTPROTO_OPTIONS') or '') + sys.argv[1:])
+    _args = parser.parse_args(
+        shlex.split(os.getenv('QWEECHAT_PROTO_OPTIONS') or '') + sys.argv[1:])
 
-    test = TestProto(args)
+    test = TestProto(_args)
 
     # connect to WeeChat/relay
     if not test.connect():
@@ -234,6 +240,10 @@ The script returns:
         sys.exit(4)
 
     # main loop (wait commands, display messages received)
-    rc = test.mainloop()
+    returncode = test.mainloop()
     del test
-    sys.exit(rc)
+    sys.exit(returncode)
+
+
+if __name__ == "__main__":
+    main()

@@ -21,6 +21,7 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from pkg_resources import resource_filename
 import qt_compat
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
@@ -85,7 +86,10 @@ class BufferListWidget(GenericListWidget):
 
 
 class BufferWidget(QtGui.QWidget):
-    """Widget with (from top to bottom): title, chat + nicklist (optional) + prompt/input."""
+    """
+    Widget with (from top to bottom):
+    title, chat + nicklist (optional) + prompt/input.
+    """
 
     def __init__(self, display_nicklist=False):
         QtGui.QWidget.__init__(self)
@@ -96,7 +100,8 @@ class BufferWidget(QtGui.QWidget):
 
         # splitter with chat + nicklist
         self.chat_nicklist = QtGui.QSplitter()
-        self.chat_nicklist.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.chat_nicklist.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding)
         self.chat = ChatTextEdit(debug=False)
         self.chat_nicklist.addWidget(self.chat)
         self.nicklist = GenericListWidget()
@@ -148,7 +153,8 @@ class Buffer(QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.data = data
         self.nicklist = {}
-        self.widget = BufferWidget(display_nicklist=self.data.get('nicklist', 0))
+        self.widget = BufferWidget(display_nicklist=self.data.get('nicklist',
+                                                                  0))
         self.update_title()
         self.update_prompt()
         self.widget.input.textSent.connect(self.input_text_sent)
@@ -160,7 +166,8 @@ class Buffer(QtCore.QObject):
     def update_title(self):
         """Update title."""
         try:
-            self.widget.set_title(color.remove(self.data['title'].decode('utf-8')))
+            self.widget.set_title(
+                color.remove(self.data['title'].decode('utf-8')))
         except:
             self.widget.set_title(None)
 
@@ -179,12 +186,14 @@ class Buffer(QtCore.QObject):
     def nicklist_add_item(self, parent, group, prefix, name, visible):
         """Add a group/nick in nicklist."""
         if group:
-            self.nicklist[name] = { 'visible': visible,
-                                    'nicks': [] }
+            self.nicklist[name] = {
+                'visible': visible,
+                'nicks': []
+            }
         else:
-            self.nicklist[parent]['nicks'].append({ 'prefix': prefix,
-                                                    'name': name,
-                                                    'visible': visible })
+            self.nicklist[parent]['nicks'].append({'prefix': prefix,
+                                                   'name': name,
+                                                   'visible': visible})
 
     def nicklist_remove_item(self, parent, group, name):
         """Remove a group/nick from nicklist."""
@@ -193,7 +202,10 @@ class Buffer(QtCore.QObject):
                 del self.nicklist[name]
         else:
             if parent in self.nicklist:
-                self.nicklist[parent]['nicks'] = [nick for nick in self.nicklist[parent]['nicks'] if nick['name'] != name]
+                self.nicklist[parent]['nicks'] = [
+                    nick for nick in self.nicklist[parent]['nicks']
+                    if nick['name'] != name
+                ]
 
     def nicklist_update_item(self, parent, group, prefix, name, visible):
         """Update a group/nick in nicklist."""
@@ -212,11 +224,15 @@ class Buffer(QtCore.QObject):
         """Refresh nicklist."""
         self.widget.nicklist.clear()
         for group in sorted(self.nicklist):
-            for nick in sorted(self.nicklist[group]['nicks'], key=lambda n:n['name']):
-                prefix_color = { '': '', ' ': '', '+': 'yellow' }
+            for nick in sorted(self.nicklist[group]['nicks'],
+                               key=lambda n: n['name']):
+                prefix_color = {'': '', ' ': '', '+': 'yellow'}
                 color = prefix_color.get(nick['prefix'], 'green')
                 if color:
-                    icon = QtGui.QIcon('data/icons/bullet_%s_8x8.png' % color)
+                    icon = QtGui.QIcon(
+                        resource_filename(__name__,
+                                          'data/icons/bullet_%s_8x8.png' %
+                                          color))
                 else:
                     pixmap = QtGui.QPixmap(8, 8)
                     pixmap.fill()

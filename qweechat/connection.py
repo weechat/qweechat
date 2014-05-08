@@ -57,7 +57,8 @@ class ConnectionDialog(QtGui.QDialog):
                 self.fields['ssl'] = ssl
 
         self.dialog_buttons = QtGui.QDialogButtonBox()
-        self.dialog_buttons.setStandardButtons(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        self.dialog_buttons.setStandardButtons(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         self.dialog_buttons.rejected.connect(self.close)
 
         grid.addWidget(self.dialog_buttons, 4, 0, 1, 2)

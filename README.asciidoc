@@ -27,35 +27,10 @@ Following packages are *required*:
 * Python 2.x >= 2.6
 * PySide (recommended, packages: python.pyside.*) or PyQt4 (python-qt4)
 
-=== Run without install
-
-Extract files from archive and run qweechat.py:
+=== Install via source distribution
 
 ----
-$ tar xvzf qweechat-x.y.tar.gz
-$ cd qweechat-x.y
-$ python src/qweechat/qweechat.py
-----
-
-=== Run with install
-
-Extract files from archive and install using script 'setup.py':
-
-----
-$ tar xvzf qweechat-x.y.tar.gz
-$ cd qweechat-x.y
-----
-
-To install in your home:
-
-----
-$ python setup.py install --home=~/qweechat
-----
-
-To install in system directories (as root):
-
-----
-# python setup.py install
+$ python setup.py install
 ----
 
 == WeeChat setup

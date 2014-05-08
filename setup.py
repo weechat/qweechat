@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011-2014 Sébastien Helleu <flashcode@flashtux.org>
@@ -19,35 +18,40 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os
-from distutils.core import setup
+from setuptools import setup
 
-def listfiles(dir):
-    return ['%s/%s' % (dir, f) for f in os.listdir(dir)]
+DESCRIPTION = 'Qt remote GUI for WeeChat'
 
-setup(name='qweechat',
-      version='0.0.1-dev',
-      description='Qt remote GUI for WeeChat',
-      long_description='Qt remote GUI for WeeChat',
-      author='Sébastien Helleu',
-      author_email='flashcode@flashtux.org',
-      url='http://weechat.org/',
-      license='GPL3',
-      classifiers = ['Development Status :: 2 - Pre-Alpha',
-                     'Environment :: X11 Applications :: Qt',
-                     'Intended Audience :: End Users/Desktop',
-                     'License :: OSI Approved :: GNU General Public License (GPL)',
-                     'Natural Language :: English',
-                     'Operating System :: OS Independent',
-                     'Programming Language :: Python',
-                     'Topic :: Communications :: Chat',
-                     ],
-      platforms='OS Independent',
-      packages=['qweechat',
-                'qweechat.weechat',
-                ],
-      package_dir={'qweechat': 'src/qweechat',
-                   'qweechat.weechat': 'src/qweechat/weechat',
-                   },
-      data_files=[('data/icons', listfiles('data/icons'))]
-      )
+setup(
+    name='qweechat',
+    version='0.0.1-dev',
+    description=DESCRIPTION,
+    long_description=DESCRIPTION,
+    author='Sébastien Helleu',
+    author_email='flashcode@flashtux.org',
+    url='http://weechat.org/',
+    license='GPL3',
+    keywords='weechat qt gui',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: X11 Applications :: Qt',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License v3 '
+        'or later (GPLv3+)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Communications :: Chat',
+    ],
+    packages=['qweechat', 'qweechat.weechat'],
+    include_package_data=True,
+    package_data={'qweechat': ['data/icons/*.png']},
+    entry_points = {
+        'gui_scripts': [
+            'qweechat = qweechat.qweechat',
+        ],
+        'console_scripts': [
+            'qweechat-testproto = qweechat.weechat.testproto:main',
+        ]
+    }
+)

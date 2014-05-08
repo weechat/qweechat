@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# File downloaded from: https://github.com/epage/PythonUtils/blob/master/util/qt_compat.py
+# File downloaded from:
+#   https://github.com/epage/PythonUtils/blob/master/util/qt_compat.py
 # Author: epage
 # License: LGPL 2.1
 #

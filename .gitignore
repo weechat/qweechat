@@ -1,6 +1,9 @@
 # Ignored files for Git
 
+*.pyc
+*.pyo
 MANIFEST
 build/*
 dist/*
-*.pyc
+qweechat.egg-info/*
+src/qweechat.egg-info/*

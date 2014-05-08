@@ -31,20 +31,24 @@
 #     start dev
 #
 
-import collections, struct, zlib
+import collections
+import struct
+import zlib
 
 if hasattr(collections, 'OrderedDict'):
     # python >= 2.7
     class WeechatDict(collections.OrderedDict):
         def __str__(self):
-            return '{%s}' % ', '.join(['%s: %s' % (repr(key), repr(self[key])) for key in self])
+            return '{%s}' % ', '.join(
+                ['%s: %s' % (repr(key), repr(self[key])) for key in self])
 else:
     # python <= 2.6
     WeechatDict = dict
 
+
 class WeechatObject:
     def __init__(self, objtype, value, separator='\n'):
-        self.objtype = objtype;
+        self.objtype = objtype
         self.value = value
         self.separator = separator
         self.indent = '  ' if separator == '\n' else ''
@@ -56,17 +60,29 @@ class WeechatObject:
         return str(v)
 
     def _str_value_hdata(self):
-        lines = ['%skeys: %s%s%spath: %s' % (self.separator1, str(self.value['keys']), self.separator, self.indent, str(self.value['path']))]
+        lines = ['%skeys: %s%s%spath: %s' % (self.separator1,
+                                             str(self.value['keys']),
+                                             self.separator,
+                                             self.indent,
+                                             str(self.value['path']))]
         for i, item in enumerate(self.value['items']):
-            lines.append('  item %d:%s%s' % ((i + 1), self.separator,
-                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in item.items()])))
+            lines.append('  item %d:%s%s' % (
+                (i + 1), self.separator,
+                self.separator.join(
+                    ['%s%s: %s' % (self.indent * 2, key,
+                                   self._str_value(value))
+                     for key, value in item.items()])))
         return '\n'.join(lines)
 
     def _str_value_infolist(self):
         lines = ['%sname: %s' % (self.separator1, self.value['name'])]
         for i, item in enumerate(self.value['items']):
-            lines.append('  item %d:%s%s' % ((i + 1), self.separator,
-                                             self.separator.join(['%s%s: %s' % (self.indent * 2, key, self._str_value(value)) for key, value in item.items()])))
+            lines.append('  item %d:%s%s' % (
+                (i + 1), self.separator,
+                self.separator.join(
+                    ['%s%s: %s' % (self.indent * 2, key,
+                                   self._str_value(value))
+                     for key, value in item.items()])))
         return '\n'.join(lines)
 
     def _str_value_other(self):
@@ -76,7 +92,9 @@ class WeechatObject:
         self._obj_cb = {'hda': self._str_value_hdata,
                         'inl': self._str_value_infolist,
                         }
-        return '%s: %s' % (self.objtype, self._obj_cb.get(self.objtype, self._str_value_other)())
+        return '%s: %s' % (self.objtype,
+                           self._obj_cb.get(self.objtype,
+                                            self._str_value_other)())
 
 
 class WeechatObjects(list):
@@ -88,7 +106,8 @@ class WeechatObjects(list):
 
 
 class WeechatMessage:
-    def __init__(self, size, size_uncompressed, compression, uncompressed, msgid, objects):
+    def __init__(self, size, size_uncompressed, compression, uncompressed,
+                 msgid, objects):
         self.size = size
         self.size_uncompressed = size_uncompressed
         self.compression = compression
@@ -103,7 +122,9 @@ class WeechatMessage:
                 100 - ((self.size * 100) // self.size_uncompressed),
                 self.msgid, self.objects)
         else:
-            return 'size: %d, id=\'%s\', objects:\n%s' % (self.size, self.msgid, self.objects)
+            return 'size: %d, id=\'%s\', objects:\n%s' % (self.size,
+                                                          self.msgid,
+                                                          self.objects)
 
 
 class Protocol:
@@ -202,7 +223,10 @@ class Protocol:
         return int(str(value))
 
     def _obj_hashtable(self):
-        """Read a hashtable in data (type for keys + type for values + count + items)."""
+        """
+        Read a hashtable in data
+        (type for keys + type for values + count + items).
+        """
         type_keys = self._obj_type()
         type_values = self._obj_type()
         count = self._obj_int()
@@ -285,7 +309,8 @@ class Protocol:
         if compression:
             uncompressed = zlib.decompress(self.data[5:])
             size_uncompressed = len(uncompressed) + 5
-            uncompressed = '%s%s%s' % (struct.pack('>i', size_uncompressed), struct.pack('b', 0), uncompressed)
+            uncompressed = '%s%s%s' % (struct.pack('>i', size_uncompressed),
+                                       struct.pack('b', 0), uncompressed)
             self.data = uncompressed
         else:
             uncompressed = self.data[:]
@@ -301,7 +326,8 @@ class Protocol:
             objtype = self._obj_type()
             value = self._obj_cb[objtype]()
             objects.append(WeechatObject(objtype, value, separator=separator))
-        return WeechatMessage(size, size_uncompressed, compression, uncompressed, msgid, objects)
+        return WeechatMessage(size, size_uncompressed, compression,
+                              uncompressed, msgid, objects)
 
 
 def hex_and_ascii(data, bytes_per_line=10):

@@ -40,13 +40,27 @@ class ChatTextEdit(QtGui.QTextEdit):
         self.setFontFamily('monospace')
         self._textcolor = self.textColor()
         self._bgcolor = QtGui.QColor('#FFFFFF')
-        self._setcolorcode = { 'F': (self.setTextColor, self._textcolor),
-                               'B': (self.setTextBackgroundColor, self._bgcolor) }
-        self._setfont = { '*': self.setFontWeight,
-                          '_': self.setFontUnderline,
-                          '/': self.setFontItalic }
-        self._fontvalues = { False: { '*': QtGui.QFont.Normal, '_': False, '/': False },
-                             True: { '*': QtGui.QFont.Bold, '_': True, '/': True } }
+        self._setcolorcode = {
+            'F': (self.setTextColor, self._textcolor),
+            'B': (self.setTextBackgroundColor, self._bgcolor)
+        }
+        self._setfont = {
+            '*': self.setFontWeight,
+            '_': self.setFontUnderline,
+            '/': self.setFontItalic
+        }
+        self._fontvalues = {
+            False: {
+                '*': QtGui.QFont.Normal,
+                '_': False,
+                '/': False
+            },
+            True: {
+                '*': QtGui.QFont.Bold,
+                '_': True,
+                '/': True
+            }
+        }
         self._color = color.Color(config.color_options(), self.debug)
 
     def display(self, time, prefix, text, forcecolor=None):
@@ -93,17 +107,22 @@ class ChatTextEdit(QtGui.QTextEdit):
                         # reset attributes and color
                         if code == 'r':
                             self._reset_attributes()
-                            self._setcolorcode[action][0](self._setcolorcode[action][1])
+                            self._setcolorcode[action][0](
+                                self._setcolorcode[action][1])
                         else:
                             # set attributes + color
-                            while code.startswith(('*', '!', '/', '_', '|', 'r')):
+                            while code.startswith(('*', '!', '/', '_', '|',
+                                                   'r')):
                                 if code[0] == 'r':
                                     self._reset_attributes()
                                 elif code[0] in self._setfont:
-                                    self._set_attribute(code[0], not self._font[code[0]])
+                                    self._set_attribute(
+                                        code[0],
+                                        not self._font[code[0]])
                                 code = code[1:]
                             if code:
-                                self._setcolorcode[action][0](QtGui.QColor(code))
+                                self._setcolorcode[action][0](
+                                    QtGui.QColor(code))
                     item = item[pos+1:]
             if len(item) > 0:
                 self.insertPlainText(item)

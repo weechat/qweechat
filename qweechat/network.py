@@ -27,12 +27,21 @@ QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
 import config
 
-_PROTO_INIT_CMD  = ['init password=%(password)s']
-_PROTO_SYNC_CMDS = ['(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,type,nicklist,title,local_variables',
-                    '(listlines) hdata buffer:gui_buffers(*)/own_lines/last_line(-%(lines)d)/data date,displayed,prefix,message',
-                    '(nicklist) nicklist',
-                    'sync',
-                    '']
+_PROTO_INIT_CMD = ['init password=%(password)s']
+
+_PROTO_SYNC_CMDS = [
+    '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,'
+    'type,nicklist,title,local_variables',
+
+    '(listlines) hdata buffer:gui_buffers(*)/own_lines/last_line(-%(lines)d)/'
+    'data date,displayed,prefix,message',
+
+    '(nicklist) nicklist',
+
+    'sync',
+
+    ''
+]
 
 
 class Network(QtCore.QObject):
@@ -68,7 +77,9 @@ class Network(QtCore.QObject):
 
     def _socket_error(self, error):
         """Slot: socket error."""
-        self.statusChanged.emit(self.status_disconnected, 'Failed, error: %s' % self._socket.errorString())
+        self.statusChanged.emit(
+            self.status_disconnected,
+            'Failed, error: %s' % self._socket.errorString())
 
     def _socket_read(self):
         """Slot: data available on socket."""
@@ -129,13 +140,14 @@ class Network(QtCore.QObject):
         self.statusChanged.emit(self.status_connecting, None)
 
     def disconnect_weechat(self):
-        if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
-            if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
-                self.send_to_weechat('quit\n')
-                self._socket.waitForBytesWritten(1000)
-            else:
-                self.statusChanged.emit(self.status_disconnected, None)
-            self._socket.abort()
+        if self._socket.state() == QtNetwork.QAbstractSocket.UnconnectedState:
+            return
+        if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
+            self.send_to_weechat('quit\n')
+            self._socket.waitForBytesWritten(1000)
+        else:
+            self.statusChanged.emit(self.status_disconnected, None)
+        self._socket.abort()
 
     def send_to_weechat(self, message):
         self._socket.write(message.encode('utf-8'))

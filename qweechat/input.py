@@ -44,26 +44,32 @@ class InputLineEdit(QtGui.QLineEdit):
         key = event.key()
         modifiers = event.modifiers()
         bar = self.scroll_widget.verticalScrollBar()
-        if modifiers == QtCore.Qt.ControlModifier and key == QtCore.Qt.Key_PageUp:
-            self.bufferSwitchPrev.emit()
-        elif modifiers == QtCore.Qt.AltModifier and key in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Up):
-            self.bufferSwitchPrev.emit()
-        elif modifiers == QtCore.Qt.ControlModifier and key == QtCore.Qt.Key_PageDown:
-            self.bufferSwitchNext.emit()
-        elif modifiers == QtCore.Qt.AltModifier and key in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Down):
-            self.bufferSwitchNext.emit()
-        elif modifiers == QtCore.Qt.AltModifier and key == QtCore.Qt.Key_PageUp:
-            bar.setValue(bar.value() - (bar.pageStep() / 10))
-        elif modifiers == QtCore.Qt.AltModifier and key == QtCore.Qt.Key_PageDown:
-            bar.setValue(bar.value() + (bar.pageStep() / 10))
+        if modifiers == QtCore.Qt.ControlModifier:
+            if key == QtCore.Qt.Key_PageUp:
+                self.bufferSwitchPrev.emit()
+            elif key == QtCore.Qt.Key_PageDown:
+                self.bufferSwitchNext.emit()
+            else:
+                QtGui.QLineEdit.keyPressEvent(self, event)
+        elif modifiers == QtCore.Qt.AltModifier:
+            if key in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Up):
+                self.bufferSwitchPrev.emit()
+            elif key in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Down):
+                self.bufferSwitchNext.emit()
+            elif key == QtCore.Qt.Key_PageUp:
+                bar.setValue(bar.value() - (bar.pageStep() / 10))
+            elif key == QtCore.Qt.Key_PageDown:
+                bar.setValue(bar.value() + (bar.pageStep() / 10))
+            elif key == QtCore.Qt.Key_Home:
+                bar.setValue(bar.minimum())
+            elif key == QtCore.Qt.Key_End:
+                bar.setValue(bar.maximum())
+            else:
+                QtGui.QLineEdit.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
             bar.setValue(bar.value() - bar.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
             bar.setValue(bar.value() + bar.pageStep())
-        elif modifiers == QtCore.Qt.AltModifier and key == QtCore.Qt.Key_Home:
-            bar.setValue(bar.minimum())
-        elif modifiers == QtCore.Qt.AltModifier and key == QtCore.Qt.Key_End:
-            bar.setValue(bar.maximum())
         elif key == QtCore.Qt.Key_Up:
             self._history_navigate(-1)
         elif key == QtCore.Qt.Key_Down:
