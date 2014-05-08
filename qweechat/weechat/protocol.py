@@ -55,7 +55,7 @@ class WeechatObject:
         self.separator1 = '\n%s' % self.indent if separator == '\n' else ''
 
     def _str_value(self, v):
-        if type(v) is str and not v is None:
+        if type(v) is str and v is not None:
             return '\'%s\'' % v
         return str(v)
 

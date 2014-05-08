@@ -131,14 +131,14 @@ class BufferWidget(QtGui.QWidget):
     def set_title(self, title):
         """Set buffer title."""
         self.title.clear()
-        if not title is None:
+        if title is not None:
             self.title.setText(title)
 
     def set_prompt(self, prompt):
         """Set prompt."""
         if self.hbox_edit.count() > 1:
             self.hbox_edit.takeAt(0)
-        if not prompt is None:
+        if prompt is not None:
             label = QtGui.QLabel(prompt)
             label.setContentsMargins(0, 0, 5, 0)
             self.hbox_edit.insertWidget(0, label)
