@@ -9,4 +9,5 @@ install:
 
 script:
   - flake8 qweechat
+  - qweechat-testproto --version
   - qweechat-testproto --help
