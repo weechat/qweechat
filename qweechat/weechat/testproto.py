@@ -121,7 +121,7 @@ class TestProto(object):
             data = os.read(sys.stdin.fileno(), 4096)
             if data:
                 if not self.send(data.strip()):
-                    #self.sock.close()
+                    # self.sock.close()
                     return False
             # open stdin to read user commands
             sys.stdin = open('/dev/tty')
