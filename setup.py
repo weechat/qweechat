@@ -19,12 +19,13 @@
 #
 
 from setuptools import setup
+from qweechat.version import qweechat_version
 
 DESCRIPTION = 'Qt remote GUI for WeeChat'
 
 setup(
     name='qweechat',
-    version='0.0.1-dev',
+    version=qweechat_version(),
     description=DESCRIPTION,
     long_description=DESCRIPTION,
     author='Sébastien Helleu',

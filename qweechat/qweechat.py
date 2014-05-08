@@ -46,9 +46,9 @@ from connection import ConnectionDialog
 from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
+from version import qweechat_version
 
 NAME = 'QWeeChat'
-VERSION = '0.0.1-dev'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL = 'flashcode@flashtux.org'
 WEECHAT_SITE = 'http://weechat.org/'
@@ -240,7 +240,7 @@ class MainWindow(QTGUI.QMainWindow):
 
     def open_about_dialog(self):
         """Open a dialog with info about QWeeChat."""
-        messages = ['<b>%s</b> %s' % (NAME, VERSION),
+        messages = ['<b>%s</b> %s' % (NAME, qweechat_version()),
                     '&copy; 2011-2014 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
