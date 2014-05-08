@@ -37,6 +37,7 @@ import time
 import traceback
 
 import protocol  # WeeChat/relay protocol
+from .. version import qweechat_version
 
 NAME = 'qweechat-testproto'
 
@@ -93,10 +94,10 @@ class TestProto(object):
         try:
             proto = protocol.Protocol()
             msgd = proto.decode(message,
-                                separator='\n' if self.args.verbose > 0
+                                separator='\n' if self.args.debug > 0
                                 else ', ')
             print('')
-            if self.args.verbose >= 2 and msgd.uncompressed:
+            if self.args.debug >= 2 and msgd.uncompressed:
                 # display raw message
                 print('\x1b[32m--> message uncompressed ({0} bytes):\n'
                       '{1}\x1b[0m'
@@ -215,9 +216,11 @@ The script returns:
 '''.format(name=NAME))
     parser.add_argument('-6', '--ipv6', action='store_true',
                         help='connect using IPv6')
-    parser.add_argument('-v', '--verbose', action='count', default=0,
-                        help='verbose mode: long objects view '
-                        '(-vv: display raw messages)')
+    parser.add_argument('-d', '--debug', action='count', default=0,
+                        help='debug mode: long objects view '
+                        '(-dd: display raw messages)')
+    parser.add_argument('-v', '--version', action='version',
+                        version=qweechat_version())
     parser.add_argument('hostname',
                         help='hostname (or IP address) of machine running '
                         'WeeChat/relay')
