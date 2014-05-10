@@ -458,6 +458,8 @@ class MainWindow(QTGUI.QMainWindow):
                 elif message.msgid == '_buffer_title_changed':
                     self.buffers[index].data['title'] = item['title']
                     self.buffers[index].update_title()
+                elif message.msgid == '_buffer_cleared':
+                    self.buffers[index].widget.chat.clear()
                 elif message.msgid.startswith('_buffer_localvar_'):
                     self.buffers[index].data['local_variables'] = \
                         item['local_variables']
