@@ -359,12 +359,15 @@ class MainWindow(QTGUI.QMainWindow):
                 index = [i for i, b in enumerate(self.buffers)
                          if b.pointer() == ptrbuf]
                 if index:
-                    lines.append((item['date'], item['prefix'],
-                                  item['message']))
+                    lines.append(
+                        (index[0],
+                         (item['date'], item['prefix'],
+                          item['message']))
+                    )
             if message.msgid == 'listlines':
                 lines.reverse()
             for line in lines:
-                self.buffers[index[0]].widget.chat.display(*line)
+                self.buffers[line[0]].widget.chat.display(*line[1])
 
     def _parse_nicklist(self, message):
         """Parse a WeeChat message with a buffer nicklist."""
