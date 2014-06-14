@@ -16,7 +16,7 @@ image:https://travis-ci.org/weechat/qweechat.svg?branch=master["Build Status", l
 * Multi-platform (GNU/Linux, *BSD, Mac OS X, QNX, Windows & others).
 * Free software, released under GPLv3.
 
-image::http://static.weechat.org/images/screenshots/medium/qweechat_shadow.png[align="center"]
+image::http://static.weechat.org/images/screenshots/relay/medium/qweechat_shadow.png[align="center"]
 
 == Install
 
