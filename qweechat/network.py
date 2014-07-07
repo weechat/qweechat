@@ -83,8 +83,8 @@ class Network(QtCore.QObject):
 
     def _socket_read(self):
         """Slot: data available on socket."""
-        bytes = self._socket.readAll()
-        self._buffer.append(bytes)
+        data = self._socket.readAll()
+        self._buffer.append(data)
         while len(self._buffer) >= 4:
             remainder = None
             length = struct.unpack('>i', self._buffer[0:4])[0]
