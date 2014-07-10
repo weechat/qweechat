@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # config.py - configuration for QWeeChat (~/.qweechat/qweechat.conf)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # File downloaded from:
 #   https://github.com/epage/PythonUtils/blob/master/util/qt_compat.py
