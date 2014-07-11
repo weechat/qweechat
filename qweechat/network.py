@@ -111,12 +111,15 @@ class Network(QtCore.QObject):
         self.statusChanged.emit(self.status_disconnected, None)
 
     def is_connected(self):
+        """Return True if the socket is connected, False otherwise."""
         return self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState
 
     def is_ssl(self):
+        """Return True if SSL is used, False otherwise."""
         return self._ssl
 
     def connect_weechat(self, server, port, ssl, password, lines):
+        """Connect to WeeChat."""
         self._server = server
         try:
             self._port = int(port)
@@ -139,6 +142,7 @@ class Network(QtCore.QObject):
         self.statusChanged.emit(self.status_connecting, None)
 
     def disconnect_weechat(self):
+        """Disconnect from WeeChat."""
         if self._socket.state() == QtNetwork.QAbstractSocket.UnconnectedState:
             return
         if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
@@ -149,12 +153,15 @@ class Network(QtCore.QObject):
         self._socket.abort()
 
     def send_to_weechat(self, message):
+        """Send a message to WeeChat."""
         self._socket.write(message.encode('utf-8'))
 
     def desync_weechat(self):
+        """Desynchronize from WeeChat."""
         self.send_to_weechat('desync\n')
 
     def sync_weechat(self):
+        """Synchronize with WeeChat."""
         self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS))
 
     def status_icon(self, status):
