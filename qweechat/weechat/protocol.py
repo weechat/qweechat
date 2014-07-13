@@ -88,9 +88,10 @@ class WeechatObject:
         return self._str_value(self.value)
 
     def __str__(self):
-        self._obj_cb = {'hda': self._str_value_hdata,
-                        'inl': self._str_value_infolist,
-                        }
+        self._obj_cb = {
+            'hda': self._str_value_hdata,
+            'inl': self._str_value_infolist,
+        }
         return '%s: %s' % (self.objtype,
                            self._obj_cb.get(self.objtype,
                                             self._str_value_other)())
@@ -130,19 +131,20 @@ class Protocol:
     """Decode binary message received from WeeChat/relay."""
 
     def __init__(self):
-        self._obj_cb = {'chr': self._obj_char,
-                        'int': self._obj_int,
-                        'lon': self._obj_long,
-                        'str': self._obj_str,
-                        'buf': self._obj_buffer,
-                        'ptr': self._obj_ptr,
-                        'tim': self._obj_time,
-                        'htb': self._obj_hashtable,
-                        'hda': self._obj_hdata,
-                        'inf': self._obj_info,
-                        'inl': self._obj_infolist,
-                        'arr': self._obj_array,
-                        }
+        self._obj_cb = {
+            'chr': self._obj_char,
+            'int': self._obj_int,
+            'lon': self._obj_long,
+            'str': self._obj_str,
+            'buf': self._obj_buffer,
+            'ptr': self._obj_ptr,
+            'tim': self._obj_time,
+            'htb': self._obj_hashtable,
+            'hda': self._obj_hdata,
+            'inf': self._obj_info,
+            'inl': self._obj_infolist,
+            'arr': self._obj_array,
+        }
 
     def _obj_type(self):
         """Read type in data (3 chars)."""
@@ -260,11 +262,12 @@ class Protocol:
                 item[key] = self._obj_cb[objtype]()
             item['__path'] = pointers
             items.append(item)
-        return {'path': list_path,
-                'keys': dict_keys,
-                'count': count,
-                'items': items,
-                }
+        return {
+            'path': list_path,
+            'keys': dict_keys,
+            'count': count,
+            'items': items,
+        }
 
     def _obj_info(self):
         """Read an info in data."""
@@ -286,7 +289,10 @@ class Protocol:
                 var_value = self._obj_cb[var_type]()
                 variables[var_name] = var_value
             items.append(variables)
-        return {'name': name, 'items': items}
+        return {
+            'name': name,
+            'items': items
+        }
 
     def _obj_array(self):
         """Read an array of values in data."""

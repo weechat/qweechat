@@ -165,14 +165,20 @@ class Network(QtCore.QObject):
         self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS))
 
     def status_icon(self, status):
-        icon = {self.status_disconnected: 'dialog-close.png',
-                self.status_connecting: 'dialog-close.png',
-                self.status_connected: 'dialog-ok-apply.png'}
+        """Return the name of icon for a given status."""
+        icon = {
+            self.status_disconnected: 'dialog-close.png',
+            self.status_connecting: 'dialog-close.png',
+            self.status_connected: 'dialog-ok-apply.png',
+        }
         return icon.get(status, '')
 
     def get_options(self):
-        return {'server': self._server,
-                'port': self._port,
-                'ssl': 'on' if self._ssl else 'off',
-                'password': self._password,
-                'lines': str(self._lines)}
+        """Get connection options."""
+        return {
+            'server': self._server,
+            'port': self._port,
+            'ssl': 'on' if self._ssl else 'off',
+            'password': self._password,
+            'lines': str(self._lines),
+        }

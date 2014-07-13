@@ -190,9 +190,11 @@ class Buffer(QtCore.QObject):
                 'nicks': []
             }
         else:
-            self.nicklist[parent]['nicks'].append({'prefix': prefix,
-                                                   'name': name,
-                                                   'visible': visible})
+            self.nicklist[parent]['nicks'].append({
+                'prefix': prefix,
+                'name': name,
+                'visible': visible,
+            })
 
     def nicklist_remove_item(self, parent, group, name):
         """Remove a group/nick from nicklist."""
@@ -225,7 +227,11 @@ class Buffer(QtCore.QObject):
         for group in sorted(self.nicklist):
             for nick in sorted(self.nicklist[group]['nicks'],
                                key=lambda n: n['name']):
-                prefix_color = {'': '', ' ': '', '+': 'yellow'}
+                prefix_color = {
+                    '': '',
+                    ' ': '',
+                    '+': 'yellow',
+                }
                 color = prefix_color.get(nick['prefix'], 'green')
                 if color:
                     icon = QtGui.QIcon(

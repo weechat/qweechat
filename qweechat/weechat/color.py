@@ -127,7 +127,12 @@ class Color():
             return ''
 
     def _attrcode_to_char(self, code):
-        codes = {'\x01': '*', '\x02': '!', '\x03': '/', '\x04': '_'}
+        codes = {
+            '\x01': '*',
+            '\x02': '!',
+            '\x03': '/',
+            '\x04': '_',
+        }
         return codes.get(code, '')
 
     def _convert_color(self, match):
