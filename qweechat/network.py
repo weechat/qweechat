@@ -123,13 +123,13 @@ class Network(QtCore.QObject):
         self._server = server
         try:
             self._port = int(port)
-        except:
+        except ValueError:
             self._port = 0
         self._ssl = ssl
         self._password = password
         try:
             self._lines = int(lines)
-        except:
+        except ValueError:
             self._lines = config.CONFIG_DEFAULT_RELAY_LINES
         if self._socket.state() == QtNetwork.QAbstractSocket.ConnectedState:
             return
