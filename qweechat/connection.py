@@ -36,23 +36,23 @@ class ConnectionDialog(QtGui.QDialog):
         grid.setSpacing(10)
 
         self.fields = {}
-        for y, field in enumerate(('server', 'port', 'password', 'lines')):
-            grid.addWidget(QtGui.QLabel(field.capitalize()), y, 0)
-            lineEdit = QtGui.QLineEdit()
-            lineEdit.setFixedWidth(200)
+        for line, field in enumerate(('server', 'port', 'password', 'lines')):
+            grid.addWidget(QtGui.QLabel(field.capitalize()), line, 0)
+            line_edit = QtGui.QLineEdit()
+            line_edit.setFixedWidth(200)
             if field == 'password':
-                lineEdit.setEchoMode(QtGui.QLineEdit.Password)
+                line_edit.setEchoMode(QtGui.QLineEdit.Password)
             if field == 'lines':
                 validator = QtGui.QIntValidator(0, 2147483647, self)
-                lineEdit.setValidator(validator)
-                lineEdit.setFixedWidth(80)
-            lineEdit.insert(self.values[field])
-            grid.addWidget(lineEdit, y, 1)
-            self.fields[field] = lineEdit
+                line_edit.setValidator(validator)
+                line_edit.setFixedWidth(80)
+            line_edit.insert(self.values[field])
+            grid.addWidget(line_edit, line, 1)
+            self.fields[field] = line_edit
             if field == 'port':
                 ssl = QtGui.QCheckBox('SSL')
                 ssl.setChecked(self.values['ssl'] == 'on')
-                grid.addWidget(ssl, y, 2)
+                grid.addWidget(ssl, line, 2)
                 self.fields['ssl'] = ssl
 
         self.dialog_buttons = QtGui.QDialogButtonBox()
