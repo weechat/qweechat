@@ -73,6 +73,7 @@ class MainWindow(QTGUI.QMainWindow):
 
         self.about_dialog = None
         self.connection_dialog = None
+        self.preferences_dialog = None
 
         # network
         self.network = Network()
@@ -196,7 +197,10 @@ class MainWindow(QTGUI.QMainWindow):
 
     def open_preferences_dialog(self):
         """Open a dialog with preferences."""
-        pass  # TODO
+        # TODO: implement the preferences dialog box
+        messages = ['Not yet implemented!',
+                    '']
+        self.preferences_dialog = AboutDialog('Preferences', messages, self)
 
     def save_connection(self):
         """Save connection configuration."""
