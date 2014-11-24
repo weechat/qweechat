@@ -51,7 +51,7 @@ from version import qweechat_version
 NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL = 'flashcode@flashtux.org'
-WEECHAT_SITE = 'http://weechat.org/'
+WEECHAT_SITE = 'https://weechat.org/'
 
 # number of lines in buffer for debug window
 DEBUG_NUM_LINES = 50

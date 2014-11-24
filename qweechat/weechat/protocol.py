@@ -22,7 +22,7 @@
 
 #
 # For info about protocol and format of messages, please read document
-# "WeeChat Relay Protocol", available at:  http://weechat.org/doc/
+# "WeeChat Relay Protocol", available at:  https://weechat.org/doc/
 #
 # History:
 #

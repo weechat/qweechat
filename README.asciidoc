@@ -6,7 +6,7 @@
 
 QWeeChat is a Qt remote GUI for WeeChat written in Python.
 
-Homepage: http://weechat.org/
+Homepage: https://weechat.org/
 
 image:https://travis-ci.org/weechat/qweechat.svg?branch=master["Build Status", link="https://travis-ci.org/weechat/qweechat"]
 

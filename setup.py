@@ -30,7 +30,7 @@ setup(
     long_description=DESCRIPTION,
     author='Sébastien Helleu',
     author_email='flashcode@flashtux.org',
-    url='http://weechat.org/',
+    url='https://weechat.org/',
     license='GPL3',
     keywords='weechat qt gui',
     classifiers=[
