@@ -2,7 +2,7 @@
 #
 # connection.py - connection window
 #
-# Copyright (C) 2011-2014 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
