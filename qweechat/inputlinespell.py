@@ -36,6 +36,7 @@ try:
 except ImportError:
     enchant = None
 
+
 class InputLineSpell(QtGui.QTextEdit):
     """Chat area."""
 
@@ -100,7 +101,7 @@ class InputLineSpell(QtGui.QTextEdit):
     def sizeHint(self):
         original_hint = super(InputLineSpell, self).sizeHint()
         return QtCore.QSize(original_hint.width(),
-            self.heightForWidth(original_hint.width()))
+                            self.heightForWidth(original_hint.width()))
 
     def scroll_bottom(self):
         bar = self.verticalScrollBar()
@@ -108,7 +109,7 @@ class InputLineSpell(QtGui.QTextEdit):
 
     def initDict(self, lang=None):
         if enchant:
-            if lang == None:
+            if lang is None:
                 # Default dictionary based on the current locale.
                 try:
                     self.spelldict = enchant.Dict()
@@ -132,8 +133,9 @@ class InputLineSpell(QtGui.QTextEdit):
             # Rewrite the mouse event to a left button event so the cursor
             # is moved to the location of the pointer.
             event = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
-                event.pos(), QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
-                QtCore.Qt.NoModifier)
+                                      event.pos(), QtCore.Qt.LeftButton,
+                                      QtCore.Qt.LeftButton,
+                                      QtCore.Qt.NoModifier)
         QtGui.QTextEdit.mousePressEvent(self, event)
 
     def contextMenuEvent(self, event):
@@ -142,8 +144,8 @@ class InputLineSpell(QtGui.QTextEdit):
         # This fixes Issue 20
         menu_style = """ * { background-color: %s;
                                       color: %s;}
-                  """%(unicode(pal.color(QtGui.QPalette.Button).name()),
-                      unicode(pal.color(QtGui.QPalette.WindowText).name()))
+                  """ % (unicode(pal.color(QtGui.QPalette.Button).name()),
+                         unicode(pal.color(QtGui.QPalette.WindowText).name()))
         popup_menu.setStyleSheet(menu_style)
 
         # Select the word under the cursor.
@@ -156,8 +158,6 @@ class InputLineSpell(QtGui.QTextEdit):
         if enchant and self.spelldict:
             if self.textCursor().hasSelection():
                 text = unicode(self.textCursor().selectedText())
-                #Add to dictionary
-                #Spell-checker options
                 if not self.spelldict.check(text):
                     suggestions = self.spelldict.suggest(text)
                     if len(suggestions) != 0:
@@ -167,12 +167,15 @@ class InputLineSpell(QtGui.QTextEdit):
                         action = SpellAction(word, popup_menu)
                         action.correct.connect(self.correctWord)
                         popup_menu.insertAction(topAction, action)
-                    popup_menu.insertSeparator(topAction)
-                    add = SpellAddAction(text, popup_menu)
-                    add.add.connect(self.addWord)
-                    popup_menu.insertAction(topAction, add)
 
-        # FIXME: add change dict and disable spellcheck options
+                    popup_menu.insertSeparator(topAction)
+                    addAction = QtGui.QAction("Add to dictionary", self)
+                    addAction.triggered.connect(lambda: self.addWord(text))
+                    popup_menu.insertAction(topAction, addAction)
+            # FIXME: add change dict and disable spellcheck options
+            # spellmenu = QtGui.QMenu('Spell-checker options')
+            # for lang in enchant.list_languages():
+            # popup_menu.insertMenu(topAction, spellmenu)
 
         popup_menu.exec_(event.globalPos())
 
@@ -191,10 +194,6 @@ class InputLineSpell(QtGui.QTextEdit):
         cursor.insertText(word)
 
         cursor.endEditBlock()
-
-    def killDict(self):
-        self.highlighter.setDocument(None)
-        self.spelldict = None
 
 
 class SpellHighlighter(QtGui.QSyntaxHighlighter):
@@ -221,8 +220,9 @@ class SpellHighlighter(QtGui.QSyntaxHighlighter):
 
         for word_object in re.finditer(self.WORDS, text):
             if not self.spelldict.check(word_object.group()):
-                self.setFormat(word_object.start(),
-                    word_object.end() - word_object.start(), format)
+                word_len = word_object.end() - word_object.start()
+                self.setFormat(word_object.start(), word_len, format)
+
 
 class SpellAction(QtGui.QAction):
 
@@ -237,18 +237,3 @@ class SpellAction(QtGui.QAction):
 
         self.triggered.connect(lambda x: self.correct.emit(
             unicode(self.text())))
-
-class SpellAddAction(QtGui.QAction):
-
-    '''
-    An action to add the given word to a dictionary.
-    '''
-
-    add = qt_compat.Signal(unicode)
-
-    def __init__(self, word, *args):
-        QtGui.QAction.__init__(self, "Add to dictionary", *args)
-        self._word = word
-        self.triggered.connect(lambda x: self.add.emit(
-            unicode(self._word)))
-

@@ -43,6 +43,7 @@ class InputLineEdit(InputLineSpell):
         key = event.key()
         modifiers = event.modifiers()
         bar = self.scroll_widget.verticalScrollBar()
+        newline = (key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return)
         if modifiers == QtCore.Qt.ControlModifier:
             if key == QtCore.Qt.Key_PageUp:
                 self.bufferSwitchPrev.emit()
@@ -83,8 +84,7 @@ class InputLineEdit(InputLineSpell):
                     self._history_navigate(-1)
                 elif key == QtCore.Qt.Key_Down:
                     self._history_navigate(1)
-        elif ((key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return)
-          and modifiers != QtCore.Qt.ShiftModifier):
+        elif (newline and modifiers != QtCore.Qt.ShiftModifier):
             self._input_return_pressed()
         else:
             InputLineSpell.keyPressEvent(self, event)
