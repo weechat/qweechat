@@ -2,7 +2,7 @@
 #
 # qweechat.py - WeeChat remote GUI using Qt toolkit
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -245,7 +245,7 @@ class MainWindow(QTGUI.QMainWindow):
     def open_about_dialog(self):
         """Open a dialog with info about QWeeChat."""
         messages = ['<b>%s</b> %s' % (NAME, qweechat_version()),
-                    '&copy; 2011-2014 %s &lt;<a href="mailto:%s">%s</a>&gt;'
+                    '&copy; 2011-2016 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
                     'Running with %s' % ('PySide' if qt_compat.uses_pyside
