@@ -22,9 +22,10 @@
 
 import struct
 import qt_compat
+import config
+
 QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
-import config
 
 _PROTO_INIT_CMD = ['init password=%(password)s']
 

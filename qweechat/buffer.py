@@ -22,11 +22,12 @@
 
 from pkg_resources import resource_filename
 import qt_compat
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
 from chat import ChatTextEdit
 from input import InputLineEdit
 import weechat.color as color
+
+QtCore = qt_compat.import_module('QtCore')
+QtGui = qt_compat.import_module('QtGui')
 
 
 class GenericListWidget(QtGui.QListWidget):

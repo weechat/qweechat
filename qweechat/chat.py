@@ -22,10 +22,11 @@
 
 import datetime
 import qt_compat
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
 import config
 import weechat.color as color
+
+QtCore = qt_compat.import_module('QtCore')
+QtGui = qt_compat.import_module('QtGui')
 
 
 class ChatTextEdit(QtGui.QTextEdit):

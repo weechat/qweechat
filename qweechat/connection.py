@@ -21,6 +21,7 @@
 #
 
 import qt_compat
+
 QtGui = qt_compat.import_module('QtGui')
 
 
