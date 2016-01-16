@@ -4,12 +4,11 @@
 :lang: en
 
 
+image:https://travis-ci.org/weechat/qweechat.svg?branch=master["Build Status", link="https://travis-ci.org/weechat/qweechat"]
+
 QWeeChat is a Qt remote GUI for WeeChat written in Python.
 
 Homepage: https://weechat.org/
-
-image:https://travis-ci.org/weechat/qweechat.svg?branch=master["Build Status", link="https://travis-ci.org/weechat/qweechat"]
-
 
 == Features
 
