@@ -550,6 +550,6 @@ class MainWindow(QtGui.QMainWindow):
 app = QtGui.QApplication(sys.argv)
 app.setStyle(QtGui.QStyleFactory.create('Cleanlooks'))
 app.setWindowIcon(QtGui.QIcon(
-    resource_filename(__name__, 'data/icons/weechat_icon_32.png')))
+    resource_filename(__name__, 'data/icons/weechat.png')))
 main = MainWindow()
 sys.exit(app.exec_())
