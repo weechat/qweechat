@@ -243,8 +243,8 @@ class Protocol:
         path = self._obj_str()
         keys = self._obj_str()
         count = self._obj_int()
-        list_path = path.split('/')
-        list_keys = keys.split(',')
+        list_path = path.split('/') if path else []
+        list_keys = keys.split(',') if keys else []
         keys_types = []
         dict_keys = WeechatDict()
         for key in list_keys:
