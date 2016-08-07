@@ -43,7 +43,7 @@ class InputLineEdit(InputLineSpell):
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
-        bar = self.scroll_widget.verticalScrollBar()
+        scroll = self.scroll_widget.verticalScrollBar()
         newline = (key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return)
         if modifiers == QtCore.Qt.ControlModifier:
             if key == QtCore.Qt.Key_PageUp:
@@ -58,19 +58,19 @@ class InputLineEdit(InputLineSpell):
             elif key in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Down):
                 self.bufferSwitchNext.emit()
             elif key == QtCore.Qt.Key_PageUp:
-                bar.setValue(bar.value() - (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() - (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_PageDown:
-                bar.setValue(bar.value() + (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() + (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_Home:
-                bar.setValue(bar.minimum())
+                scroll.setValue(scroll.minimum())
             elif key == QtCore.Qt.Key_End:
-                bar.setValue(bar.maximum())
+                scroll.setValue(scroll.maximum())
             else:
                 InputLineSpell.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
-            bar.setValue(bar.value() - bar.pageStep())
+            scroll.setValue(scroll.value() - scroll.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
-            bar.setValue(bar.value() + bar.pageStep())
+            scroll.setValue(scroll.value() + scroll.pageStep())
         elif key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_Down:
             # Compare position, optionally only nativate history if no change:
             pos1 = self.textCursor().position()
@@ -85,7 +85,7 @@ class InputLineEdit(InputLineSpell):
                     self._history_navigate(-1)
                 elif key == QtCore.Qt.Key_Down:
                     self._history_navigate(1)
-        elif (newline and modifiers != QtCore.Qt.ShiftModifier):
+        elif newline and modifiers != QtCore.Qt.ShiftModifier:
             self._input_return_pressed()
         else:
             InputLineSpell.keyPressEvent(self, event)
@@ -108,6 +108,6 @@ class InputLineEdit(InputLineSpell):
                 return
             self.setText(self._history[self._history_index])
             # End of line:
-            textCursor = self.textCursor()
-            textCursor.setPosition(len(self._history[self._history_index]))
-            self.setTextCursor(textCursor)
+            text_cursor = self.textCursor()
+            text_cursor.setPosition(len(self._history[self._history_index]))
+            self.setTextCursor(text_cursor)

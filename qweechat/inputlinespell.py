@@ -22,13 +22,10 @@
 # You should have received a copy of the GNU General Public License
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-import qt_compat
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
-import config
 import functools
 import re
+import config
+import qt_compat
 import weechat.color as color
 
 # Spell checker support
@@ -36,6 +33,8 @@ try:
     import enchant
 except ImportError:
     enchant = None
+QtCore = qt_compat.import_module('QtCore')
+QtGui = qt_compat.import_module('QtGui')
 
 
 class InputLineSpell(QtGui.QTextEdit):
@@ -72,8 +71,8 @@ class InputLineSpell(QtGui.QTextEdit):
         self._color = color.Color(config.color_options(), self.debug)
         self.initDict()
         # Set height to one line:
-        fm = QtGui.QFontMetrics(self.currentFont())
-        self.setMinimumHeight(fm.height() + 8)
+        font_metric = QtGui.QFontMetrics(self.currentFont())
+        self.setMinimumHeight(font_metric.height() + 8)
         size_policy = self.sizePolicy()
         size_policy.setHeightForWidth(True)
         size_policy.setVerticalPolicy(QtGui.QSizePolicy.Preferred)
@@ -82,7 +81,8 @@ class InputLineSpell(QtGui.QTextEdit):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.textChanged.connect(lambda: self.updateGeometry())
 
-    def hasHeightForWidth(self):
+    @staticmethod
+    def hasHeightForWidth():
         return True
 
     def heightForWidth(self, width):
@@ -105,8 +105,8 @@ class InputLineSpell(QtGui.QTextEdit):
                             self.heightForWidth(original_hint.width()))
 
     def scroll_bottom(self):
-        bar = self.verticalScrollBar()
-        bar.setValue(bar.maximum())
+        scroll = self.verticalScrollBar()
+        scroll.setValue(scroll.maximum())
 
     def initDict(self, lang=None):
         if enchant:
@@ -124,6 +124,12 @@ class InputLineSpell(QtGui.QTextEdit):
         if self.spelldict:
             self.highlighter.setDict(self.spelldict)
             self.highlighter.rehighlight()
+
+    def toggleDict(self, label=None):
+        if self.spelldict:
+            self.killDict()
+        else:
+            self.initDict()
 
     def killDict(self):
         self.highlighter.setDocument(None)
@@ -164,21 +170,46 @@ class InputLineSpell(QtGui.QTextEdit):
                     if len(suggestions) != 0:
                         popup_menu.insertSeparator(popup_menu.actions()[0])
 
-                    topAction = popup_menu.actions()[0]
-                    for suggestion in suggestions:
-                        action = QtGui.QAction(suggestion, popup_menu)
-                        action.connect(action, QtCore.SIGNAL("triggered()"), functools.partial(self.correctWord, word = suggestion))
-                        popup_menu.insertAction(topAction, action)
-                    popup_menu.insertSeparator(topAction)
-                    addAction = QtGui.QAction("Add to dictionary", self)
-                    addAction.triggered.connect(lambda: self.addWord(text))
-                    popup_menu.insertAction(topAction, addAction)
-            # FIXME: add change dict and disable spellcheck options
-            # spellmenu = QtGui.QMenu('Spell-checker options')
-            # for lang in enchant.list_languages():
-            # popup_menu.insertMenu(topAction, spellmenu)
-
+                    top_action = popup_menu.actions()[0]
+                    for suggest in suggestions:
+                        self._menu_action(suggest, popup_menu, self.correctWord, after=top_action)
+                    popup_menu.insertSeparator(top_action)
+                    add_action = QtGui.QAction("Add to dictionary", self)
+                    add_action.triggered.connect(lambda: self.addWord(text))
+                    popup_menu.insertAction(top_action, add_action)
+            # FIXME: disable spellcheck option
+            spell_menu = QtGui.QMenu(popup_menu)
+            spell_menu.setTitle('Spellcheck')
+            popup_menu.insertMenu(top_action, spell_menu)
+            for lang in enchant.list_languages():
+                self._menu_action(lang, spell_menu, self.initDict,
+                                  checked=(lang == self.spelldict.tag))
+            toggle = self._menu_action('Check the spelling', spell_menu,
+                                       self.toggleDict,
+                                       checked=(self.spelldict != False))
+            spell_menu.insertSeparator(toggle)
+        elif enchant:
+            toggle = self._menu_action('Check the spelling', popup_menu,
+                                       self.toggleDict, checked=False)
+            popup_menu.insertSeparator(toggle)
         popup_menu.exec_(event.globalPos())
+
+    @staticmethod
+    def _menu_action(text, menu, method, after=None, checked=None):
+        action = QtGui.QAction(text, menu)
+        action.connect(
+            action,
+            QtCore.SIGNAL("triggered()"),
+            functools.partial(method, text)
+        )
+        if checked is not None:
+            action.setCheckable(True)
+            action.setChecked(checked)
+        if after is not None:
+            menu.insertAction(after, action)
+        else:
+            menu.addAction(action)
+        return action
 
     def addWord(self, word):
         self.spelldict.add(word)
@@ -199,7 +230,7 @@ class InputLineSpell(QtGui.QTextEdit):
 
 class SpellHighlighter(QtGui.QSyntaxHighlighter):
 
-    WORDS = u'(?iu)[\w\']+'
+    WORDS = r'(?iu)[\w\']+'
 
     def __init__(self, *args):
         QtGui.QSyntaxHighlighter.__init__(self, *args)
