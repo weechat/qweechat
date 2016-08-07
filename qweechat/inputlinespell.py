@@ -156,13 +156,13 @@ class InputLineSpell(QtGui.QTextEdit):
         # Check if the selected word is misspelled and offer spelling
         # suggestions if it is.
         if enchant and self.spelldict:
+            top_action = popup_menu.actions()[0]
             if self.textCursor().hasSelection():
                 text = unicode(self.textCursor().selectedText())
                 if not self.spelldict.check(text):
                     suggestions = self.spelldict.suggest(text)
                     if len(suggestions) != 0:
                         popup_menu.insertSeparator(popup_menu.actions()[0])
-                    top_action = popup_menu.actions()[0]
                     for suggest in suggestions:
                         self._menu_action(suggest, popup_menu,
                                           self.correctWord, after=top_action)
