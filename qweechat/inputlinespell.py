@@ -147,13 +147,6 @@ class InputLineSpell(QtGui.QTextEdit):
 
     def contextMenuEvent(self, event):
         popup_menu = self.createStandardContextMenu()
-        pal = QtGui.QApplication.instance().palette()
-        # This fixes Issue 20
-        menu_style = """ * { background-color: %s;
-                                      color: %s;}
-                  """ % (unicode(pal.color(QtGui.QPalette.Button).name()),
-                         unicode(pal.color(QtGui.QPalette.WindowText).name()))
-        popup_menu.setStyleSheet(menu_style)
 
         # Select the word under the cursor.
         cursor = self.textCursor()
@@ -169,27 +162,26 @@ class InputLineSpell(QtGui.QTextEdit):
                     suggestions = self.spelldict.suggest(text)
                     if len(suggestions) != 0:
                         popup_menu.insertSeparator(popup_menu.actions()[0])
-
                     top_action = popup_menu.actions()[0]
                     for suggest in suggestions:
-                        self._menu_action(suggest, popup_menu, self.correctWord, after=top_action)
+                        self._menu_action(suggest, popup_menu,
+                                          self.correctWord, after=top_action)
                     popup_menu.insertSeparator(top_action)
                     add_action = QtGui.QAction("Add to dictionary", self)
                     add_action.triggered.connect(lambda: self.addWord(text))
                     popup_menu.insertAction(top_action, add_action)
-            # FIXME: disable spellcheck option
             spell_menu = QtGui.QMenu(popup_menu)
             spell_menu.setTitle('Spellcheck')
             popup_menu.insertMenu(top_action, spell_menu)
             for lang in enchant.list_languages():
                 self._menu_action(lang, spell_menu, self.initDict,
                                   checked=(lang == self.spelldict.tag))
-            toggle = self._menu_action('Check the spelling', spell_menu,
+            toggle = self._menu_action('Check spelling', spell_menu,
                                        self.toggleDict,
-                                       checked=(self.spelldict != False))
+                                       checked=(self.spelldict is not False))
             spell_menu.insertSeparator(toggle)
         elif enchant:
-            toggle = self._menu_action('Check the spelling', popup_menu,
+            toggle = self._menu_action('Check spelling', popup_menu,
                                        self.toggleDict, checked=False)
             popup_menu.insertSeparator(toggle)
         popup_menu.exec_(event.globalPos())
