@@ -2,7 +2,7 @@
 #
 # chat.py - chat area
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -22,10 +22,11 @@
 
 import datetime
 import qt_compat
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
 import config
 import weechat.color as color
+
+QtCore = qt_compat.import_module('QtCore')
+QtGui = qt_compat.import_module('QtGui')
 
 
 class ChatTextEdit(QtGui.QTextEdit):

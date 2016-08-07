@@ -2,7 +2,7 @@
 #
 # debug.py - debug window
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -21,9 +21,10 @@
 #
 
 import qt_compat
-QtGui = qt_compat.import_module('QtGui')
 from chat import ChatTextEdit
 from input import InputLineEdit
+
+QtGui = qt_compat.import_module('QtGui')
 
 
 class DebugDialog(QtGui.QDialog):

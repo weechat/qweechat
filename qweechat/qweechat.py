@@ -2,7 +2,7 @@
 #
 # qweechat.py - WeeChat remote GUI using Qt toolkit
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -37,8 +37,6 @@ import sys
 import traceback
 from pkg_resources import resource_filename
 import qt_compat
-QTCORE = qt_compat.import_module('QtCore')
-QTGUI = qt_compat.import_module('QtGui')
 import config
 import weechat.protocol as protocol
 from network import Network
@@ -47,6 +45,9 @@ from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
 from version import qweechat_version
+
+QtCore = qt_compat.import_module('QtCore')
+QtGui = qt_compat.import_module('QtGui')
 
 NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
@@ -57,11 +58,11 @@ WEECHAT_SITE = 'https://weechat.org/'
 DEBUG_NUM_LINES = 50
 
 
-class MainWindow(QTGUI.QMainWindow):
+class MainWindow(QtGui.QMainWindow):
     """Main window."""
 
     def __init__(self, *args):
-        QTGUI.QMainWindow.__init__(*(self,) + args)
+        QtGui.QMainWindow.__init__(*(self,) + args)
 
         self.config = config.read()
 
@@ -86,11 +87,11 @@ class MainWindow(QTGUI.QMainWindow):
 
         # default buffer
         self.buffers = [Buffer()]
-        self.stacked_buffers = QTGUI.QStackedWidget()
+        self.stacked_buffers = QtGui.QStackedWidget()
         self.stacked_buffers.addWidget(self.buffers[0].widget)
 
         # splitter with buffers + chat/input
-        splitter = QTGUI.QSplitter()
+        splitter = QtGui.QSplitter()
         splitter.addWidget(self.list_buffers)
         splitter.addWidget(self.stacked_buffers)
 
@@ -125,8 +126,8 @@ class MainWindow(QTGUI.QMainWindow):
         }
         self.actions = {}
         for name, action in list(actions_def.items()):
-            self.actions[name] = QTGUI.QAction(
-                QTGUI.QIcon(
+            self.actions[name] = QtGui.QAction(
+                QtGui.QIcon(
                     resource_filename(__name__, 'data/icons/%s' % action[0])),
                 name.capitalize(), self)
             self.actions[name].setStatusTip(action[1])
@@ -145,19 +146,19 @@ class MainWindow(QTGUI.QMainWindow):
         menu_window.addAction(self.actions['debug'])
         menu_help = self.menu.addMenu('&Help')
         menu_help.addAction(self.actions['about'])
-        self.network_status = QTGUI.QLabel()
+        self.network_status = QtGui.QLabel()
         self.network_status.setFixedHeight(20)
         self.network_status.setFixedWidth(200)
         self.network_status.setContentsMargins(0, 0, 10, 0)
-        self.network_status.setAlignment(QTCORE.Qt.AlignRight)
+        self.network_status.setAlignment(QtCore.Qt.AlignRight)
         if hasattr(self.menu, 'setCornerWidget'):
             self.menu.setCornerWidget(self.network_status,
-                                      QTCORE.Qt.TopRightCorner)
+                                      QtCore.Qt.TopRightCorner)
         self.network_status_set(self.network.status_disconnected)
 
         # toolbar
         toolbar = self.addToolBar('toolBar')
-        toolbar.setToolButtonStyle(QTCORE.Qt.ToolButtonTextUnderIcon)
+        toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         toolbar.addActions([self.actions['connect'],
                             self.actions['disconnect'],
                             self.actions['debug'],
@@ -245,7 +246,7 @@ class MainWindow(QTGUI.QMainWindow):
     def open_about_dialog(self):
         """Open a dialog with info about QWeeChat."""
         messages = ['<b>%s</b> %s' % (NAME, qweechat_version()),
-                    '&copy; 2011-2014 %s &lt;<a href="mailto:%s">%s</a>&gt;'
+                    '&copy; 2011-2016 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
                     'Running with %s' % ('PySide' if qt_compat.uses_pyside
@@ -287,10 +288,10 @@ class MainWindow(QTGUI.QMainWindow):
         pal = self.network_status.palette()
         if status == self.network.status_connected:
             pal.setColor(self.network_status.foregroundRole(),
-                         QTGUI.QColor('green'))
+                         QtGui.QColor('green'))
         else:
             pal.setColor(self.network_status.foregroundRole(),
-                         QTGUI.QColor('#aa0000'))
+                         QtGui.QColor('#aa0000'))
         ssl = ' (SSL)' if status != self.network.status_disconnected \
               and self.network.is_ssl() else ''
         self.network_status.setPalette(pal)
@@ -543,12 +544,12 @@ class MainWindow(QTGUI.QMainWindow):
         if self.debug_dialog:
             self.debug_dialog.close()
         config.write(self.config)
-        QTGUI.QMainWindow.closeEvent(self, event)
+        QtGui.QMainWindow.closeEvent(self, event)
 
 
-app = QTGUI.QApplication(sys.argv)
-app.setStyle(QTGUI.QStyleFactory.create('Cleanlooks'))
-app.setWindowIcon(QTGUI.QIcon(
-    resource_filename(__name__, 'data/icons/weechat_icon_32.png')))
+app = QtGui.QApplication(sys.argv)
+app.setStyle(QtGui.QStyleFactory.create('Cleanlooks'))
+app.setWindowIcon(QtGui.QIcon(
+    resource_filename(__name__, 'data/icons/weechat.png')))
 main = MainWindow()
 sys.exit(app.exec_())

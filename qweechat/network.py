@@ -2,7 +2,7 @@
 #
 # network.py - I/O with WeeChat/relay
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -22,9 +22,10 @@
 
 import struct
 import qt_compat
+import config
+
 QtCore = qt_compat.import_module('QtCore')
 QtNetwork = qt_compat.import_module('QtNetwork')
-import config
 
 _PROTO_INIT_CMD = ['init password=%(password)s']
 

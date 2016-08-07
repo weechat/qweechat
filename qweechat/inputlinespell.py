@@ -27,6 +27,7 @@ import qt_compat
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
 import config
+import functools
 import re
 import weechat.color as color
 
@@ -162,12 +163,12 @@ class InputLineSpell(QtGui.QTextEdit):
                     suggestions = self.spelldict.suggest(text)
                     if len(suggestions) != 0:
                         popup_menu.insertSeparator(popup_menu.actions()[0])
-                    topAction = popup_menu.actions()[0]
-                    for word in suggestions:
-                        action = SpellAction(word, popup_menu)
-                        action.correct.connect(self.correctWord)
-                        popup_menu.insertAction(topAction, action)
 
+                    topAction = popup_menu.actions()[0]
+                    for suggestion in suggestions:
+                        action = QtGui.QAction(suggestion, popup_menu)
+                        action.connect(action, QtCore.SIGNAL("triggered()"), functools.partial(self.correctWord, word = suggestion))
+                        popup_menu.insertAction(topAction, action)
                     popup_menu.insertSeparator(topAction)
                     addAction = QtGui.QAction("Add to dictionary", self)
                     addAction.triggered.connect(lambda: self.addWord(text))
@@ -222,18 +223,3 @@ class SpellHighlighter(QtGui.QSyntaxHighlighter):
             if not self.spelldict.check(word_object.group()):
                 word_len = word_object.end() - word_object.start()
                 self.setFormat(word_object.start(), word_len, format)
-
-
-class SpellAction(QtGui.QAction):
-
-    '''
-    A special QAction that returns the text in a signal.
-    '''
-
-    correct = qt_compat.Signal(unicode)
-
-    def __init__(self, *args):
-        QtGui.QAction.__init__(self, *args)
-
-        self.triggered.connect(lambda x: self.correct.emit(
-            unicode(self.text())))

@@ -2,7 +2,7 @@
 #
 # protocol.py - decode binary messages received from WeeChat/relay
 #
-# Copyright (C) 2011-2015 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2016 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -232,7 +232,7 @@ class Protocol:
         type_values = self._obj_type()
         count = self._obj_int()
         hashtable = WeechatDict()
-        for i in range(0, count):
+        for _ in range(count):
             key = self._obj_cb[type_keys]()
             value = self._obj_cb[type_values]()
             hashtable[key] = value
@@ -243,8 +243,8 @@ class Protocol:
         path = self._obj_str()
         keys = self._obj_str()
         count = self._obj_int()
-        list_path = path.split('/')
-        list_keys = keys.split(',')
+        list_path = path.split('/') if path else []
+        list_keys = keys.split(',') if keys else []
         keys_types = []
         dict_keys = WeechatDict()
         for key in list_keys:
@@ -252,11 +252,11 @@ class Protocol:
             keys_types.append(items)
             dict_keys[items[0]] = items[1]
         items = []
-        for i in range(0, count):
+        for _ in range(count):
             item = WeechatDict()
             item['__path'] = []
             pointers = []
-            for p in range(0, len(list_path)):
+            for _ in enumerate(list_path):
                 pointers.append(self._obj_ptr())
             for key, objtype in keys_types:
                 item[key] = self._obj_cb[objtype]()
@@ -280,10 +280,10 @@ class Protocol:
         name = self._obj_str()
         count_items = self._obj_int()
         items = []
-        for i in range(0, count_items):
+        for _ in range(count_items):
             count_vars = self._obj_int()
             variables = WeechatDict()
-            for v in range(0, count_vars):
+            for _ in range(count_vars):
                 var_name = self._obj_str()
                 var_type = self._obj_type()
                 var_value = self._obj_cb[var_type]()
@@ -299,7 +299,7 @@ class Protocol:
         type_values = self._obj_type()
         count_values = self._obj_int()
         values = []
-        for i in range(0, count_values):
+        for _ in range(count_values):
             values.append(self._obj_cb[type_values]())
         return values
 
@@ -341,7 +341,7 @@ def hex_and_ascii(data, bytes_per_line=10):
     if num_lines == 0:
         return ''
     lines = []
-    for i in range(0, num_lines):
+    for i in range(num_lines):
         str_hex = []
         str_ascii = []
         for char in data[i*bytes_per_line:(i*bytes_per_line)+bytes_per_line]:
