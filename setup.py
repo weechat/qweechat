@@ -49,7 +49,7 @@ setup(
     package_data={'qweechat': ['data/icons/*.png']},
     entry_points = {
         'gui_scripts': [
-            'qweechat = qweechat.qweechat',
+            'qweechat = qweechat.qweechat:main',
         ],
         'console_scripts': [
             'qweechat-testproto = qweechat.weechat.testproto:main',
