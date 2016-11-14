@@ -28,6 +28,10 @@ Following packages are *required*:
 * Python 2.x >= 2.6
 * PySide (recommended, packages: python.pyside.*) or PyQt4 (python-qt4)
 
+Following packages are *optional*:
+
+* PyEnchant (for spell check)
+
 === Install via source distribution
 
 ----
