@@ -160,12 +160,14 @@ class MainWindow(QtGui.QMainWindow):
         # toolbar
         toolbar = self.addToolBar('toolBar')
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        toolbar.setMovable(False);
         toolbar.addActions([self.actions['connect'],
                             self.actions['disconnect'],
                             self.actions['debug'],
                             self.actions['preferences'],
                             self.actions['about'],
                             self.actions['quit']])
+        self.toolbar = toolbar
 
         self.buffers[0].widget.input.setFocus()
 
@@ -181,8 +183,20 @@ class MainWindow(QtGui.QMainWindow):
                                                                 'ssl'),
                                          self.config.get('relay', 'password'),
                                          self.config.get('relay', 'lines'))
+        self.apply_preferences()
 
         self.show()
+
+    def apply_preferences(self):
+        """Apply non-server options from preferences."""
+        app = QtCore.QCoreApplication.instance()
+        if self.config.getboolean('look', 'toolbar'):
+            self.toolbar.show()
+        else:
+            self.toolbar.hide()
+        if self.config.get('look', 'style'):
+            app.setStyle(QtGui.QStyleFactory.create(
+                self.config.get('look', 'style')))
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""
@@ -199,8 +213,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_preferences_dialog(self):
         """Open a dialog with preferences."""
-        self.preferences_dialog = PreferencesDialog('Preferences', self.config,
-                                                    self)
+        self.preferences_dialog = PreferencesDialog('Preferences', self)
 
     def save_connection(self):
         """Save connection configuration."""

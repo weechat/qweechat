@@ -20,7 +20,6 @@
 
 import qt_compat
 import config
-from buffer import GenericListWidget
 
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
@@ -29,30 +28,33 @@ QtGui = qt_compat.import_module('QtGui')
 class PreferencesDialog(QtGui.QDialog):
     """Preferences dialog."""
 
-    def __init__(self, name, config, *args):
+    def __init__(self, name, parent, *args):
         QtGui.QDialog.__init__(*(self,) + args)
         self.setModal(True)
         self.setWindowTitle(name)
-        self.config = config
+        self.parent = parent
+        self.config = parent.config
         self.stacked_panes = QtGui.QStackedWidget()
-        self.list_panes = PreferencesListWidget()
+        self.list_panes = PreferencesTreeWidget("Settings")
+
         splitter = QtGui.QSplitter()
         splitter.addWidget(self.list_panes)
         splitter.addWidget(self.stacked_panes)
 
-        for section_name in config.sections():
-            item = QtGui.QListWidgetItem(section_name)
+        for section_name in self.config.sections():
+            item = QtGui.QTreeWidgetItem(section_name)
+            item.setText(0, section_name)
             pane = PreferencesPaneWidget(section_name)
-            self.list_panes.addItem(item)
+            self.list_panes.addTopLevelItem(item)
             self.stacked_panes.addWidget(pane)
-            for name, value in config.items(section_name):
+            for name, value in self.config.items(section_name):
                 pane.addItem(name, value)
-        self.list_panes.currentRowChanged.connect(self._pane_switch)
+        self.list_panes.currentItemChanged.connect(self._pane_switch)
 
         hbox = QtGui.QHBoxLayout()
         self.dialog_buttons = QtGui.QDialogButtonBox()
         self.dialog_buttons.setStandardButtons(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+            QtGui.QDialogButtonBox.Save | QtGui.QDialogButtonBox.Cancel)
         self.dialog_buttons.rejected.connect(self.close)
         self.dialog_buttons.accepted.connect(self._save_and_close)
 
@@ -67,8 +69,9 @@ class PreferencesDialog(QtGui.QDialog):
         self.setLayout(vbox)
         self.show()
 
-    def _pane_switch(self, index):
+    def _pane_switch(self, item):
         """Switch the visible preference pane."""
+        index = self.list_panes.indexOfTopLevelItem(item)
         if index >= 0:
             self.stacked_panes.setCurrentIndex(index)
 
@@ -76,16 +79,23 @@ class PreferencesDialog(QtGui.QDialog):
         for widget in (self.stacked_panes.widget(i)
                        for i in range(self.stacked_panes.count())):
             for key, field in widget.fields.iteritems():
-                self.config.set(widget.section_name, key, str(field.text()))
+                if isinstance(field, QtGui.QComboBox):
+                    text = field.itemText(field.currentIndex())
+                else:
+                    text = field.text()
+                self.config.set(widget.section_name, key, str(text))
         config.write(self.config)
+        self.parent.apply_preferences()
         self.close()
 
 
-class PreferencesListWidget(GenericListWidget):
-    """Widget with list of preferences."""
+class PreferencesTreeWidget(QtGui.QTreeWidget):
+    """Widget with tree list of preferences."""
 
-    def __init__(self, *args):
-        GenericListWidget.__init__(*(self,) + args)
+    def __init__(self, header_label, *args):
+        QtGui.QTreeWidget.__init__(*(self,) + args)
+        self.setHeaderLabel(header_label)
+        self.setRootIsDecorated(False)
 
     def switch_prev_buffer(self):
         if self.currentRow() > 0:
@@ -117,10 +127,15 @@ class PreferencesPaneWidget(QtGui.QWidget):
         """Add a key-value pair."""
         line = len(self.fields)
         self.grid.addWidget(QtGui.QLabel(key.capitalize()), line, 0)
-        line_edit = QtGui.QLineEdit()
-        line_edit.setFixedWidth(200)
-        line_edit.insert(value)
+        edit = QtGui.QLineEdit()
+        edit.setFixedWidth(200)
+        edit.insert(value)
         if key == 'password':
-            line_edit.setEchoMode(QtGui.QLineEdit.Password)
-        self.grid.addWidget(line_edit, line, 1)
-        self.fields[key] = line_edit
+            edit.setEchoMode(QtGui.QLineEdit.Password)
+        if key == 'style':
+            edit = QtGui.QComboBox()
+            edit.addItems(QtGui.QStyleFactory.keys())
+            edit.setCurrentIndex(edit.findText(QtGui.qApp.style().objectName(),
+                                               QtCore.Qt.MatchFixedString))
+        self.grid.addWidget(edit, line, 1)
+        self.fields[key] = edit
