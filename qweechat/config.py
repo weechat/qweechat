@@ -37,6 +37,7 @@ CONFIG_DEFAULT_OPTIONS = (('relay.server', ''),
                           ('relay.lines', str(CONFIG_DEFAULT_RELAY_LINES)),
                           ('look.debug', 'off'),
                           ('look.style', ''),
+                          ('look.buffer_list', 'left'),
                           ('look.toolbar', 'on'),
                           ('look.statusbar', 'off'))
 

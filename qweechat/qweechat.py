@@ -92,14 +92,11 @@ class MainWindow(QtGui.QMainWindow):
         self.stacked_buffers.addWidget(self.buffers[0].widget)
 
         # splitter with buffers + chat/input
-        splitter = QtGui.QSplitter()
-        splitter.addWidget(self.list_buffers)
-        splitter.addWidget(self.stacked_buffers)
+        self.splitter = QtGui.QSplitter()
+        self.splitter.addWidget(self.list_buffers)
+        self.splitter.addWidget(self.stacked_buffers)
 
-        self.setCentralWidget(splitter)
-
-        if self.config.getboolean('look', 'statusbar'):
-            self.statusBar().visible = True
+        self.setCentralWidget(self.splitter)
 
         # actions for menu and toolbar
         actions_def = {
@@ -160,7 +157,7 @@ class MainWindow(QtGui.QMainWindow):
         # toolbar
         toolbar = self.addToolBar('toolBar')
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        toolbar.setMovable(False);
+        toolbar.setMovable(False)
         toolbar.addActions([self.actions['connect'],
                             self.actions['disconnect'],
                             self.actions['debug'],
@@ -197,6 +194,15 @@ class MainWindow(QtGui.QMainWindow):
         if self.config.get('look', 'style'):
             app.setStyle(QtGui.QStyleFactory.create(
                 self.config.get('look', 'style')))
+        if self.config.getboolean('look', 'statusbar'):
+            self.statusBar().show()
+        else:
+            self.statusBar().hide()
+        # Move the buffer list / main buffer view:
+        if self.config.get('look', 'buffer_list') == 'right':
+            self.splitter.insertWidget(1, self.list_buffers)
+        else:
+            self.splitter.insertWidget(1, self.stacked_buffers)
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""
