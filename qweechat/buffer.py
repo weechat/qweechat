@@ -184,6 +184,14 @@ class Buffer(QtCore.QObject):
         if self.data:
             self.bufferInput.emit(self.data['full_name'], text)
 
+    def update_config(self):
+        """Match visibility to configuration, faster than a nicklist refresh"""
+        if (self.config):
+            nicklist_visible = self.config.get("look", "nicklist") != "off"
+            topic_visible = self.config.get("look", "topic") != "off"
+            self.widget.nicklist.setVisible(nicklist_visible)
+            self.widget.title.setVisible(topic_visible)
+
     def nicklist_add_item(self, parent, group, prefix, name, visible):
         """Add a group/nick in nicklist."""
         if group:
@@ -223,12 +231,6 @@ class Buffer(QtCore.QObject):
                         nick['visible'] = visible
                         break
 
-    def nicklist_update_config(self):
-        """Match nicklist to configuration, quicker than a refresh"""
-        if (self.config):
-            setting = self.config.get("look", "nick_list") != "off"
-            self.widget.nicklist.setVisible(setting)
-
     def nicklist_refresh(self):
         """Refresh nicklist."""
         self.widget.nicklist.clear()
@@ -253,7 +255,7 @@ class Buffer(QtCore.QObject):
                 item = QtGui.QListWidgetItem(icon, nick['name'])
                 self.widget.nicklist.addItem(item)
                 if self.config and self.config.get("look",
-                                                   "nick_list") == "off":
+                                                   "nicklist") == "off":
                     self.widget.nicklist.setVisible(False)
                 else:
                     self.widget.nicklist.setVisible(True)

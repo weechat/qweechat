@@ -78,7 +78,7 @@ class PreferencesDialog(QtGui.QDialog):
     def _save_and_close(self):
         for widget in (self.stacked_panes.widget(i)
                        for i in range(self.stacked_panes.count())):
-            for key, field in widget.fields.iteritems():
+            for key, field in widget.fields.items():
                 if isinstance(field, QtGui.QComboBox):
                     text = field.itemText(field.currentIndex())
                 else:
