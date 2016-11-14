@@ -44,6 +44,7 @@ from connection import ConnectionDialog
 from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
+from preferences import PreferencesDialog
 from version import qweechat_version
 
 QtCore = qt_compat.import_module('QtCore')
@@ -198,10 +199,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_preferences_dialog(self):
         """Open a dialog with preferences."""
-        # TODO: implement the preferences dialog box
-        messages = ['Not yet implemented!',
-                    '']
-        self.preferences_dialog = AboutDialog('Preferences', messages, self)
+        self.preferences_dialog = PreferencesDialog('Preferences', self.config,
+                                                    self)
 
     def save_connection(self):
         """Save connection configuration."""
