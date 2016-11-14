@@ -203,6 +203,12 @@ class MainWindow(QtGui.QMainWindow):
                             self.actions['quit']])
         self.toolbar = toolbar
 
+        # Override context menu for both -- default is a simple menubar toggle.
+        self.menu.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.toolbar.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.menu.customContextMenuRequested.connect(self._menu_context)
+        self.toolbar.customContextMenuRequested.connect(self._menu_context)
+        
         self.buffers[0].widget.input.setFocus()
 
         # open debug dialog
@@ -262,6 +268,14 @@ class MainWindow(QtGui.QMainWindow):
                 ac = action[0].split(".")
                 toggle = self.config.get(ac[0], ac[1])
                 self.actions[name].setChecked(toggle == "on")
+
+    def _menu_context(self, event):
+        """Show a slightly nicer context menu for the menu/toolbar."""
+        menu = QtGui.QMenu()
+        menu.addActions([self.actions['show menubar'],
+                         self.actions['show toolbar'],
+                         self.actions['show status bar']])
+        action = menu.exec_(self.mapToGlobal(event))
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""

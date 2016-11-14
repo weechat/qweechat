@@ -2,6 +2,8 @@
 #
 # preferences.py - preferences dialog box
 #
+# Copyright (C) 2016 Ricky Brent <ricky@rickybrent.com>
+#
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
 # QWeeChat is free software; you can redistribute it and/or modify
@@ -81,6 +83,8 @@ class PreferencesDialog(QtGui.QDialog):
             for key, field in widget.fields.items():
                 if isinstance(field, QtGui.QComboBox):
                     text = field.itemText(field.currentIndex())
+                elif isinstance(field, QtGui.QCheckBox):
+                    text = "on" if field.isChecked() else "off"
                 else:
                     text = field.text()
                 self.config.set(widget.section_name, key, str(text))
@@ -110,6 +114,40 @@ class PreferencesTreeWidget(QtGui.QTreeWidget):
             self.setCurrentRow(0)
 
 
+class PreferencesColorEdit(QtGui.QPushButton):
+    """Simple color square that changes based on the color selected."""
+    def __init__(self, *args):
+        QtGui.QPushButton.__init__(*(self,) + args)
+        self.color = "#000000"
+        self.clicked.connect(self._color_picker)
+        # Some of the configured colors use a astrisk prefix. 
+        # Toggle this on right click.
+        self.star = False
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._color_star)
+
+    def insert(self, color):
+        """Insert the desired color for the widget."""
+        if color[:1] == "*":
+            self.star = True
+            color = color[1:]
+        self.setText("*" if self.star else "")
+        self.color = color
+        self.setStyleSheet("background-color: " + color)
+
+    def text(self):
+        """Returns the hex value of the color."""
+        return ("*" if self.star else "") + self.color
+        
+    def _color_picker(self):
+        color = QtGui.QColorDialog.getColor()
+        self.insert(color.name())
+
+    def _color_star(self):
+        self.star = not self.star
+        self.insert(self.text())
+
+
 class PreferencesPaneWidget(QtGui.QWidget):
     """
     Widget with (from top to bottom):
@@ -125,6 +163,10 @@ class PreferencesPaneWidget(QtGui.QWidget):
         self.setLayout(self.grid)
         self.grid.setColumnStretch(2, 1)
         self.grid.setSpacing(10)
+        self.checkboxes = ("ssl", "autoconnect", "statusbar", "topic",
+                              "menubar", "toolbar", "nicklist", "debug")
+        self.comboboxes = {"style": QtGui.QStyleFactory.keys(), 
+                           "buffer_list": ["left", "right"]}
 
     def addItem(self, key, value):
         """Add a key-value pair."""
@@ -134,15 +176,23 @@ class PreferencesPaneWidget(QtGui.QWidget):
             start = 2 * (line % 2)
             line = line // 2
         self.grid.addWidget(QtGui.QLabel(key.capitalize()), line, start + 0)
-        edit = QtGui.QLineEdit()
-        edit.setFixedWidth(200)
-        edit.insert(value)
+        if self.section_name == "color":
+            edit = PreferencesColorEdit()
+            edit.setFixedWidth(edit.sizeHint().height())
+            edit.insert(value)
+        elif key in self.comboboxes.keys():
+            edit = QtGui.QComboBox()
+            edit.addItems(self.comboboxes[key])
+            edit.setCurrentIndex(edit.findText(value))
+            edit.setFixedWidth(200)
+        elif key in self.checkboxes:
+            edit = QtGui.QCheckBox()
+            edit.setChecked(value == "on")
+        else:
+            edit = QtGui.QLineEdit()
+            edit.setFixedWidth(200)
+            edit.insert(value)
         if key == 'password':
             edit.setEchoMode(QtGui.QLineEdit.Password)
-        if key == 'style':
-            edit = QtGui.QComboBox()
-            edit.addItems(QtGui.QStyleFactory.keys())
-            edit.setCurrentIndex(edit.findText(QtGui.qApp.style().objectName(),
-                                               QtCore.Qt.MatchFixedString))
         self.grid.addWidget(edit, line, start + 1)
         self.fields[key] = edit
