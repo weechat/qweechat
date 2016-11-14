@@ -149,9 +149,10 @@ class Buffer(QtCore.QObject):
 
     bufferInput = qt_compat.Signal(str, str)
 
-    def __init__(self, data={}):
+    def __init__(self, data={}, config=False):
         QtCore.QObject.__init__(self)
         self.data = data
+        self.config = config
         self.nicklist = {}
         self.widget = BufferWidget(display_nicklist=self.data.get('nicklist',
                                                                   0))
@@ -222,6 +223,12 @@ class Buffer(QtCore.QObject):
                         nick['visible'] = visible
                         break
 
+    def nicklist_update_config(self):
+        """Match nicklist to configuration, quicker than a refresh"""
+        if (self.config):
+            setting = self.config.get("look", "nick_list") != "off"
+            self.widget.nicklist.setVisible(setting)
+
     def nicklist_refresh(self):
         """Refresh nicklist."""
         self.widget.nicklist.clear()
@@ -245,4 +252,8 @@ class Buffer(QtCore.QObject):
                     icon = QtGui.QIcon(pixmap)
                 item = QtGui.QListWidgetItem(icon, nick['name'])
                 self.widget.nicklist.addItem(item)
-                self.widget.nicklist.setVisible(True)
+                if self.config and self.config.get("look",
+                                                   "nick_list") == "off":
+                    self.widget.nicklist.setVisible(False)
+                else:
+                    self.widget.nicklist.setVisible(True)

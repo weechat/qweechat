@@ -38,6 +38,7 @@ CONFIG_DEFAULT_OPTIONS = (('relay.server', ''),
                           ('look.debug', 'off'),
                           ('look.style', ''),
                           ('look.buffer_list', 'left'),
+                          ('look.nick_list', 'on'),
                           ('look.toolbar', 'on'),
                           ('look.statusbar', 'off'))
 

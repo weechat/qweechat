@@ -203,6 +203,9 @@ class MainWindow(QtGui.QMainWindow):
             self.splitter.insertWidget(1, self.list_buffers)
         else:
             self.splitter.insertWidget(1, self.stacked_buffers)
+        # Update visibility of all nicklists:
+        for buffer in self.buffers:
+            buffer.nicklist_update_config()
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""
@@ -516,7 +519,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_buffer(self, item):
         """Create a new buffer."""
-        buf = Buffer(item)
+        buf = Buffer(item, self.config)
         buf.bufferInput.connect(self.buffer_input)
         buf.widget.input.bufferSwitchPrev.connect(
             self.list_buffers.switch_prev_buffer)
