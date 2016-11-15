@@ -43,15 +43,23 @@ class PreferencesDialog(QtGui.QDialog):
         splitter.addWidget(self.list_panes)
         splitter.addWidget(self.stacked_panes)
 
-        for section_name in self.config.sections():
-            item = QtGui.QTreeWidgetItem(section_name)
-            item.setText(0, section_name)
-            pane = PreferencesPaneWidget(section_name)
+        # Follow same order as defaults:
+        section_panes = {}
+        for section in self.config.sections():
+            item = QtGui.QTreeWidgetItem(section)
+            item.setText(0, section)
+            section_panes[section] = PreferencesPaneWidget(section)
             self.list_panes.addTopLevelItem(item)
-            self.stacked_panes.addWidget(pane)
-            for name, value in self.config.items(section_name):
-                pane.addItem(name, value)
+            self.stacked_panes.addWidget(section_panes[section])
+
+        for setting, default in config.CONFIG_DEFAULT_OPTIONS:
+            section, key = setting.split(".")
+            section_panes[section].addItem(key, self.config.get(section, key))
+        for key, value in self.config.items("color"):
+            section_panes["color"].addItem(key, value)
+
         self.list_panes.currentItemChanged.connect(self._pane_switch)
+        self.list_panes.setCurrentItem(self.list_panes.topLevelItem(0))
 
         hbox = QtGui.QHBoxLayout()
         self.dialog_buttons = QtGui.QDialogButtonBox()
@@ -100,18 +108,10 @@ class PreferencesTreeWidget(QtGui.QTreeWidget):
         QtGui.QTreeWidget.__init__(*(self,) + args)
         self.setHeaderLabel(header_label)
         self.setRootIsDecorated(False)
-
-    def switch_prev_buffer(self):
-        if self.currentRow() > 0:
-            self.setCurrentRow(self.currentRow() - 1)
-        else:
-            self.setCurrentRow(self.count() - 1)
-
-    def switch_next_buffer(self):
-        if self.currentRow() < self.count() - 1:
-            self.setCurrentRow(self.currentRow() + 1)
-        else:
-            self.setCurrentRow(0)
+        self.setMaximumWidth(90)
+        self.setTextElideMode(QtCore.Qt.ElideNone)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
 
 
 class PreferencesColorEdit(QtGui.QPushButton):
@@ -120,7 +120,7 @@ class PreferencesColorEdit(QtGui.QPushButton):
         QtGui.QPushButton.__init__(*(self,) + args)
         self.color = "#000000"
         self.clicked.connect(self._color_picker)
-        # Some of the configured colors use a astrisk prefix. 
+        # Some of the configured colors use a astrisk prefix.
         # Toggle this on right click.
         self.star = False
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -138,7 +138,7 @@ class PreferencesColorEdit(QtGui.QPushButton):
     def text(self):
         """Returns the hex value of the color."""
         return ("*" if self.star else "") + self.color
-        
+
     def _color_picker(self):
         color = QtGui.QColorDialog.getColor()
         self.insert(color.name())
@@ -164,18 +164,19 @@ class PreferencesPaneWidget(QtGui.QWidget):
         self.grid.setColumnStretch(2, 1)
         self.grid.setSpacing(10)
         self.checkboxes = ("ssl", "autoconnect", "statusbar", "topic",
-                              "menubar", "toolbar", "nicklist", "debug")
-        self.comboboxes = {"style": QtGui.QStyleFactory.keys(), 
+                           "menubar", "toolbar", "nicklist", "debug")
+        self.comboboxes = {"style": QtGui.QStyleFactory.keys(),
                            "buffer_list": ["left", "right"]}
 
     def addItem(self, key, value):
         """Add a key-value pair."""
         line = len(self.fields)
+        name = key.capitalize().replace("_", " ")
         start = 0
         if self.section_name == "color":
             start = 2 * (line % 2)
             line = line // 2
-        self.grid.addWidget(QtGui.QLabel(key.capitalize()), line, start + 0)
+        self.grid.addWidget(QtGui.QLabel(name), line, start + 0)
         if self.section_name == "color":
             edit = PreferencesColorEdit()
             edit.setFixedWidth(edit.sizeHint().height())
