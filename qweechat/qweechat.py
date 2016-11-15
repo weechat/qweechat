@@ -208,7 +208,7 @@ class MainWindow(QtGui.QMainWindow):
         self.toolbar.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.menu.customContextMenuRequested.connect(self._menu_context)
         self.toolbar.customContextMenuRequested.connect(self._menu_context)
-        
+
         self.buffers[0].widget.input.setFocus()
 
         # open debug dialog
@@ -275,7 +275,7 @@ class MainWindow(QtGui.QMainWindow):
         menu.addActions([self.actions['show menubar'],
                          self.actions['show toolbar'],
                          self.actions['show status bar']])
-        action = menu.exec_(self.mapToGlobal(event))
+        menu.exec_(self.mapToGlobal(event))
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""
