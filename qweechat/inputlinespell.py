@@ -133,6 +133,7 @@ class InputLineSpell(QtGui.QTextEdit):
 
     def killDict(self):
         self.highlighter.setDocument(None)
+        self.highlighter.setDict(None)
         self.spelldict = None
 
     def mousePressEvent(self, event):
@@ -219,6 +220,12 @@ class InputLineSpell(QtGui.QTextEdit):
 
         cursor.endEditBlock()
 
+    @staticmethod
+    def list_languages():
+        if enchant:
+            return enchant.list_languages()
+        return []
+
 
 class SpellHighlighter(QtGui.QSyntaxHighlighter):
 
@@ -228,6 +235,9 @@ class SpellHighlighter(QtGui.QSyntaxHighlighter):
         QtGui.QSyntaxHighlighter.__init__(self, *args)
 
         self.spelldict = None
+        self._mispelled = QtGui.QTextCharFormat()
+        self._mispelled.setUnderlineColor(QtGui.QColor('red'))
+        self._mispelled.setUnderlineStyle(QtGui.QTextCharFormat.DotLine)
 
     def setDict(self, spelldict):
         self.spelldict = spelldict
@@ -238,11 +248,8 @@ class SpellHighlighter(QtGui.QSyntaxHighlighter):
 
         text = unicode(text)
 
-        format = QtGui.QTextCharFormat()
-        format.setUnderlineColor(QtGui.QColor('red'))
-        format.setUnderlineStyle(QtGui.QTextCharFormat.DotLine)
-
         for word_object in re.finditer(self.WORDS, text):
             if not self.spelldict.check(word_object.group()):
                 word_len = word_object.end() - word_object.start()
-                self.setFormat(word_object.start(), word_len, format)
+                self.setFormat(word_object.start(),
+                               word_len, self._mispelled)
