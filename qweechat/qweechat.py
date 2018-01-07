@@ -329,7 +329,7 @@ class MainWindow(QtGui.QMainWindow):
                     forcecolor='#008800')
             self.debug_display(0, '', 'Message: %s' % message)
             self.parse_message(message)
-        except:
+        except:  # noqa: E722
             print('Error while decoding message from WeeChat:\n%s'
                   % traceback.format_exc())
             self.network.disconnect_weechat()

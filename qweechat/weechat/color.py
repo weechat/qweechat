@@ -91,7 +91,7 @@ class Color():
         try:
             index = int(color)
             return '\x01(Fr%s)' % self.color_options[index]
-        except:
+        except:  # noqa: E722
             print('Error decoding WeeChat color "%s"' % color)
             return ''
 
@@ -99,7 +99,7 @@ class Color():
         try:
             index = int(color)
             return '\x01(%s%s#%s)' % (fg_bg, attrs, self._rgb_color(index))
-        except:
+        except:  # noqa: E722
             print('Error decoding terminal color "%s"' % color)
             return ''
 
@@ -122,7 +122,7 @@ class Color():
             index = int(color)
             return self._convert_terminal_color(fg_bg, attrs,
                                                 WEECHAT_BASIC_COLORS[index][1])
-        except:
+        except:  # noqa: E722
             print('Error decoding color "%s"' % color)
             return ''
 

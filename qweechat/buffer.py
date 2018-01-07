@@ -168,14 +168,14 @@ class Buffer(QtCore.QObject):
         try:
             self.widget.set_title(
                 color.remove(self.data['title'].decode('utf-8')))
-        except:
+        except:  # noqa: E722
             self.widget.set_title(None)
 
     def update_prompt(self):
         """Update prompt."""
         try:
             self.widget.set_prompt(self.data['local_variables']['nick'])
-        except:
+        except:  # noqa: E722
             self.widget.set_prompt(None)
 
     def input_text_sent(self, text):

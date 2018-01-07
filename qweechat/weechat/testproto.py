@@ -61,7 +61,7 @@ class TestProto(object):
         try:
             self.sock = socket.socket(inet, socket.SOCK_STREAM)
             self.sock.connect((self.args.hostname, self.args.port))
-        except:
+        except:  # noqa: E722
             if self.sock:
                 self.sock.close()
             print('Failed to connect to', self.address)
@@ -80,7 +80,7 @@ class TestProto(object):
                     self.has_quit = True
                 self.sock.sendall(msg + '\n')
                 print('\x1b[33m<-- ' + msg + '\x1b[0m')
-        except:
+        except:  # noqa: E722
             traceback.print_exc()
             print('Failed to send message')
             return False
@@ -105,7 +105,7 @@ class TestProto(object):
                                 protocol.hex_and_ascii(msgd.uncompressed, 20)))
             # display decoded message
             print('\x1b[32m--> {0}\x1b[0m'.format(msgd))
-        except:
+        except:  # noqa: E722
             traceback.print_exc()
             print('Error while decoding message from WeeChat')
             return False
@@ -181,7 +181,7 @@ class TestProto(object):
                                     recvbuf = ''
                             sys.stdout.write(prompt + message)
                             sys.stdout.flush()
-        except:
+        except:  # noqa: E722
             traceback.print_exc()
             self.send('quit')
         return 0
