@@ -2,7 +2,7 @@
 #
 # input.py - input line for chat and debug window
 #
-# Copyright (C) 2011-2018 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2019 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
