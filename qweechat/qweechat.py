@@ -44,6 +44,7 @@ from connection import ConnectionDialog
 from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
+from preferences import PreferencesDialog
 from version import qweechat_version
 
 QtCore = qt_compat.import_module('QtCore')
@@ -91,14 +92,11 @@ class MainWindow(QtGui.QMainWindow):
         self.stacked_buffers.addWidget(self.buffers[0].widget)
 
         # splitter with buffers + chat/input
-        splitter = QtGui.QSplitter()
-        splitter.addWidget(self.list_buffers)
-        splitter.addWidget(self.stacked_buffers)
+        self.splitter = QtGui.QSplitter()
+        self.splitter.addWidget(self.list_buffers)
+        self.splitter.addWidget(self.stacked_buffers)
 
-        self.setCentralWidget(splitter)
-
-        if self.config.getboolean('look', 'statusbar'):
-            self.statusBar().visible = True
+        self.setCentralWidget(self.splitter)
 
         # actions for menu and toolbar
         actions_def = {
@@ -124,6 +122,27 @@ class MainWindow(QtGui.QMainWindow):
                 'application-exit.png', 'Quit application',
                 'Ctrl+Q', self.close],
         }
+        # toggleable actions
+        self.toggles_def = {
+            'show menubar': [
+                'look.menubar', 'Show Menubar',
+                'Ctrl+M', self.toggle_menubar],
+            'show toolbar': [
+                'look.toolbar', 'Show Toolbar',
+                False, self.toggle_toolbar],
+            'show status bar': [
+                'look.statusbar', 'Show Status Bar',
+                False, self.toggle_statusbar],
+            'show topic': [
+                'look.topic', 'Show Topic',
+                False, self.toggle_topic],
+            'show nick list': [
+                'look.nicklist', 'Show Nick List',
+                'Ctrl+F7', self.toggle_nicklist],
+            'fullscreen': [
+                False, 'Fullscreen',
+                'F11', self.toggle_fullscreen],
+        }
         self.actions = {}
         for name, action in list(actions_def.items()):
             self.actions[name] = QtGui.QAction(
@@ -132,6 +151,13 @@ class MainWindow(QtGui.QMainWindow):
                 name.capitalize(), self)
             self.actions[name].setStatusTip(action[1])
             self.actions[name].setShortcut(action[2])
+            self.actions[name].triggered.connect(action[3])
+        for name, action in list(self.toggles_def.items()):
+            self.actions[name] = QtGui.QAction(name.capitalize(), self)
+            self.actions[name].setStatusTip(action[1])
+            self.actions[name].setCheckable(True)
+            if action[2]:
+                self.actions[name].setShortcut(action[2])
             self.actions[name].triggered.connect(action[3])
 
         # menu
@@ -142,6 +168,15 @@ class MainWindow(QtGui.QMainWindow):
                               self.actions['preferences'],
                               self.actions['save connection'],
                               self.actions['quit']])
+        menu_view = self.menu.addMenu('&View')
+        menu_view.addActions([self.actions['show menubar'],
+                              self.actions['show toolbar'],
+                              self.actions['show status bar'],
+                              self._actions_separator(),
+                              self.actions['show topic'],
+                              self.actions['show nick list'],
+                              self._actions_separator(),
+                              self.actions['fullscreen']])
         menu_window = self.menu.addMenu('&Window')
         menu_window.addAction(self.actions['debug'])
         menu_help = self.menu.addMenu('&Help')
@@ -159,12 +194,20 @@ class MainWindow(QtGui.QMainWindow):
         # toolbar
         toolbar = self.addToolBar('toolBar')
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        toolbar.setMovable(False)
         toolbar.addActions([self.actions['connect'],
                             self.actions['disconnect'],
                             self.actions['debug'],
                             self.actions['preferences'],
                             self.actions['about'],
                             self.actions['quit']])
+        self.toolbar = toolbar
+
+        # Override context menu for both -- default is a simple menubar toggle.
+        self.menu.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.toolbar.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.menu.customContextMenuRequested.connect(self._menu_context)
+        self.toolbar.customContextMenuRequested.connect(self._menu_context)
 
         self.buffers[0].widget.input.setFocus()
 
@@ -180,8 +223,59 @@ class MainWindow(QtGui.QMainWindow):
                                                                 'ssl'),
                                          self.config.get('relay', 'password'),
                                          self.config.get('relay', 'lines'))
+        self.apply_preferences()
 
         self.show()
+
+    def _actions_separator(self):
+        """Create a new QAction separator."""
+        sep = QtGui.QAction("", self)
+        sep.setSeparator(True)
+        return sep
+
+    def apply_preferences(self):
+        """Apply non-server options from preferences."""
+        app = QtCore.QCoreApplication.instance()
+        if self.config.getboolean('look', 'toolbar'):
+            self.toolbar.show()
+        else:
+            self.toolbar.hide()
+        # Change the height to avoid losing all hotkeys:
+        if self.config.getboolean('look', 'menubar'):
+            self.menu.setMaximumHeight(QtGui.QWIDGETSIZE_MAX)
+        else:
+            self.menu.setFixedHeight(1)
+        # Apply the selected qt style here so it will update without a restart
+        if self.config.get('look', 'style'):
+            app.setStyle(QtGui.QStyleFactory.create(
+                self.config.get('look', 'style')))
+        # Statusbar:
+        if self.config.getboolean('look', 'statusbar'):
+            self.statusBar().show()
+        else:
+            self.statusBar().hide()
+        # Move the buffer list / main buffer view:
+        if self.config.get('look', 'buffer_list') == 'right':
+            self.splitter.insertWidget(1, self.list_buffers)
+        else:
+            self.splitter.insertWidget(1, self.stacked_buffers)
+        # Update visibility of all nicklists/topics:
+        for buffer in self.buffers:
+            buffer.update_config()
+        # Update toggle state for menubar:
+        for name, action in list(self.toggles_def.items()):
+            if action[0]:
+                ac = action[0].split(".")
+                toggle = self.config.get(ac[0], ac[1])
+                self.actions[name].setChecked(toggle == "on")
+
+    def _menu_context(self, event):
+        """Show a slightly nicer context menu for the menu/toolbar."""
+        menu = QtGui.QMenu()
+        menu.addActions([self.actions['show menubar'],
+                         self.actions['show toolbar'],
+                         self.actions['show status bar']])
+        menu.exec_(self.mapToGlobal(event))
 
     def _buffer_switch(self, index):
         """Switch to a buffer."""
@@ -198,10 +292,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open_preferences_dialog(self):
         """Open a dialog with preferences."""
-        # TODO: implement the preferences dialog box
-        messages = ['Not yet implemented!',
-                    '']
-        self.preferences_dialog = AboutDialog('Preferences', messages, self)
+        self.preferences_dialog = PreferencesDialog('Preferences', self)
 
     def save_connection(self):
         """Save connection configuration."""
@@ -265,6 +356,39 @@ class MainWindow(QtGui.QMainWindow):
         self.connection_dialog = ConnectionDialog(values, self)
         self.connection_dialog.dialog_buttons.accepted.connect(
             self.connect_weechat)
+
+    def toggle_setting(self, section, option):
+        """Toggles any boolean setting."""
+        val = self.config.getboolean(section, option)
+        self.config.set(section, option, "off" if val else "on")
+        self.apply_preferences()
+
+    def toggle_menubar(self):
+        """Toggle menubar."""
+        self.toggle_setting('look', 'menubar')
+
+    def toggle_toolbar(self):
+        """Toggle toolbar."""
+        self.toggle_setting('look', 'toolbar')
+
+    def toggle_statusbar(self):
+        """Toggle statusbar."""
+        self.toggle_setting('look', 'statusbar')
+
+    def toggle_topic(self):
+        """Toggle topic."""
+        self.toggle_setting('look', 'topic')
+
+    def toggle_nicklist(self):
+        """Toggle nicklist."""
+        self.toggle_setting('look', 'nicklist')
+
+    def toggle_fullscreen(self):
+        """Toggle fullscreen."""
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
 
     def connect_weechat(self):
         """Connect to WeeChat."""
@@ -498,7 +622,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_buffer(self, item):
         """Create a new buffer."""
-        buf = Buffer(item)
+        buf = Buffer(item, self.config)
         buf.bufferInput.connect(self.buffer_input)
         buf.widget.input.bufferSwitchPrev.connect(
             self.list_buffers.switch_prev_buffer)

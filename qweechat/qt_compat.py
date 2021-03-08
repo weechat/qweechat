@@ -29,7 +29,10 @@ except ImportError:
 
 def _pyside_import_module(moduleName):
     pyside = __import__('PySide', globals(), locals(), [moduleName], -1)
-    return getattr(pyside, moduleName)
+    mod = getattr(pyside, moduleName)
+    if moduleName == "QtGui":
+        mod.QWIDGETSIZE_MAX = ((1 << 24) - 1)
+    return mod
 
 
 def _pyqt4_import_module(moduleName):
