@@ -33,6 +33,7 @@ It requires requires WeeChat 0.3.7 or newer, running on local or remote host.
 #     start dev
 #
 
+import signal
 import sys
 import traceback
 from pkg_resources import resource_filename
@@ -45,6 +46,8 @@ from buffer import BufferListWidget, Buffer
 from debug import DebugDialog
 from about import AboutDialog
 from version import qweechat_version
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
