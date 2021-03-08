@@ -21,12 +21,13 @@
 #
 
 import qt_compat
+from inputlinespell import InputLineSpell
 
 QtCore = qt_compat.import_module('QtCore')
 QtGui = qt_compat.import_module('QtGui')
 
 
-class InputLineEdit(QtGui.QLineEdit):
+class InputLineEdit(InputLineSpell):
     """Input line."""
 
     bufferSwitchPrev = qt_compat.Signal()
@@ -34,53 +35,65 @@ class InputLineEdit(QtGui.QLineEdit):
     textSent = qt_compat.Signal(str)
 
     def __init__(self, scroll_widget):
-        QtGui.QLineEdit.__init__(self)
+        InputLineSpell.__init__(self, False)
         self.scroll_widget = scroll_widget
         self._history = []
         self._history_index = -1
-        self.returnPressed.connect(self._input_return_pressed)
 
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
-        bar = self.scroll_widget.verticalScrollBar()
+        scroll = self.scroll_widget.verticalScrollBar()
+        newline = (key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return)
         if modifiers == QtCore.Qt.ControlModifier:
             if key == QtCore.Qt.Key_PageUp:
                 self.bufferSwitchPrev.emit()
             elif key == QtCore.Qt.Key_PageDown:
                 self.bufferSwitchNext.emit()
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                InputLineSpell.keyPressEvent(self, event)
         elif modifiers == QtCore.Qt.AltModifier:
             if key in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Up):
                 self.bufferSwitchPrev.emit()
             elif key in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Down):
                 self.bufferSwitchNext.emit()
             elif key == QtCore.Qt.Key_PageUp:
-                bar.setValue(bar.value() - (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() - (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_PageDown:
-                bar.setValue(bar.value() + (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() + (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_Home:
-                bar.setValue(bar.minimum())
+                scroll.setValue(scroll.minimum())
             elif key == QtCore.Qt.Key_End:
-                bar.setValue(bar.maximum())
+                scroll.setValue(scroll.maximum())
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                InputLineSpell.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
-            bar.setValue(bar.value() - bar.pageStep())
+            scroll.setValue(scroll.value() - scroll.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
-            bar.setValue(bar.value() + bar.pageStep())
-        elif key == QtCore.Qt.Key_Up:
-            self._history_navigate(-1)
-        elif key == QtCore.Qt.Key_Down:
-            self._history_navigate(1)
+            scroll.setValue(scroll.value() + scroll.pageStep())
+        elif key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_Down:
+            # Compare position, optionally only nativate history if no change:
+            pos1 = self.textCursor().position()
+            InputLineSpell.keyPressEvent(self, event)
+            pos2 = self.textCursor().position()
+            if pos1 == pos2:
+                if key == QtCore.Qt.Key_Up:
+                    # Add to history if there is text like curses weechat:
+                    txt = self.toPlainText().encode('utf-8')
+                    if txt != "" and len(self._history) == self._history_index:
+                        self._history.append(txt)
+                    self._history_navigate(-1)
+                elif key == QtCore.Qt.Key_Down:
+                    self._history_navigate(1)
+        elif newline and modifiers != QtCore.Qt.ShiftModifier:
+            self._input_return_pressed()
         else:
-            QtGui.QLineEdit.keyPressEvent(self, event)
+            InputLineSpell.keyPressEvent(self, event)
 
     def _input_return_pressed(self):
-        self._history.append(self.text().encode('utf-8'))
+        self._history.append(self.toPlainText().encode('utf-8'))
         self._history_index = len(self._history)
-        self.textSent.emit(self.text())
+        self.textSent.emit(self.toPlainText())
         self.clear()
 
     def _history_navigate(self, direction):
@@ -94,3 +107,7 @@ class InputLineEdit(QtGui.QLineEdit):
                 self.clear()
                 return
             self.setText(self._history[self._history_index])
+            # End of line:
+            text_cursor = self.textCursor()
+            text_cursor.setPosition(len(self._history[self._history_index]))
+            self.setTextCursor(text_cursor)
