@@ -21,9 +21,9 @@
 #
 
 from pkg_resources import resource_filename
-from chat import ChatTextEdit
-from input import InputLineEdit
-import weechat.color as color
+from qweechat.chat import ChatTextEdit
+from qweechat.input import InputLineEdit
+import qweechat.weechat.color as color
 
 from PySide6 import QtCore
 from PySide6 import QtWidgets

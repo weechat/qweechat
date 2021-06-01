@@ -37,14 +37,14 @@ import sys
 import traceback
 from pkg_resources import resource_filename
 # import qt_compat
-import config
-import weechat.protocol as protocol
-from network import Network
-from connection import ConnectionDialog
-from buffer import BufferListWidget, Buffer
-from debug import DebugDialog
-from about import AboutDialog
-from version import qweechat_version
+from qweechat import config
+from qweechat.weechat import protocol
+from qweechat.network import Network
+from qweechat.connection import ConnectionDialog
+from qweechat.buffer import BufferListWidget, Buffer
+from qweechat.debug import DebugDialog
+from qweechat.about import AboutDialog
+from qweechat.version import qweechat_version
 
 from PySide6.QtWidgets import (
     QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
@@ -345,7 +345,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for obj in message.objects:
             if obj.objtype != 'hda' or obj.value['path'][-1] != 'buffer':
                 continue
-            print('listbuffers object', obj.objtype, obj.value['path'])
             self.list_buffers.clear()
             while self.stacked_buffers.count() > 0:
                 buf = self.stacked_buffers.widget(0)
@@ -353,7 +352,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.buffers = []
             for item in obj.value['items']:
                 buf = self.create_buffer(item)
-                print(f'Creating buffer for {item}')
                 self.insert_buffer(len(self.buffers), buf)
             self.list_buffers.setCurrentRow(0)
             self.buffers[0].widget.input.setFocus()
@@ -485,7 +483,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def parse_message(self, message):
         """Parse a WeeChat message."""
-        print(f'message.msgid = {message.msgid}')
         if message.msgid.startswith('debug'):
             self.debug_display(0, '', '(debug message, ignored)')
         elif message.msgid == 'listbuffers':

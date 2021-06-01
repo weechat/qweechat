@@ -21,7 +21,7 @@
 #
 
 import struct
-import config
+from qweechat import config
 from PySide6 import QtCore, QtNetwork
 from PySide6.QtCore import QObject, Signal
 

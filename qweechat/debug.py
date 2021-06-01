@@ -20,8 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from chat import ChatTextEdit
-from input import InputLineEdit
+from qweechat.chat import ChatTextEdit
+from qweechat.input import InputLineEdit
 
 from PySide6 import QtWidgets as QtGui
 
