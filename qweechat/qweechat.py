@@ -255,8 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     '&copy; 2011-2020 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
-                    'Running with %s' % ('PySide' if qt_compat.uses_pyside
-                                         else 'PyQt4'),
+                    'Running with PySide6',
                     '',
                     'WeeChat site: <a href="%s">%s</a>'
                     % (WEECHAT_SITE, WEECHAT_SITE),
@@ -554,11 +553,15 @@ class MainWindow(QtWidgets.QMainWindow):
         config.write(self.config)
         QtWidgets.QMainWindow.closeEvent(self, event)
 
+def main():
+    app = QApplication(sys.argv)
+    app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
+    app.setWindowIcon(QtGui.QIcon(
+        resource_filename(__name__, 'data/icons/weechat.png')))
+    main = MainWindow()
+    main.show()
+    sys.exit(app.exec_())
 
-app = QApplication(sys.argv)
-app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
-app.setWindowIcon(QtGui.QIcon(
-     resource_filename(__name__, 'data/icons/weechat.png')))
-main = MainWindow()
-main.show()
-sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
