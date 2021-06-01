@@ -23,10 +23,8 @@
 import struct
 from qweechat import config
 from PySide6 import QtCore, QtNetwork
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import Signal
 
-# QtCore = qt_compat.import_module('QtCore')
-# QtNetwork = qt_compat.import_module('QtNetwork')
 
 _PROTO_INIT_CMD = ['init password=%(password)s']
 

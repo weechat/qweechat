@@ -34,6 +34,7 @@ import collections
 import struct
 import zlib
 
+
 class WeechatDict(collections.OrderedDict):
     def __str__(self):
         return '{%s}' % ', '.join(
@@ -314,7 +315,7 @@ class Protocol:
             uncompressed = zlib.decompress(self.data[5:])
             size_uncompressed = len(uncompressed) + 5
             uncompressed = b'%s%s%s' % (struct.pack('>i', size_uncompressed),
-                                       struct.pack('b', 0), uncompressed)
+                                        struct.pack('b', 0), uncompressed)
             self.data = uncompressed
         else:
             uncompressed = self.data[:]
@@ -343,7 +344,7 @@ def hex_and_ascii(data, bytes_per_line=10):
     for i in range(num_lines):
         str_hex = []
         str_ascii = []
-        for j in range(bytes_per_line): # data[i*bytes_per_line:(i*bytes_per_line)+bytes_per_line]:
+        for j in range(bytes_per_line):
             # We can't easily iterate over individual bytes, so we are going to
             # do it this way.
             index = (i*bytes_per_line) + j

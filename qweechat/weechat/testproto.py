@@ -24,8 +24,6 @@
 Command-line program for testing WeeChat/relay protocol.
 """
 
-
-
 import argparse
 import os
 import select
@@ -80,7 +78,8 @@ class TestProto(object):
                 if msg == b'quit':
                     self.has_quit = True
                 self.sock.sendall(msg + b'\n')
-                sys.stdout.write((b'\x1b[33m<-- ' + msg + b'\x1b[0m\n').decode())
+                sys.stdout.write(
+                    (b'\x1b[33m<-- ' + msg + b'\x1b[0m\n').decode())
         except:  # noqa: E722
             traceback.print_exc()
             print('Failed to send message')

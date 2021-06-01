@@ -46,9 +46,7 @@ from qweechat.debug import DebugDialog
 from qweechat.about import AboutDialog
 from qweechat.version import qweechat_version
 
-from PySide6.QtWidgets import (
-    QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtWidgets import QApplication
 from PySide6 import QtGui, QtWidgets, QtCore
 
 
@@ -331,7 +329,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     'message uncompressed (%d bytes):\n%s'
                     % (message.size_uncompressed,
                        protocol.hex_and_ascii(message.uncompressed, 20)),
-                                forcecolor='#008800')
+                    forcecolor='#008800')
             self.debug_display(0, '', 'Message: %s' % message)
             self.parse_message(message)
         except Exception:  # noqa: E722
@@ -516,10 +514,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def insert_buffer(self, index, buf):
         """Insert a buffer in list."""
         self.buffers.insert(index, buf)
-        self.list_buffers.insertItem(index, '%d. %s'
-                                     % (buf.data['number'],
-                                        buf.data['full_name']))
+        self.list_buffers.insertItem(index, '%s'
+                                     % (buf.data['local_variables']['name']))
         self.stacked_buffers.insertWidget(index, buf.widget)
+        self._reorder_buffers()
+
+    def _reorder_buffers(self):
+        """Order buffers by server."""
+        pass
 
     def remove_buffer(self, index):
         """Remove a buffer."""
@@ -552,6 +554,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.debug_dialog.close()
         config.write(self.config)
         QtWidgets.QMainWindow.closeEvent(self, event)
+
 
 def main():
     app = QApplication(sys.argv)

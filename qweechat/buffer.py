@@ -19,8 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
-import traceback
-
 from pkg_resources import resource_filename
 from qweechat.chat import ChatTextEdit
 from qweechat.input import InputLineEdit
@@ -169,7 +167,7 @@ class Buffer(QtCore.QObject):
         try:
             self.widget.set_title(
                 color.remove(self.data['title']))
-        except Exception as e:  # noqa: E722
+        except Exception:  # noqa: E722
             # TODO: Debug print the exception to be fixed.
             # traceback.print_exc()
             self.widget.set_title(None)
@@ -178,7 +176,7 @@ class Buffer(QtCore.QObject):
         """Update prompt."""
         try:
             self.widget.set_prompt(self.data['local_variables']['nick'])
-        except Exception as e:  # noqa: E722
+        except Exception:  # noqa: E722
             self.widget.set_prompt(None)
 
     def input_text_sent(self, text):
