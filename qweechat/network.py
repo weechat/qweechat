@@ -21,11 +21,12 @@
 #
 
 import struct
-import qt_compat
 import config
+from PySide6 import QtCore, QtNetwork
+from PySide6.QtCore import QObject, Signal
 
-QtCore = qt_compat.import_module('QtCore')
-QtNetwork = qt_compat.import_module('QtNetwork')
+# QtCore = qt_compat.import_module('QtCore')
+# QtNetwork = qt_compat.import_module('QtNetwork')
 
 _PROTO_INIT_CMD = ['init password=%(password)s']
 
@@ -47,11 +48,11 @@ _PROTO_SYNC_CMDS = [
 class Network(QtCore.QObject):
     """I/O with WeeChat/relay."""
 
-    statusChanged = qt_compat.Signal(str, str)
-    messageFromWeechat = qt_compat.Signal(QtCore.QByteArray)
+    statusChanged = Signal(str, str)
+    messageFromWeechat = Signal(QtCore.QByteArray)
 
     def __init__(self, *args):
-        QtCore.QObject.__init__(*(self,) + args)
+        super().__init__(*args)
         self.status_disconnected = 'disconnected'
         self.status_connecting = 'connecting...'
         self.status_connected = 'connected'
@@ -63,13 +64,14 @@ class Network(QtCore.QObject):
         self._buffer = QtCore.QByteArray()
         self._socket = QtNetwork.QSslSocket()
         self._socket.connected.connect(self._socket_connected)
-        self._socket.error.connect(self._socket_error)
+        # self._socket.error.connect(self._socket_error)
         self._socket.readyRead.connect(self._socket_read)
         self._socket.disconnected.connect(self._socket_disconnected)
 
     def _socket_connected(self):
         """Slot: socket connected."""
         self.statusChanged.emit(self.status_connected, None)
+        print('Connected, now sending password.')
         if self._password:
             self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
                                  % {'password': str(self._password),
@@ -87,7 +89,7 @@ class Network(QtCore.QObject):
         self._buffer.append(data)
         while len(self._buffer) >= 4:
             remainder = None
-            length = struct.unpack('>i', self._buffer[0:4])[0]
+            length = struct.unpack('>i', self._buffer[0:4].data())[0]
             if len(self._buffer) < length:
                 # partial message, just wait for end of message
                 break
@@ -108,7 +110,7 @@ class Network(QtCore.QObject):
         self._server = None
         self._port = None
         self._ssl = None
-        self._password = None
+        self._password = ""
         self.statusChanged.emit(self.status_disconnected, None)
 
     def is_connected(self):
@@ -122,6 +124,7 @@ class Network(QtCore.QObject):
     def connect_weechat(self, server, port, ssl, password, lines):
         """Connect to WeeChat."""
         self._server = server
+        print(f'Connecting to server {self._server}')
         try:
             self._port = int(port)
         except ValueError:
@@ -136,11 +139,13 @@ class Network(QtCore.QObject):
             return
         if self._socket.state() != QtNetwork.QAbstractSocket.UnconnectedState:
             self._socket.abort()
-        self._socket.connectToHost(self._server, self._port)
         if self._ssl:
             self._socket.ignoreSslErrors()
-            self._socket.startClientEncryption()
-        self.statusChanged.emit(self.status_connecting, None)
+            self._socket.connectToHostEncrypted(self._server, self._port)
+        else:
+            self._socket.connectToHost(self._server, self._port)
+        print('Got SSL connection')
+        self.statusChanged.emit(self.status_connecting, "")
 
     def disconnect_weechat(self):
         """Disconnect from WeeChat."""

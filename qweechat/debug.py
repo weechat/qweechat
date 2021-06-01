@@ -20,11 +20,10 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import qt_compat
 from chat import ChatTextEdit
 from input import InputLineEdit
 
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtWidgets as QtGui
 
 
 class DebugDialog(QtGui.QDialog):

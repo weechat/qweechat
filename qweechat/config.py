@@ -20,7 +20,7 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import ConfigParser
+import configparser
 import os
 
 CONFIG_DIR = '%s/.qweechat' % os.getenv('HOME')
@@ -91,7 +91,7 @@ config_color_options = []
 def read():
     """Read config file."""
     global config_color_options
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     if os.path.isfile(CONFIG_FILENAME):
         config.read(CONFIG_FILENAME)
 
@@ -123,7 +123,7 @@ def write(config):
     """Write config file."""
     if not os.path.exists(CONFIG_DIR):
         os.mkdir(CONFIG_DIR, 0o0755)
-    with open(CONFIG_FILENAME, 'wb') as cfg:
+    with open(CONFIG_FILENAME, 'w') as cfg:
         config.write(cfg)
 
 

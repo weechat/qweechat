@@ -21,20 +21,20 @@
 #
 
 from pkg_resources import resource_filename
-import qt_compat
 from chat import ChatTextEdit
 from input import InputLineEdit
 import weechat.color as color
 
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtCore
+from PySide6 import QtWidgets
+from PySide6 import QtGui
 
 
-class GenericListWidget(QtGui.QListWidget):
+class GenericListWidget(QtWidgets.QListWidget):
     """Generic QListWidget with dynamic size."""
 
     def __init__(self, *args):
-        QtGui.QListWidget.__init__(*(self,) + args)
+        super().__init__(*args)
         self.setMaximumWidth(100)
         self.setTextElideMode(QtCore.Qt.ElideNone)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -52,17 +52,17 @@ class GenericListWidget(QtGui.QListWidget):
 
     def clear(self, *args):
         """Re-implement clear to set dynamic size after clear."""
-        QtGui.QListWidget.clear(*(self,) + args)
+        QtWidgets.QListWidget.clear(*(self,) + args)
         self.auto_resize()
 
     def addItem(self, *args):
         """Re-implement addItem to set dynamic size after add."""
-        QtGui.QListWidget.addItem(*(self,) + args)
+        QtWidgets.QListWidget.addItem(*(self,) + args)
         self.auto_resize()
 
     def insertItem(self, *args):
         """Re-implement insertItem to set dynamic size after insert."""
-        QtGui.QListWidget.insertItem(*(self,) + args)
+        QtWidgets.QListWidget.insertItem(*(self,) + args)
         self.auto_resize()
 
 
@@ -70,7 +70,7 @@ class BufferListWidget(GenericListWidget):
     """Widget with list of buffers."""
 
     def __init__(self, *args):
-        GenericListWidget.__init__(*(self,) + args)
+        super().__init__(*args)
 
     def switch_prev_buffer(self):
         if self.currentRow() > 0:
@@ -85,23 +85,23 @@ class BufferListWidget(GenericListWidget):
             self.setCurrentRow(0)
 
 
-class BufferWidget(QtGui.QWidget):
+class BufferWidget(QtWidgets.QWidget):
     """
     Widget with (from top to bottom):
     title, chat + nicklist (optional) + prompt/input.
     """
 
     def __init__(self, display_nicklist=False):
-        QtGui.QWidget.__init__(self)
+        super().__init__()
 
         # title
-        self.title = QtGui.QLineEdit()
+        self.title = QtWidgets.QLineEdit()
         self.title.setFocusPolicy(QtCore.Qt.NoFocus)
 
         # splitter with chat + nicklist
-        self.chat_nicklist = QtGui.QSplitter()
-        self.chat_nicklist.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                                         QtGui.QSizePolicy.Expanding)
+        self.chat_nicklist = QtWidgets.QSplitter()
+        self.chat_nicklist.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                         QtWidgets.QSizePolicy.Expanding)
         self.chat = ChatTextEdit(debug=False)
         self.chat_nicklist.addWidget(self.chat)
         self.nicklist = GenericListWidget()
@@ -110,16 +110,16 @@ class BufferWidget(QtGui.QWidget):
         self.chat_nicklist.addWidget(self.nicklist)
 
         # prompt + input
-        self.hbox_edit = QtGui.QHBoxLayout()
+        self.hbox_edit = QtWidgets.QHBoxLayout()
         self.hbox_edit.setContentsMargins(0, 0, 0, 0)
         self.hbox_edit.setSpacing(0)
         self.input = InputLineEdit(self.chat)
         self.hbox_edit.addWidget(self.input)
-        prompt_input = QtGui.QWidget()
+        prompt_input = QtWidgets.QWidget()
         prompt_input.setLayout(self.hbox_edit)
 
         # vbox with title + chat/nicklist + prompt/input
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
         vbox.addWidget(self.title)
@@ -139,7 +139,7 @@ class BufferWidget(QtGui.QWidget):
         if self.hbox_edit.count() > 1:
             self.hbox_edit.takeAt(0)
         if prompt is not None:
-            label = QtGui.QLabel(prompt)
+            label = QtWidgets.QLabel(prompt)
             label.setContentsMargins(0, 0, 5, 0)
             self.hbox_edit.insertWidget(0, label)
 
@@ -147,7 +147,7 @@ class BufferWidget(QtGui.QWidget):
 class Buffer(QtCore.QObject):
     """A WeeChat buffer."""
 
-    bufferInput = qt_compat.Signal(str, str)
+    bufferInput = QtCore.Signal(str, str)
 
     def __init__(self, data={}):
         QtCore.QObject.__init__(self)
@@ -243,6 +243,6 @@ class Buffer(QtCore.QObject):
                     pixmap = QtGui.QPixmap(8, 8)
                     pixmap.fill()
                     icon = QtGui.QIcon(pixmap)
-                item = QtGui.QListWidgetItem(icon, nick['name'])
+                item = QtWidgets.QListWidgetItem(icon, nick['name'])
                 self.widget.nicklist.addItem(item)
                 self.widget.nicklist.setVisible(True)

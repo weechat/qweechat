@@ -24,7 +24,7 @@
 Command-line program for testing WeeChat/relay protocol.
 """
 
-
+from __future__ import print_function
 
 import argparse
 import os
@@ -76,11 +76,11 @@ class TestProto(object):
         Return True if OK, False if error.
         """
         try:
-            for msg in messages.split(b'\n'):
-                if msg == b'quit':
+            for msg in messages.split('\n'):
+                if msg == 'quit':
                     self.has_quit = True
-                self.sock.sendall(msg + b'\n')
-                sys.stdout.write((b'\x1b[33m<-- ' + msg + b'\x1b[0m\n').decode())
+                self.sock.sendall(msg + '\n')
+                print('\x1b[33m<-- ' + msg + '\x1b[0m')
         except:  # noqa: E722
             traceback.print_exc()
             print('Failed to send message')
@@ -95,7 +95,7 @@ class TestProto(object):
         try:
             proto = protocol.Protocol()
             msgd = proto.decode(message,
-                                separator=b'\n' if self.args.debug > 0
+                                separator='\n' if self.args.debug > 0
                                 else ', ')
             print('')
             if self.args.debug >= 2 and msgd.uncompressed:
@@ -137,10 +137,10 @@ class TestProto(object):
         """
         if self.has_quit:
             return 0
-        message = b''
-        recvbuf = b''
-        prompt = b'\x1b[36mrelay> \x1b[0m'
-        sys.stdout.write(prompt.decode())
+        message = ''
+        recvbuf = ''
+        prompt = '\x1b[36mrelay> \x1b[0m'
+        sys.stdout.write(prompt)
         sys.stdout.flush()
         try:
             while not self.has_quit:
@@ -150,14 +150,13 @@ class TestProto(object):
                         buf = os.read(_file.fileno(), 4096)
                         if buf:
                             message += buf
-                            if b'\n' in message:
-                                messages = message.split(b'\n')
-                                msgsent = b'\n'.join(messages[:-1])
+                            if '\n' in message:
+                                messages = message.split('\n')
+                                msgsent = '\n'.join(messages[:-1])
                                 if msgsent and not self.send(msgsent):
                                     return 4
                                 message = messages[-1]
-                                sys.stdout.write((prompt + message).decode())
-                                # sys.stdout.write(prompt + message)
+                                sys.stdout.write(prompt + message)
                                 sys.stdout.flush()
                     else:
                         buf = _file.recv(4096)
@@ -180,12 +179,12 @@ class TestProto(object):
                                 if remainder:
                                     recvbuf = remainder
                                 else:
-                                    recvbuf = b''
-                            sys.stdout.write((prompt + message).decode())
+                                    recvbuf = ''
+                            sys.stdout.write(prompt + message)
                             sys.stdout.flush()
         except:  # noqa: E722
             traceback.print_exc()
-            self.send(b'quit')
+            self.send('quit')
         return 0
 
     def __del__(self):

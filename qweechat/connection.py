@@ -20,29 +20,30 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import qt_compat
+# import qt_compat
 
-QtGui = qt_compat.import_module('QtGui')
+# QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtGui, QtWidgets
 
 
-class ConnectionDialog(QtGui.QDialog):
+class ConnectionDialog(QtWidgets.QDialog):
     """Connection window."""
 
     def __init__(self, values, *args):
-        QtGui.QDialog.__init__(*(self,) + args)
+        super().__init__(*args)
         self.values = values
         self.setModal(True)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
 
         self.fields = {}
         for line, field in enumerate(('server', 'port', 'password', 'lines')):
-            grid.addWidget(QtGui.QLabel(field.capitalize()), line, 0)
-            line_edit = QtGui.QLineEdit()
+            grid.addWidget(QtWidgets.QLabel(field.capitalize()), line, 0)
+            line_edit = QtWidgets.QLineEdit()
             line_edit.setFixedWidth(200)
             if field == 'password':
-                line_edit.setEchoMode(QtGui.QLineEdit.Password)
+                line_edit.setEchoMode(QtWidgets.QLineEdit.Password)
             if field == 'lines':
                 validator = QtGui.QIntValidator(0, 2147483647, self)
                 line_edit.setValidator(validator)
@@ -51,14 +52,14 @@ class ConnectionDialog(QtGui.QDialog):
             grid.addWidget(line_edit, line, 1)
             self.fields[field] = line_edit
             if field == 'port':
-                ssl = QtGui.QCheckBox('SSL')
+                ssl = QtWidgets.QCheckBox('SSL')
                 ssl.setChecked(self.values['ssl'] == 'on')
                 grid.addWidget(ssl, line, 2)
                 self.fields['ssl'] = ssl
 
-        self.dialog_buttons = QtGui.QDialogButtonBox()
+        self.dialog_buttons = QtWidgets.QDialogButtonBox()
         self.dialog_buttons.setStandardButtons(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         self.dialog_buttons.rejected.connect(self.close)
 
         grid.addWidget(self.dialog_buttons, 4, 0, 1, 2)

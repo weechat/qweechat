@@ -20,21 +20,19 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import qt_compat
-
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtCore
+from PySide6 import QtWidgets as QtGui
 
 
 class InputLineEdit(QtGui.QLineEdit):
     """Input line."""
 
-    bufferSwitchPrev = qt_compat.Signal()
-    bufferSwitchNext = qt_compat.Signal()
-    textSent = qt_compat.Signal(str)
+    bufferSwitchPrev = QtCore.Signal()
+    bufferSwitchNext = QtCore.Signal()
+    textSent = QtCore.Signal(str)
 
     def __init__(self, scroll_widget):
-        QtGui.QLineEdit.__init__(self)
+        super().__init__(scroll_widget)
         self.scroll_widget = scroll_widget
         self._history = []
         self._history_index = -1

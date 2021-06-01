@@ -34,15 +34,10 @@ import collections
 import struct
 import zlib
 
-if hasattr(collections, 'OrderedDict'):
-    # python >= 2.7
-    class WeechatDict(collections.OrderedDict):
-        def __str__(self):
-            return '{%s}' % ', '.join(
-                ['%s: %s' % (repr(key), repr(self[key])) for key in self])
-else:
-    # python <= 2.6
-    WeechatDict = dict
+class WeechatDict(collections.OrderedDict):
+    def __str__(self):
+        return '{%s}' % ', '.join(
+            ['%s: %s' % (repr(key), repr(self[key])) for key in self])
 
 
 class WeechatObject:
@@ -151,7 +146,7 @@ class Protocol:
         if len(self.data) < 3:
             self.data = ''
             return ''
-        objtype = str(self.data[0:3])
+        objtype = bytes(self.data[0:3])
         self.data = self.data[3:]
         return objtype
 
@@ -196,14 +191,17 @@ class Protocol:
         value = self._obj_len_data(1)
         if value is None:
             return None
-        return int(str(value))
+        return int(value)
 
     def _obj_str(self):
         """Read a string in data (length on 4 bytes + content)."""
         value = self._obj_len_data(4)
         if value is None:
             return None
-        return str(value)
+        try:
+            return value.decode()
+        except AttributeError:
+            return value
 
     def _obj_buffer(self):
         """Read a buffer in data (length on 4 bytes + data)."""
@@ -214,22 +212,22 @@ class Protocol:
         value = self._obj_len_data(1)
         if value is None:
             return None
-        return '0x%s' % str(value)
+        return '0x%s' % value
 
     def _obj_time(self):
         """Read a time in data (length on 1 byte + value as string)."""
         value = self._obj_len_data(1)
         if value is None:
             return None
-        return int(str(value))
+        return int(value)
 
     def _obj_hashtable(self):
         """
         Read a hashtable in data
         (type for keys + type for values + count + items).
         """
-        type_keys = self._obj_type()
-        type_values = self._obj_type()
+        type_keys = self._obj_type().decode()
+        type_values = self._obj_type().decode()
         count = self._obj_int()
         hashtable = WeechatDict()
         for _ in range(count):
@@ -248,7 +246,7 @@ class Protocol:
         keys_types = []
         dict_keys = WeechatDict()
         for key in list_keys:
-            items = key.split(':')
+            items = list(item for item in key.split(':'))
             keys_types.append(items)
             dict_keys[items[0]] = items[1]
         items = []
@@ -259,6 +257,7 @@ class Protocol:
             for _ in enumerate(list_path):
                 pointers.append(self._obj_ptr())
             for key, objtype in keys_types:
+                objtype = objtype
                 item[key] = self._obj_cb[objtype]()
             item['__path'] = pointers
             items.append(item)
@@ -296,7 +295,7 @@ class Protocol:
 
     def _obj_array(self):
         """Read an array of values in data."""
-        type_values = self._obj_type()
+        type_values = self._obj_type().decode()
         count_values = self._obj_int()
         values = []
         for _ in range(count_values):
@@ -314,7 +313,7 @@ class Protocol:
         if compression:
             uncompressed = zlib.decompress(self.data[5:])
             size_uncompressed = len(uncompressed) + 5
-            uncompressed = '%s%s%s' % (struct.pack('>i', size_uncompressed),
+            uncompressed = b'%s%s%s' % (struct.pack('>i', size_uncompressed),
                                        struct.pack('b', 0), uncompressed)
             self.data = uncompressed
         else:
@@ -328,7 +327,7 @@ class Protocol:
         # read objects
         objects = WeechatObjects(separator=separator)
         while len(self.data) > 0:
-            objtype = self._obj_type()
+            objtype = self._obj_type().decode()
             value = self._obj_cb[objtype]()
             objects.append(WeechatObject(objtype, value, separator=separator))
         return WeechatMessage(size, size_uncompressed, compression,
@@ -344,13 +343,20 @@ def hex_and_ascii(data, bytes_per_line=10):
     for i in range(num_lines):
         str_hex = []
         str_ascii = []
-        for char in data[i*bytes_per_line:(i*bytes_per_line)+bytes_per_line]:
+        for j in range(bytes_per_line): # data[i*bytes_per_line:(i*bytes_per_line)+bytes_per_line]:
+            # We can't easily iterate over individual bytes, so we are going to
+            # do it this way.
+            index = (i*bytes_per_line) + j
+            char = data[index:index+1]
+            if not char:
+                char = b'x'
             byte = struct.unpack('B', char)[0]
-            str_hex.append('%02X' % int(byte))
+            str_hex.append(b'%02X' % int(byte))
             if byte >= 32 and byte <= 127:
                 str_ascii.append(char)
             else:
-                str_ascii.append('.')
-        fmt = '%%-%ds %%s' % ((bytes_per_line * 3) - 1)
-        lines.append(fmt % (' '.join(str_hex), ''.join(str_ascii)))
-    return '\n'.join(lines)
+                str_ascii.append(b'.')
+        fmt = b'%%-%ds %%s' % ((bytes_per_line * 3) - 1)
+        lines.append(fmt % (b' '.join(str_hex),
+                            b''.join(str_ascii)))
+    return b'\n'.join(lines)
