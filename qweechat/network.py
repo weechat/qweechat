@@ -27,7 +27,6 @@ from PySide6 import QtCore, QtNetwork
 from qweechat import config
 
 
-
 _PROTO_INIT_CMD = ['init password=%(password)s']
 
 _PROTO_SYNC_CMDS = [
