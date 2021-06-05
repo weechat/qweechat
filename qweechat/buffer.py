@@ -20,13 +20,12 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pkg_resources import resource_filename
+
 from qweechat.chat import ChatTextEdit
 from qweechat.input import InputLineEdit
-import qweechat.weechat.color as color
+from qweechat.weechat import color
 
-from PySide6 import QtCore
-from PySide6 import QtWidgets
-from PySide6 import QtGui
+from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class GenericListWidget(QtWidgets.QListWidget):
