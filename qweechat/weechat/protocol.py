@@ -147,7 +147,7 @@ class Protocol:
         if len(self.data) < 3:
             self.data = ''
             return ''
-        objtype = bytes(self.data[0:3])
+        objtype = self.data[0:3].decode()
         self.data = self.data[3:]
         return objtype
 
@@ -197,12 +197,9 @@ class Protocol:
     def _obj_str(self):
         """Read a string in data (length on 4 bytes + content)."""
         value = self._obj_len_data(4)
-        if value is None:
-            return None
-        try:
-            return value.decode()
-        except AttributeError:
-            return value
+        if value in ("", None):
+            return ""
+        return value.decode()
 
     def _obj_buffer(self):
         """Read a buffer in data (length on 4 bytes + data)."""
@@ -227,8 +224,8 @@ class Protocol:
         Read a hashtable in data
         (type for keys + type for values + count + items).
         """
-        type_keys = self._obj_type().decode()
-        type_values = self._obj_type().decode()
+        type_keys = self._obj_type()
+        type_values = self._obj_type()
         count = self._obj_int()
         hashtable = WeechatDict()
         for _ in range(count):
@@ -247,7 +244,7 @@ class Protocol:
         keys_types = []
         dict_keys = WeechatDict()
         for key in list_keys:
-            items = list(item for item in key.split(':'))
+            items = key.split(':')
             keys_types.append(items)
             dict_keys[items[0]] = items[1]
         items = []
@@ -258,7 +255,6 @@ class Protocol:
             for _ in enumerate(list_path):
                 pointers.append(self._obj_ptr())
             for key, objtype in keys_types:
-                objtype = objtype
                 item[key] = self._obj_cb[objtype]()
             item['__path'] = pointers
             items.append(item)
@@ -296,7 +292,7 @@ class Protocol:
 
     def _obj_array(self):
         """Read an array of values in data."""
-        type_values = self._obj_type().decode()
+        type_values = self._obj_type()
         count_values = self._obj_int()
         values = []
         for _ in range(count_values):
@@ -328,7 +324,7 @@ class Protocol:
         # read objects
         objects = WeechatObjects(separator=separator)
         while len(self.data) > 0:
-            objtype = self._obj_type().decode()
+            objtype = self._obj_type()
             value = self._obj_cb[objtype]()
             objects.append(WeechatObject(objtype, value, separator=separator))
         return WeechatMessage(size, size_uncompressed, compression,

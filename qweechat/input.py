@@ -32,7 +32,7 @@ class InputLineEdit(QtWidgets.QLineEdit):
     textSent = QtCore.Signal(str)
 
     def __init__(self, scroll_widget):
-        super().__init__(scroll_widget)
+        super().__init__()
         self.scroll_widget = scroll_widget
         self._history = []
         self._history_index = -1
