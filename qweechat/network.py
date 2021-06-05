@@ -21,9 +21,11 @@
 #
 
 import struct
-from qweechat import config
+
 from PySide6 import QtCore, QtNetwork
-from PySide6.QtCore import Signal
+
+from qweechat import config
+
 
 
 _PROTO_INIT_CMD = ['init password=%(password)s']
@@ -46,8 +48,8 @@ _PROTO_SYNC_CMDS = [
 class Network(QtCore.QObject):
     """I/O with WeeChat/relay."""
 
-    statusChanged = Signal(str, str)
-    messageFromWeechat = Signal(QtCore.QByteArray)
+    statusChanged = QtCore.Signal(str, str)
+    messageFromWeechat = QtCore.Signal(QtCore.QByteArray)
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -69,7 +71,6 @@ class Network(QtCore.QObject):
     def _socket_connected(self):
         """Slot: socket connected."""
         self.statusChanged.emit(self.status_connected, None)
-        print('Connected, now sending password.')
         if self._password:
             self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
                                  % {'password': str(self._password),
@@ -122,7 +123,6 @@ class Network(QtCore.QObject):
     def connect_weechat(self, server, port, ssl, password, lines):
         """Connect to WeeChat."""
         self._server = server
-        print(f'Connecting to server {self._server}')
         try:
             self._port = int(port)
         except ValueError:
@@ -142,7 +142,6 @@ class Network(QtCore.QObject):
             self._socket.connectToHostEncrypted(self._server, self._port)
         else:
             self._socket.connectToHost(self._server, self._port)
-        print('Got SSL connection')
         self.statusChanged.emit(self.status_connecting, "")
 
     def disconnect_weechat(self):

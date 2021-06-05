@@ -21,10 +21,10 @@
 #
 
 from PySide6 import QtCore
-from PySide6 import QtWidgets as QtGui
+from PySide6 import QtWidgets
 
 
-class InputLineEdit(QtGui.QLineEdit):
+class InputLineEdit(QtWidgets.QLineEdit):
     """Input line."""
 
     bufferSwitchPrev = QtCore.Signal()
@@ -48,7 +48,7 @@ class InputLineEdit(QtGui.QLineEdit):
             elif key == QtCore.Qt.Key_PageDown:
                 self.bufferSwitchNext.emit()
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                QtWidgets.QLineEdit.keyPressEvent(self, event)
         elif modifiers == QtCore.Qt.AltModifier:
             if key in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Up):
                 self.bufferSwitchPrev.emit()
@@ -63,7 +63,7 @@ class InputLineEdit(QtGui.QLineEdit):
             elif key == QtCore.Qt.Key_End:
                 bar.setValue(bar.maximum())
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                QtWidgets.QLineEdit.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
             bar.setValue(bar.value() - bar.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
@@ -73,7 +73,7 @@ class InputLineEdit(QtGui.QLineEdit):
         elif key == QtCore.Qt.Key_Down:
             self._history_navigate(1)
         else:
-            QtGui.QLineEdit.keyPressEvent(self, event)
+            QtWidgets.QLineEdit.keyPressEvent(self, event)
 
     def _input_return_pressed(self):
         self._history.append(self.text())

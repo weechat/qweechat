@@ -20,9 +20,6 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# import qt_compat
-
-# QtGui = qt_compat.import_module('QtGui')
 from PySide6 import QtGui, QtWidgets
 
 

@@ -23,21 +23,21 @@
 from qweechat.chat import ChatTextEdit
 from qweechat.input import InputLineEdit
 
-from PySide6 import QtWidgets as QtGui
+from PySide6 import QtWidgets
 
 
-class DebugDialog(QtGui.QDialog):
+class DebugDialog(QtWidgets.QDialog):
     """Debug dialog."""
 
     def __init__(self, *args):
-        QtGui.QDialog.__init__(*(self,) + args)
+        QtWidgets.QDialog.__init__(*(self,) + args)
         self.resize(640, 480)
         self.setWindowTitle('Debug console')
 
         self.chat = ChatTextEdit(debug=True)
         self.input = InputLineEdit(self.chat)
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         vbox.addWidget(self.chat)
         vbox.addWidget(self.input)
 

@@ -36,7 +36,10 @@ It requires requires WeeChat 0.3.7 or newer, running on local or remote host.
 import sys
 import traceback
 from pkg_resources import resource_filename
-# import qt_compat
+
+from PySide6.QtWidgets import QApplication
+from PySide6 import QtGui, QtWidgets, QtCore
+
 from qweechat import config
 from qweechat.weechat import protocol
 from qweechat.network import Network
@@ -45,9 +48,6 @@ from qweechat.buffer import BufferListWidget, Buffer
 from qweechat.debug import DebugDialog
 from qweechat.about import AboutDialog
 from qweechat.version import qweechat_version
-
-from PySide6.QtWidgets import QApplication
-from PySide6 import QtGui, QtWidgets, QtCore
 
 
 # QtCore = qt_compat.import_module('QtCore')
@@ -315,11 +315,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _network_weechat_msg(self, message):
         """Called when a message is received from WeeChat."""
-        # self.debug_display(0, '==>',
-        #                    'message (%d bytes):\n%s'
-        #                    % (len(message),
-        #                       protocol.hex_and_ascii(message, 20)),
-        #                    forcecolor='#008800')
+        self.debug_display(0, '==>',
+                           'message (%d bytes):\n%s'
+                           % (len(message),
+                              protocol.hex_and_ascii(message.data(), 20)),
+                           forcecolor='#008800')
         try:
             proto = protocol.Protocol()
             message = proto.decode(message.data())
@@ -517,11 +517,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.list_buffers.insertItem(index, '%s'
                                      % (buf.data['local_variables']['name']))
         self.stacked_buffers.insertWidget(index, buf.widget)
-        self._reorder_buffers()
-
-    def _reorder_buffers(self):
-        """Order buffers by server."""
-        pass
 
     def remove_buffer(self, index):
         """Remove a buffer."""
