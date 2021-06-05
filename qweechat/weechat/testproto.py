@@ -34,9 +34,9 @@ import sys
 import time
 import traceback
 
-import protocol  # WeeChat/relay protocol
-# from .. version import qweechat_version
-qweechat_version = '1.1'
+from qweechat.weechat import protocol
+
+qweechat_version = '0.1'
 
 NAME = 'qweechat-testproto'
 
@@ -60,12 +60,13 @@ class TestProto(object):
         try:
             self.sock = socket.socket(inet, socket.SOCK_STREAM)
             self.sock.connect((self.args.hostname, self.args.port))
-        except:  # noqa: E722
+        except Exception:
             if self.sock:
                 self.sock.close()
             print('Failed to connect to', self.address)
             return False
-        print('Connected to', self.address)
+
+        print(f'Connected to {self.address} socket {self.sock}')
         return True
 
     def send(self, messages):
@@ -122,7 +123,7 @@ class TestProto(object):
             data = os.read(sys.stdin.fileno(), 4096)
             if data:
                 if not self.send(data.strip()):
-                    # self.sock.close()
+                    self.sock.close()
                     return False
             # open stdin to read user commands
             sys.stdin = open('/dev/tty')
