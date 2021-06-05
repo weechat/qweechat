@@ -49,9 +49,6 @@ from qweechat.about import AboutDialog
 from qweechat.version import qweechat_version
 
 
-# QtCore = qt_compat.import_module('QtCore')
-# QtGui = qt_compat.import_module('QtGui')
-
 NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
 AUTHOR_MAIL = 'flashcode@flashtux.org'
