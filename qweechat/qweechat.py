@@ -37,7 +37,6 @@ import sys
 import traceback
 from pkg_resources import resource_filename
 
-from PySide6.QtWidgets import QApplication
 from PySide6 import QtGui, QtWidgets, QtCore
 
 from qweechat import config
@@ -552,7 +551,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def main():
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
     app.setWindowIcon(QtGui.QIcon(
         resource_filename(__name__, 'data/icons/weechat.png')))
