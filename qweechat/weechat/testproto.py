@@ -20,9 +20,7 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""
-Command-line program for testing WeeChat/relay protocol.
-"""
+"""Command-line program for testing WeeChat/relay protocol."""
 
 import argparse
 import os
@@ -81,7 +79,7 @@ class TestProto(object):
                 self.sock.sendall(msg + b'\n')
                 sys.stdout.write(
                     (b'\x1b[33m<-- ' + msg + b'\x1b[0m\n').decode())
-        except:  # noqa: E722
+        except Exception:  # noqa: E722
             traceback.print_exc()
             print('Failed to send message')
             return False
@@ -106,7 +104,7 @@ class TestProto(object):
                                 protocol.hex_and_ascii(msgd.uncompressed, 20)))
             # display decoded message
             print('\x1b[32m--> {0}\x1b[0m'.format(msgd))
-        except:  # noqa: E722
+        except Exception:  # noqa: E722
             traceback.print_exc()
             print('Error while decoding message from WeeChat')
             return False
@@ -183,7 +181,7 @@ class TestProto(object):
                                     recvbuf = b''
                             sys.stdout.write((prompt + message).decode())
                             sys.stdout.flush()
-        except:  # noqa: E722
+        except Exception:  # noqa: E722
             traceback.print_exc()
             self.send(b'quit')
         return 0

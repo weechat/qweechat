@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""I/O with WeeChat/relay."""
+
 import struct
 
 from PySide6 import QtCore, QtNetwork

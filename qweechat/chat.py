@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Chat area."""
+
 import datetime
 
 from PySide6 import QtCore, QtWidgets, QtGui
@@ -64,11 +66,11 @@ class ChatTextEdit(QtWidgets.QTextEdit):
 
     def display(self, time, prefix, text, forcecolor=None):
         if time == 0:
-            d = datetime.datetime.now()
+            now = datetime.datetime.now()
         else:
-            d = datetime.datetime.fromtimestamp(float(time))
+            now = datetime.datetime.fromtimestamp(float(time))
         self.setTextColor(QtGui.QColor('#999999'))
-        self.insertPlainText(d.strftime('%H:%M '))
+        self.insertPlainText(now.strftime('%H:%M '))
         prefix = self._color.convert(prefix)
         text = self._color.convert(text)
         if forcecolor:
@@ -136,5 +138,5 @@ class ChatTextEdit(QtWidgets.QTextEdit):
         self._setfont[attr](self._fontvalues[self._font[attr]][attr])
 
     def scroll_bottom(self):
-        bar = self.verticalScrollBar()
-        bar.setValue(bar.maximum())
+        scroll = self.verticalScrollBar()
+        scroll.setValue(scroll.maximum())

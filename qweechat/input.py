@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Input line for chat and debug window."""
+
 from PySide6 import QtCore, QtWidgets
 
 
@@ -40,7 +42,7 @@ class InputLineEdit(QtWidgets.QLineEdit):
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
-        bar = self.scroll_widget.verticalScrollBar()
+        scroll = self.scroll_widget.verticalScrollBar()
         if modifiers == QtCore.Qt.ControlModifier:
             if key == QtCore.Qt.Key_PageUp:
                 self.bufferSwitchPrev.emit()
@@ -54,19 +56,19 @@ class InputLineEdit(QtWidgets.QLineEdit):
             elif key in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Down):
                 self.bufferSwitchNext.emit()
             elif key == QtCore.Qt.Key_PageUp:
-                bar.setValue(bar.value() - (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() - (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_PageDown:
-                bar.setValue(bar.value() + (bar.pageStep() / 10))
+                scroll.setValue(scroll.value() + (scroll.pageStep() / 10))
             elif key == QtCore.Qt.Key_Home:
-                bar.setValue(bar.minimum())
+                scroll.setValue(scroll.minimum())
             elif key == QtCore.Qt.Key_End:
-                bar.setValue(bar.maximum())
+                scroll.setValue(scroll.maximum())
             else:
                 QtWidgets.QLineEdit.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
-            bar.setValue(bar.value() - bar.pageStep())
+            scroll.setValue(scroll.value() - scroll.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
-            bar.setValue(bar.value() + bar.pageStep())
+            scroll.setValue(scroll.value() + scroll.pageStep())
         elif key == QtCore.Qt.Key_Up:
             self._history_navigate(-1)
         elif key == QtCore.Qt.Key_Down:

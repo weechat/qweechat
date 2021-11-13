@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Debug window."""
+
 from PySide6 import QtWidgets
 
 from qweechat.chat import ChatTextEdit

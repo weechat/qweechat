@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Configuration for QWeeChat."""
+
 import configparser
 import os
 

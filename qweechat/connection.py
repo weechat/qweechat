@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Connection window."""
+
 from PySide6 import QtGui, QtWidgets
 
 

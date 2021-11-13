@@ -30,6 +30,8 @@
 #     start dev
 #
 
+"""Decode binary messages received from WeeChat/relay."""
+
 import collections
 import struct
 import zlib
@@ -49,10 +51,10 @@ class WeechatObject:
         self.indent = '  ' if separator == '\n' else ''
         self.separator1 = '\n%s' % self.indent if separator == '\n' else ''
 
-    def _str_value(self, v):
-        if type(v) is str and v is not None:
-            return '\'%s\'' % v
-        return str(v)
+    def _str_value(self, val):
+        if isinstance(val, str) and val is not None:
+            return '\'%s\'' % val
+        return str(val)
 
     def _str_value_hdata(self):
         lines = ['%skeys: %s%s%spath: %s' % (self.separator1,
@@ -84,17 +86,17 @@ class WeechatObject:
         return self._str_value(self.value)
 
     def __str__(self):
-        self._obj_cb = {
+        obj_cb = {
             'hda': self._str_value_hdata,
             'inl': self._str_value_infolist,
         }
         return '%s: %s' % (self.objtype,
-                           self._obj_cb.get(self.objtype,
-                                            self._str_value_other)())
+                           obj_cb.get(self.objtype, self._str_value_other)())
 
 
 class WeechatObjects(list):
     def __init__(self, separator='\n'):
+        super().__init__()
         self.separator = separator
 
     def __str__(self):
@@ -117,16 +119,16 @@ class WeechatMessage:
                 self.size, self.size_uncompressed,
                 100 - ((self.size * 100) // self.size_uncompressed),
                 self.msgid, self.objects)
-        else:
-            return 'size: %d, id=\'%s\', objects:\n%s' % (self.size,
-                                                          self.msgid,
-                                                          self.objects)
+        return 'size: %d, id=\'%s\', objects:\n%s' % (self.size,
+                                                      self.msgid,
+                                                      self.objects)
 
 
 class Protocol:
     """Decode binary message received from WeeChat/relay."""
 
     def __init__(self):
+        self.data = ''
         self._obj_cb = {
             'chr': self._obj_char,
             'int': self._obj_int,
@@ -349,7 +351,7 @@ def hex_and_ascii(data, bytes_per_line=10):
                 char = b'x'
             byte = struct.unpack('B', char)[0]
             str_hex.append(b'%02X' % int(byte))
-            if byte >= 32 and byte <= 127:
+            if 32 <= byte <= 127:
                 str_ascii.append(char)
             else:
                 str_ascii.append(b'.')

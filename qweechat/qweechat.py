@@ -62,7 +62,7 @@ class MainWindow(QtWidgets.QMainWindow):
     """Main window."""
 
     def __init__(self, *args):
-        super().__init__()
+        super().__init__(*args)
 
         self.config = config.read()
 
@@ -207,7 +207,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Save connection configuration."""
         if self.network:
             options = self.network.get_options()
-            for option in options.keys():
+            for option in options:
                 self.config.set('relay', option, options[option])
 
     def debug_display(self, *args, **kwargs):
@@ -550,8 +550,8 @@ def main():
     app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
     app.setWindowIcon(QtGui.QIcon(
         resource_filename(__name__, 'data/icons/weechat.png')))
-    main = MainWindow()
-    main.show()
+    main_win = MainWindow()
+    main_win.show()
     sys.exit(app.exec_())
 
 

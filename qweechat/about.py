@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""About dialog box."""
+
 from PySide6 import QtCore, QtWidgets as QtGui
 
 

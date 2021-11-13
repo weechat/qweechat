@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Management of WeeChat buffers/nicklist."""
+
 from pkg_resources import resource_filename
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -67,9 +69,6 @@ class GenericListWidget(QtWidgets.QListWidget):
 
 class BufferListWidget(GenericListWidget):
     """Widget with list of buffers."""
-
-    def __init__(self, *args):
-        super().__init__(*args)
 
     def switch_prev_buffer(self):
         if self.currentRow() > 0:
@@ -148,9 +147,9 @@ class Buffer(QtCore.QObject):
 
     bufferInput = QtCore.Signal(str, str)
 
-    def __init__(self, data={}):
+    def __init__(self, data=None):
         QtCore.QObject.__init__(self)
-        self.data = data
+        self.data = data or {}
         self.nicklist = {}
         self.widget = BufferWidget(display_nicklist=self.data.get('nicklist',
                                                                   0))
@@ -234,12 +233,12 @@ class Buffer(QtCore.QObject):
                     ' ': '',
                     '+': 'yellow',
                 }
-                color = prefix_color.get(nick['prefix'], 'green')
-                if color:
+                col = prefix_color.get(nick['prefix'], 'green')
+                if col:
                     icon = QtGui.QIcon(
                         resource_filename(__name__,
                                           'data/icons/bullet_%s_8x8.png' %
-                                          color))
+                                          col))
                 else:
                     pixmap = QtGui.QPixmap(8, 8)
                     pixmap.fill()

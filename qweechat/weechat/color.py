@@ -20,6 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Remove/replace colors in WeeChat strings."""
+
 import re
 import logging
 
@@ -86,25 +88,25 @@ class Color():
 
     def _rgb_color(self, index):
         color = TERMINAL_COLORS[index*6:(index*6)+6]
-        r = int(color[0:2], 16) * 0.85
-        g = int(color[2:4], 16) * 0.85
-        b = int(color[4:6], 16) * 0.85
-        return '%02x%02x%02x' % (r, g, b)
+        col_r = int(color[0:2], 16) * 0.85
+        col_g = int(color[2:4], 16) * 0.85
+        col_b = int(color[4:6], 16) * 0.85
+        return '%02x%02x%02x' % (col_r, col_g, col_b)
 
     def _convert_weechat_color(self, color):
         try:
             index = int(color)
             return '\x01(Fr%s)' % self.color_options[index]
-        except:  # noqa: E722
-            log.debug('Error decoding WeeChat color "%s"' % color)
+        except Exception:  # noqa: E722
+            log.debug('Error decoding WeeChat color "%s"', color)
             return ''
 
     def _convert_terminal_color(self, fg_bg, attrs, color):
         try:
             index = int(color)
             return '\x01(%s%s#%s)' % (fg_bg, attrs, self._rgb_color(index))
-        except:  # noqa: E722
-            log.debug('Error decoding terminal color "%s"' % color)
+        except Exception:  # noqa: E722
+            log.debug('Error decoding terminal color "%s"', color)
             return ''
 
     def _convert_color_attr(self, fg_bg, color):
@@ -126,8 +128,8 @@ class Color():
             index = int(color)
             return self._convert_terminal_color(fg_bg, attrs,
                                                 WEECHAT_BASIC_COLORS[index][1])
-        except:  # noqa: E722
-            log.debug('Error decoding color "%s"' % color)
+        except Exception:  # noqa: E722
+            log.debug('Error decoding color "%s"', color)
             return ''
 
     def _attrcode_to_char(self, code):
@@ -145,29 +147,27 @@ class Color():
             if color[1] == 'b':
                 # bar code, ignored
                 return ''
-            elif color[1] == '\x1C':
+            if color[1] == '\x1C':
                 # reset
                 return '\x01(Fr)\x01(Br)'
-            elif color[1] in ('F', 'B'):
+            if color[1] in ('F', 'B'):
                 # foreground or background
                 return self._convert_color_attr(color[1], color[2:])
-            elif color[1] == '*':
+            if color[1] == '*':
                 # foreground with optional background
                 items = color[2:].split(',')
-                s = self._convert_color_attr('F', items[0])
+                str_col = self._convert_color_attr('F', items[0])
                 if len(items) > 1:
-                    s += self._convert_color_attr('B', items[1])
-                return s
-            elif color[1] == '@':
+                    str_col += self._convert_color_attr('B', items[1])
+                return str_col
+            if color[1] == '@':
                 # direct ncurses pair number, ignored
                 return ''
-            elif color[1] == 'E':
+            if color[1] == 'E':
                 # text emphasis, ignored
                 return ''
             if color[1:].isdigit():
                 return self._convert_weechat_color(int(color[1:]))
-            # color code
-            pass
         elif color[0] == '\x1A':
             # set attribute
             return '\x01(+%s)' % self._attrcode_to_char(color[1])
@@ -191,8 +191,7 @@ class Color():
             return ''
         if self.debug:
             return RE_COLOR.sub(self._convert_color_debug, text)
-        else:
-            return RE_COLOR.sub(self._convert_color, text)
+        return RE_COLOR.sub(self._convert_color, text)
 
 
 def remove(text):
