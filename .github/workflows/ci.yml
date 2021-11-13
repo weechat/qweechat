@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-20.04
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install bandit flake8 pylint
+
+      - name: Lint with flake8
+        run: make flake8
+
+      # - name: Lint with pylint
+      #   run: make pylint
+
+      - name: Lint with bandit
+        run: make bandit
