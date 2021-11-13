@@ -47,7 +47,7 @@ setup(
     packages=['qweechat', 'qweechat.weechat'],
     include_package_data=True,
     package_data={'qweechat': ['data/icons/*.png']},
-    entry_points = {
+    entry_points={
         'gui_scripts': [
             'qweechat = qweechat.qweechat:main',
         ],
@@ -55,7 +55,7 @@ setup(
             'qweechat-testproto = qweechat.weechat.testproto:main',
         ]
     },
-    install_requires = [
+    install_requires=[
         'PySide6',
     ]
 )
