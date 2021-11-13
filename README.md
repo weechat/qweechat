@@ -46,7 +46,7 @@ In QWeeChat, click on connect and enter fields:
 - `port`: the relay port (defined in WeeChat)
 - `password`: the relay password (defined in WeeChat)
 
-Options can be changed in file `~/.qweechat/qweechat.conf`.
+Options can be changed in file `~/.config/qweechat/qweechat.conf`.
 
 ## Copyright
 

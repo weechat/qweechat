@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# config.py - configuration for QWeeChat (~/.qweechat/qweechat.conf)
+# config.py - configuration for QWeeChat
 #
 # Copyright (C) 2011-2021 Sébastien Helleu <flashcode@flashtux.org>
 #
@@ -25,7 +25,9 @@
 import configparser
 import os
 
-CONFIG_DIR = '%s/.qweechat' % os.getenv('HOME')
+from pathlib import Path
+
+CONFIG_DIR = '%s/.config/qweechat' % os.getenv('HOME')
 CONFIG_FILENAME = '%s/qweechat.conf' % CONFIG_DIR
 
 CONFIG_DEFAULT_RELAY_LINES = 50
@@ -123,8 +125,7 @@ def read():
 
 def write(config):
     """Write config file."""
-    if not os.path.exists(CONFIG_DIR):
-        os.mkdir(CONFIG_DIR, 0o0755)
+    Path(CONFIG_DIR).mkdir(mode=0o0700, parents=True, exist_ok=True)
     with open(CONFIG_FILENAME, 'w') as cfg:
         config.write(cfg)
 
