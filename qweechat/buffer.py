@@ -19,13 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 from pkg_resources import resource_filename
+
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from qweechat.chat import ChatTextEdit
 from qweechat.input import InputLineEdit
 from qweechat.weechat import color
-
-from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class GenericListWidget(QtWidgets.QListWidget):

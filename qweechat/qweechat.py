@@ -37,7 +37,7 @@ import sys
 import traceback
 from pkg_resources import resource_filename
 
-from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from qweechat import config
 from qweechat.weechat import protocol
