@@ -54,5 +54,8 @@ setup(
         'console_scripts': [
             'qweechat-testproto = qweechat.weechat.testproto:main',
         ]
-    }
+    },
+    install_requires = [
+        'PySide6',
+    ]
 )

@@ -21,6 +21,7 @@
 #
 
 import re
+import logging
 
 RE_COLOR_ATTRS = r'[*!/_|]*'
 RE_COLOR_STD = r'(?:%s\d{2})' % RE_COLOR_ATTRS
@@ -75,6 +76,9 @@ WEECHAT_BASIC_COLORS = (
     ('white', 0))
 
 
+log = logging.getLogger(__name__)
+
+
 class Color():
     def __init__(self, color_options, debug=False):
         self.color_options = color_options
@@ -92,7 +96,7 @@ class Color():
             index = int(color)
             return '\x01(Fr%s)' % self.color_options[index]
         except:  # noqa: E722
-            print('Error decoding WeeChat color "%s"' % color)
+            log.debug('Error decoding WeeChat color "%s"' % color)
             return ''
 
     def _convert_terminal_color(self, fg_bg, attrs, color):
@@ -100,7 +104,7 @@ class Color():
             index = int(color)
             return '\x01(%s%s#%s)' % (fg_bg, attrs, self._rgb_color(index))
         except:  # noqa: E722
-            print('Error decoding terminal color "%s"' % color)
+            log.debug('Error decoding terminal color "%s"' % color)
             return ''
 
     def _convert_color_attr(self, fg_bg, color):
@@ -123,7 +127,7 @@ class Color():
             return self._convert_terminal_color(fg_bg, attrs,
                                                 WEECHAT_BASIC_COLORS[index][1])
         except:  # noqa: E722
-            print('Error decoding color "%s"' % color)
+            log.debug('Error decoding color "%s"' % color)
             return ''
 
     def _attrcode_to_char(self, code):

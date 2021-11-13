@@ -36,18 +36,18 @@ It requires requires WeeChat 0.3.7 or newer, running on local or remote host.
 import sys
 import traceback
 from pkg_resources import resource_filename
-import qt_compat
-import config
-import weechat.protocol as protocol
-from network import Network
-from connection import ConnectionDialog
-from buffer import BufferListWidget, Buffer
-from debug import DebugDialog
-from about import AboutDialog
-from version import qweechat_version
 
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtGui, QtWidgets, QtCore
+
+from qweechat import config
+from qweechat.weechat import protocol
+from qweechat.network import Network
+from qweechat.connection import ConnectionDialog
+from qweechat.buffer import BufferListWidget, Buffer
+from qweechat.debug import DebugDialog
+from qweechat.about import AboutDialog
+from qweechat.version import qweechat_version
+
 
 NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
@@ -58,11 +58,11 @@ WEECHAT_SITE = 'https://weechat.org/'
 DEBUG_NUM_LINES = 50
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     """Main window."""
 
     def __init__(self, *args):
-        QtGui.QMainWindow.__init__(*(self,) + args)
+        super().__init__()
 
         self.config = config.read()
 
@@ -87,11 +87,11 @@ class MainWindow(QtGui.QMainWindow):
 
         # default buffer
         self.buffers = [Buffer()]
-        self.stacked_buffers = QtGui.QStackedWidget()
+        self.stacked_buffers = QtWidgets.QStackedWidget()
         self.stacked_buffers.addWidget(self.buffers[0].widget)
 
         # splitter with buffers + chat/input
-        splitter = QtGui.QSplitter()
+        splitter = QtWidgets.QSplitter()
         splitter.addWidget(self.list_buffers)
         splitter.addWidget(self.stacked_buffers)
 
@@ -146,7 +146,7 @@ class MainWindow(QtGui.QMainWindow):
         menu_window.addAction(self.actions['debug'])
         menu_help = self.menu.addMenu('&Help')
         menu_help.addAction(self.actions['about'])
-        self.network_status = QtGui.QLabel()
+        self.network_status = QtWidgets.QLabel()
         self.network_status.setFixedHeight(20)
         self.network_status.setFixedWidth(200)
         self.network_status.setContentsMargins(0, 0, 10, 0)
@@ -249,8 +249,7 @@ class MainWindow(QtGui.QMainWindow):
                     '&copy; 2011-2020 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
-                    'Running with %s' % ('PySide' if qt_compat.uses_pyside
-                                         else 'PyQt4'),
+                    'Running with PySide6',
                     '',
                     'WeeChat site: <a href="%s">%s</a>'
                     % (WEECHAT_SITE, WEECHAT_SITE),
@@ -315,11 +314,11 @@ class MainWindow(QtGui.QMainWindow):
         self.debug_display(0, '==>',
                            'message (%d bytes):\n%s'
                            % (len(message),
-                              protocol.hex_and_ascii(message, 20)),
+                              protocol.hex_and_ascii(message.data(), 20)),
                            forcecolor='#008800')
         try:
             proto = protocol.Protocol()
-            message = proto.decode(str(message))
+            message = proto.decode(message.data())
             if message.uncompressed:
                 self.debug_display(
                     0, '==>',
@@ -329,7 +328,7 @@ class MainWindow(QtGui.QMainWindow):
                     forcecolor='#008800')
             self.debug_display(0, '', 'Message: %s' % message)
             self.parse_message(message)
-        except:  # noqa: E722
+        except Exception:  # noqa: E722
             print('Error while decoding message from WeeChat:\n%s'
                   % traceback.format_exc())
             self.network.disconnect_weechat()
@@ -495,6 +494,8 @@ class MainWindow(QtGui.QMainWindow):
             self.network.desync_weechat()
         elif message.msgid == '_upgrade_ended':
             self.network.sync_weechat()
+        else:
+            print(f"Unknown message with id {message.msgid}")
 
     def create_buffer(self, item):
         """Create a new buffer."""
@@ -509,9 +510,8 @@ class MainWindow(QtGui.QMainWindow):
     def insert_buffer(self, index, buf):
         """Insert a buffer in list."""
         self.buffers.insert(index, buf)
-        self.list_buffers.insertItem(index, '%d. %s'
-                                     % (buf.data['number'],
-                                        buf.data['full_name'].decode('utf-8')))
+        self.list_buffers.insertItem(index, '%s'
+                                     % (buf.data['local_variables']['name']))
         self.stacked_buffers.insertWidget(index, buf.widget)
 
     def remove_buffer(self, index):
@@ -544,12 +544,18 @@ class MainWindow(QtGui.QMainWindow):
         if self.debug_dialog:
             self.debug_dialog.close()
         config.write(self.config)
-        QtGui.QMainWindow.closeEvent(self, event)
+        QtWidgets.QMainWindow.closeEvent(self, event)
 
 
-app = QtGui.QApplication(sys.argv)
-app.setStyle(QtGui.QStyleFactory.create('Cleanlooks'))
-app.setWindowIcon(QtGui.QIcon(
-    resource_filename(__name__, 'data/icons/weechat.png')))
-main = MainWindow()
-sys.exit(app.exec_())
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+    app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
+    app.setWindowIcon(QtGui.QIcon(
+        resource_filename(__name__, 'data/icons/weechat.png')))
+    main = MainWindow()
+    main.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

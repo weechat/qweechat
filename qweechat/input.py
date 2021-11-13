@@ -20,21 +20,19 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import qt_compat
-
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtCore
+from PySide6 import QtWidgets
 
 
-class InputLineEdit(QtGui.QLineEdit):
+class InputLineEdit(QtWidgets.QLineEdit):
     """Input line."""
 
-    bufferSwitchPrev = qt_compat.Signal()
-    bufferSwitchNext = qt_compat.Signal()
-    textSent = qt_compat.Signal(str)
+    bufferSwitchPrev = QtCore.Signal()
+    bufferSwitchNext = QtCore.Signal()
+    textSent = QtCore.Signal(str)
 
     def __init__(self, scroll_widget):
-        QtGui.QLineEdit.__init__(self)
+        super().__init__()
         self.scroll_widget = scroll_widget
         self._history = []
         self._history_index = -1
@@ -50,7 +48,7 @@ class InputLineEdit(QtGui.QLineEdit):
             elif key == QtCore.Qt.Key_PageDown:
                 self.bufferSwitchNext.emit()
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                QtWidgets.QLineEdit.keyPressEvent(self, event)
         elif modifiers == QtCore.Qt.AltModifier:
             if key in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Up):
                 self.bufferSwitchPrev.emit()
@@ -65,7 +63,7 @@ class InputLineEdit(QtGui.QLineEdit):
             elif key == QtCore.Qt.Key_End:
                 bar.setValue(bar.maximum())
             else:
-                QtGui.QLineEdit.keyPressEvent(self, event)
+                QtWidgets.QLineEdit.keyPressEvent(self, event)
         elif key == QtCore.Qt.Key_PageUp:
             bar.setValue(bar.value() - bar.pageStep())
         elif key == QtCore.Qt.Key_PageDown:
@@ -75,10 +73,10 @@ class InputLineEdit(QtGui.QLineEdit):
         elif key == QtCore.Qt.Key_Down:
             self._history_navigate(1)
         else:
-            QtGui.QLineEdit.keyPressEvent(self, event)
+            QtWidgets.QLineEdit.keyPressEvent(self, event)
 
     def _input_return_pressed(self):
-        self._history.append(self.text().encode('utf-8'))
+        self._history.append(self.text())
         self._history_index = len(self._history)
         self.textSent.emit(self.text())
         self.clear()

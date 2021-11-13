@@ -24,8 +24,6 @@
 Command-line program for testing WeeChat/relay protocol.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import select
@@ -36,8 +34,9 @@ import sys
 import time
 import traceback
 
-import protocol  # WeeChat/relay protocol
-from .. version import qweechat_version
+from qweechat.weechat import protocol
+
+qweechat_version = '0.1'
 
 NAME = 'qweechat-testproto'
 
@@ -61,12 +60,13 @@ class TestProto(object):
         try:
             self.sock = socket.socket(inet, socket.SOCK_STREAM)
             self.sock.connect((self.args.hostname, self.args.port))
-        except:  # noqa: E722
+        except Exception:
             if self.sock:
                 self.sock.close()
             print('Failed to connect to', self.address)
             return False
-        print('Connected to', self.address)
+
+        print(f'Connected to {self.address} socket {self.sock}')
         return True
 
     def send(self, messages):
@@ -75,11 +75,12 @@ class TestProto(object):
         Return True if OK, False if error.
         """
         try:
-            for msg in messages.split('\n'):
-                if msg == 'quit':
+            for msg in messages.split(b'\n'):
+                if msg == b'quit':
                     self.has_quit = True
-                self.sock.sendall(msg + '\n')
-                print('\x1b[33m<-- ' + msg + '\x1b[0m')
+                self.sock.sendall(msg + b'\n')
+                sys.stdout.write(
+                    (b'\x1b[33m<-- ' + msg + b'\x1b[0m\n').decode())
         except:  # noqa: E722
             traceback.print_exc()
             print('Failed to send message')
@@ -94,7 +95,7 @@ class TestProto(object):
         try:
             proto = protocol.Protocol()
             msgd = proto.decode(message,
-                                separator='\n' if self.args.debug > 0
+                                separator=b'\n' if self.args.debug > 0
                                 else ', ')
             print('')
             if self.args.debug >= 2 and msgd.uncompressed:
@@ -122,7 +123,7 @@ class TestProto(object):
             data = os.read(sys.stdin.fileno(), 4096)
             if data:
                 if not self.send(data.strip()):
-                    # self.sock.close()
+                    self.sock.close()
                     return False
             # open stdin to read user commands
             sys.stdin = open('/dev/tty')
@@ -136,10 +137,10 @@ class TestProto(object):
         """
         if self.has_quit:
             return 0
-        message = ''
-        recvbuf = ''
-        prompt = '\x1b[36mrelay> \x1b[0m'
-        sys.stdout.write(prompt)
+        message = b''
+        recvbuf = b''
+        prompt = b'\x1b[36mrelay> \x1b[0m'
+        sys.stdout.write(prompt.decode())
         sys.stdout.flush()
         try:
             while not self.has_quit:
@@ -149,13 +150,14 @@ class TestProto(object):
                         buf = os.read(_file.fileno(), 4096)
                         if buf:
                             message += buf
-                            if '\n' in message:
-                                messages = message.split('\n')
-                                msgsent = '\n'.join(messages[:-1])
+                            if b'\n' in message:
+                                messages = message.split(b'\n')
+                                msgsent = b'\n'.join(messages[:-1])
                                 if msgsent and not self.send(msgsent):
                                     return 4
                                 message = messages[-1]
-                                sys.stdout.write(prompt + message)
+                                sys.stdout.write((prompt + message).decode())
+                                # sys.stdout.write(prompt + message)
                                 sys.stdout.flush()
                     else:
                         buf = _file.recv(4096)
@@ -178,12 +180,12 @@ class TestProto(object):
                                 if remainder:
                                     recvbuf = remainder
                                 else:
-                                    recvbuf = ''
-                            sys.stdout.write(prompt + message)
+                                    recvbuf = b''
+                            sys.stdout.write((prompt + message).decode())
                             sys.stdout.flush()
         except:  # noqa: E722
             traceback.print_exc()
-            self.send('quit')
+            self.send(b'quit')
         return 0
 
     def __del__(self):
@@ -220,7 +222,7 @@ The script returns:
                         help='debug mode: long objects view '
                         '(-dd: display raw messages)')
     parser.add_argument('-v', '--version', action='version',
-                        version=qweechat_version())
+                        version=qweechat_version)
     parser.add_argument('hostname',
                         help='hostname (or IP address) of machine running '
                         'WeeChat/relay')

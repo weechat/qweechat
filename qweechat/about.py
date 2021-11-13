@@ -20,10 +20,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import qt_compat
-
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtCore
+from PySide6 import QtWidgets as QtGui
 
 
 class AboutDialog(QtGui.QDialog):
@@ -44,7 +42,7 @@ class AboutDialog(QtGui.QDialog):
 
         vbox = QtGui.QVBoxLayout()
         for msg in messages:
-            label = QtGui.QLabel(msg.decode('utf-8'))
+            label = QtGui.QLabel(msg)
             label.setAlignment(QtCore.Qt.AlignHCenter)
             vbox.addWidget(label)
         vbox.addLayout(hbox)

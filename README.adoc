@@ -25,13 +25,13 @@ Following packages are *required*:
 
 * WeeChat (version >= 0.3.7) on local or remote machine, with relay plugin
   enabled and listening on a port with protocol "weechat"
-* Python 2.x >= 2.6
-* PySide (recommended, packages: python.pyside.*) or PyQt4 (python-qt4)
+* Python 3.7+
+* PySide6
 
 === Install via source distribution
 
 ----
-$ python setup.py install
+$ pip install .
 ----
 
 == WeeChat setup

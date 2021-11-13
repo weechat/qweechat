@@ -21,19 +21,18 @@
 #
 
 import datetime
-import qt_compat
-import config
-import weechat.color as color
+from qweechat import config
+from qweechat.weechat import color
 
-QtCore = qt_compat.import_module('QtCore')
-QtGui = qt_compat.import_module('QtGui')
+from PySide6 import QtCore
+from PySide6 import QtWidgets, QtGui
 
 
-class ChatTextEdit(QtGui.QTextEdit):
+class ChatTextEdit(QtWidgets.QTextEdit):
     """Chat area."""
 
     def __init__(self, debug, *args):
-        QtGui.QTextEdit.__init__(*(self,) + args)
+        QtWidgets.QTextEdit.__init__(*(self,) + args)
         self.debug = debug
         self.readOnly = True
         self.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -77,9 +76,9 @@ class ChatTextEdit(QtGui.QTextEdit):
                 prefix = '\x01(F%s)%s' % (forcecolor, prefix)
             text = '\x01(F%s)%s' % (forcecolor, text)
         if prefix:
-            self._display_with_colors(str(prefix).decode('utf-8') + ' ')
+            self._display_with_colors(prefix + ' ')
         if text:
-            self._display_with_colors(str(text).decode('utf-8'))
+            self._display_with_colors(text)
             if text[-1:] != '\n':
                 self.insertPlainText('\n')
         else:
