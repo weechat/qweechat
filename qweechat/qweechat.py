@@ -249,8 +249,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     '&copy; 2011-2020 %s &lt;<a href="mailto:%s">%s</a>&gt;'
                     % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
                     '',
-                    'Running with PySide6',
-                    '',
                     'WeeChat site: <a href="%s">%s</a>'
                     % (WEECHAT_SITE, WEECHAT_SITE),
                     '']
