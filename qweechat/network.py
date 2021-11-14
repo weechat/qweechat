@@ -115,7 +115,7 @@ class Network(QtCore.QObject):
 
     def _init_connection(self):
         self.status = STATUS_DISCONNECTED
-        self._server = None
+        self._hostname = None
         self._port = None
         self._ssl = None
         self._password = None
@@ -236,9 +236,9 @@ class Network(QtCore.QObject):
         """Return True if SSL is used, False otherwise."""
         return self._ssl
 
-    def connect_weechat(self, server, port, ssl, password, totp, lines):
+    def connect_weechat(self, hostname, port, ssl, password, totp, lines):
         """Connect to WeeChat."""
-        self._server = server
+        self._hostname = hostname
         try:
             self._port = int(port)
         except ValueError:
@@ -256,9 +256,9 @@ class Network(QtCore.QObject):
             self._socket.abort()
         if self._ssl:
             self._socket.ignoreSslErrors()
-            self._socket.connectToHostEncrypted(self._server, self._port)
+            self._socket.connectToHostEncrypted(self._hostname, self._port)
         else:
-            self._socket.connectToHost(self._server, self._port)
+            self._socket.connectToHost(self._hostname, self._port)
         self.set_status(STATUS_CONNECTING)
 
     def disconnect_weechat(self):
@@ -316,7 +316,7 @@ class Network(QtCore.QObject):
     def get_options(self):
         """Get connection options."""
         return {
-            'server': self._server,
+            'hostname': self._hostname,
             'port': self._port,
             'ssl': 'on' if self._ssl else 'off',
             'password': self._password,

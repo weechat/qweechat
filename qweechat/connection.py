@@ -40,16 +40,16 @@ class ConnectionDialog(QtWidgets.QDialog):
         self.fields = {}
         focus = None
 
-        # server
-        grid.addWidget(QtWidgets.QLabel('<b>Server</b>'), 0, 0)
+        # hostname
+        grid.addWidget(QtWidgets.QLabel('<b>Hostname</b>'), 0, 0)
         line_edit = QtWidgets.QLineEdit()
         line_edit.setFixedWidth(200)
-        value = self.values.get('server', '')
+        value = self.values.get('hostname', '')
         line_edit.insert(value)
         grid.addWidget(line_edit, 0, 1)
-        self.fields['server'] = line_edit
+        self.fields['hostname'] = line_edit
         if not focus and not value:
-            focus = 'server'
+            focus = 'hostname'
 
         # port / SSL
         grid.addWidget(QtWidgets.QLabel('<b>Port</b>'), 1, 0)

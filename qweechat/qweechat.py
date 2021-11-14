@@ -188,12 +188,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # auto-connect to relay
         if self.config.getboolean('relay', 'autoconnect'):
             self.network.connect_weechat(
-                server=self.config.get('relay', 'server'),
-                port=self.config.get('relay', 'port'),
-                ssl=self.config.getboolean('relay', 'ssl'),
-                password=self.config.get('relay', 'password'),
+                hostname=self.config.get('relay', 'hostname', fallback=''),
+                port=self.config.get('relay', 'port', fallback=''),
+                ssl=self.config.getboolean('relay', 'ssl', fallback=''),
+                password=self.config.get('relay', 'password', fallback=''),
                 totp=None,
-                lines=self.config.get('relay', 'lines'),
+                lines=self.config.get('relay', 'lines', fallback=''),
             )
 
         self.show()
@@ -230,8 +230,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def open_connection_dialog(self):
         """Open a dialog with connection settings."""
         values = {}
-        for option in ('server', 'port', 'ssl', 'password', 'lines'):
-            values[option] = self.config.get('relay', option)
+        for option in ('hostname', 'port', 'ssl', 'password', 'lines'):
+            values[option] = self.config.get('relay', option, fallback='')
         self.connection_dialog = ConnectionDialog(values, self)
         self.connection_dialog.dialog_buttons.accepted.connect(
             self.connect_weechat)
@@ -239,7 +239,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def connect_weechat(self):
         """Connect to WeeChat."""
         self.network.connect_weechat(
-            server=self.connection_dialog.fields['server'].text(),
+            hostname=self.connection_dialog.fields['hostname'].text(),
             port=self.connection_dialog.fields['port'].text(),
             ssl=self.connection_dialog.fields['ssl'].isChecked(),
             password=self.connection_dialog.fields['password'].text(),
