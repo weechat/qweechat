@@ -45,6 +45,27 @@ _PROTO_SYNC_CMDS = [
     ''
 ]
 
+STATUS_DISCONNECTED = 'disconnected'
+STATUS_CONNECTING = 'connecting'
+STATUS_CONNECTED = 'connected'
+
+NETWORK_STATUS = {
+    'disconnected': {
+        'label': 'Disconnected',
+        'color': '#aa0000',
+        'icon': 'dialog-close.png',
+    },
+    'connecting': {
+        'label': 'Connecting…',
+        'color': '#ff7f00',
+        'icon': 'dialog-warning.png',
+    },
+    'connected': {
+        'label': 'Connected',
+        'color': 'green',
+        'icon': 'dialog-ok-apply.png',
+    },
+}
 
 class Network(QtCore.QObject):
     """I/O with WeeChat/relay."""
@@ -54,9 +75,6 @@ class Network(QtCore.QObject):
 
     def __init__(self, *args):
         super().__init__(*args)
-        self.status_disconnected = 'disconnected'
-        self.status_connecting = 'connecting...'
-        self.status_connected = 'connected'
         self._server = None
         self._port = None
         self._ssl = None
@@ -71,7 +89,7 @@ class Network(QtCore.QObject):
 
     def _socket_connected(self):
         """Slot: socket connected."""
-        self.statusChanged.emit(self.status_connected, None)
+        self.statusChanged.emit(STATUS_CONNECTED, None)
         if self._password:
             self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
                                  % {'password': str(self._password),
@@ -80,7 +98,7 @@ class Network(QtCore.QObject):
     def _socket_error(self, error):
         """Slot: socket error."""
         self.statusChanged.emit(
-            self.status_disconnected,
+            STATUS_DISCONNECTED,
             'Failed, error: %s' % self._socket.errorString())
 
     def _socket_read(self):
@@ -111,7 +129,7 @@ class Network(QtCore.QObject):
         self._port = None
         self._ssl = None
         self._password = ""
-        self.statusChanged.emit(self.status_disconnected, None)
+        self.statusChanged.emit(STATUS_DISCONNECTED, None)
 
     def is_connected(self):
         """Return True if the socket is connected, False otherwise."""
@@ -143,7 +161,7 @@ class Network(QtCore.QObject):
             self._socket.connectToHostEncrypted(self._server, self._port)
         else:
             self._socket.connectToHost(self._server, self._port)
-        self.statusChanged.emit(self.status_connecting, "")
+        self.statusChanged.emit(STATUS_CONNECTING, "")
 
     def disconnect_weechat(self):
         """Disconnect from WeeChat."""
@@ -153,7 +171,7 @@ class Network(QtCore.QObject):
             self.send_to_weechat('quit\n')
             self._socket.waitForBytesWritten(1000)
         else:
-            self.statusChanged.emit(self.status_disconnected, None)
+            self.statusChanged.emit(STATUS_DISCONNECTED, None)
         self._socket.abort()
 
     def send_to_weechat(self, message):
@@ -168,14 +186,17 @@ class Network(QtCore.QObject):
         """Synchronize with WeeChat."""
         self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS))
 
+    def status_label(self, status):
+        """Return the label for a given status."""
+        return NETWORK_STATUS.get(status, {}).get('label', '')
+
+    def status_color(self, status):
+        """Return the color for a given status."""
+        return NETWORK_STATUS.get(status, {}).get('color', 'black')
+
     def status_icon(self, status):
         """Return the name of icon for a given status."""
-        icon = {
-            self.status_disconnected: 'dialog-close.png',
-            self.status_connecting: 'dialog-close.png',
-            self.status_connected: 'dialog-ok-apply.png',
-        }
-        return icon.get(status, '')
+        return NETWORK_STATUS.get(status, {}).get('icon', '')
 
     def get_options(self):
         """Get connection options."""

@@ -41,7 +41,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from qweechat import config
 from qweechat.weechat import protocol
-from qweechat.network import Network
+from qweechat.network import Network, STATUS_DISCONNECTED, NETWORK_STATUS
 from qweechat.connection import ConnectionDialog
 from qweechat.buffer import BufferListWidget, Buffer
 from qweechat.debug import DebugDialog
@@ -154,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if hasattr(self.menu, 'setCornerWidget'):
             self.menu.setCornerWidget(self.network_status,
                                       QtCore.Qt.TopRightCorner)
-        self.network_status_set(self.network.status_disconnected)
+        self.network_status_set(STATUS_DISCONNECTED)
 
         # toolbar
         toolbar = self.addToolBar('toolBar')
@@ -283,13 +283,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def network_status_set(self, status):
         """Set the network status."""
         pal = self.network_status.palette()
-        if status == self.network.status_connected:
-            pal.setColor(self.network_status.foregroundRole(),
-                         QtGui.QColor('green'))
-        else:
-            pal.setColor(self.network_status.foregroundRole(),
-                         QtGui.QColor('#aa0000'))
-        ssl = ' (SSL)' if status != self.network.status_disconnected \
+        pal.setColor(self.network_status.foregroundRole(),
+                     self.network.status_color(status))
+        ssl = ' (SSL)' if status != STATUS_DISCONNECTED \
               and self.network.is_ssl() else ''
         self.network_status.setPalette(pal)
         icon = self.network.status_icon(status)
@@ -297,10 +293,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.network_status.setText(
                 '<img src="%s"> %s' %
                 (resource_filename(__name__, 'data/icons/%s' % icon),
-                 status.capitalize() + ssl))
+                 self.network.status_label(status) + ssl))
         else:
             self.network_status.setText(status.capitalize())
-        if status == self.network.status_disconnected:
+        if status == STATUS_DISCONNECTED:
             self.actions['connect'].setEnabled(True)
             self.actions['disconnect'].setEnabled(False)
         else:
