@@ -40,20 +40,17 @@ from pkg_resources import resource_filename
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from qweechat import config
-from qweechat.weechat import protocol
-from qweechat.network import Network, STATUS_DISCONNECTED, NETWORK_STATUS
-from qweechat.connection import ConnectionDialog
-from qweechat.buffer import BufferListWidget, Buffer
-from qweechat.debug import DebugDialog
 from qweechat.about import AboutDialog
+from qweechat.buffer import BufferListWidget, Buffer
+from qweechat.connection import ConnectionDialog
+from qweechat.network import Network, STATUS_DISCONNECTED, NETWORK_STATUS
+from qweechat.preferences import PreferencesDialog
+from qweechat.weechat import protocol
 
 
 APP_NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
 WEECHAT_SITE = 'https://weechat.org/'
-
-# number of lines in buffer for debug window
-DEBUG_NUM_LINES = 50
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -66,9 +63,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.resize(1000, 600)
         self.setWindowTitle(APP_NAME)
-
-        self.debug_dialog = None
-        self.debug_lines = []
 
         self.about_dialog = None
         self.connection_dialog = None
@@ -101,26 +95,47 @@ class MainWindow(QtWidgets.QMainWindow):
         # actions for menu and toolbar
         actions_def = {
             'connect': [
-                'network-connect.png', 'Connect to WeeChat',
-                'Ctrl+O', self.open_connection_dialog],
+                'network-connect.png',
+                'Connect to WeeChat',
+                'Ctrl+O',
+                self.open_connection_dialog,
+            ],
             'disconnect': [
-                'network-disconnect.png', 'Disconnect from WeeChat',
-                'Ctrl+D', self.network.disconnect_weechat],
+                'network-disconnect.png',
+                'Disconnect from WeeChat',
+                'Ctrl+D',
+                self.network.disconnect_weechat,
+            ],
             'debug': [
-                'edit-find.png', 'Debug console window',
-                'Ctrl+B', self.open_debug_dialog],
+                'edit-find.png',
+                'Open debug console window',
+                'Ctrl+B',
+                self.network.open_debug_dialog,
+            ],
             'preferences': [
-                'preferences-other.png', 'Preferences',
-                'Ctrl+P', self.open_preferences_dialog],
+                'preferences-other.png',
+                'Change preferences',
+                'Ctrl+P',
+                self.open_preferences_dialog,
+            ],
             'about': [
-                'help-about.png', 'About',
-                'Ctrl+H', self.open_about_dialog],
+                'help-about.png',
+                'About QWeeChat',
+                'Ctrl+H',
+                self.open_about_dialog,
+            ],
             'save connection': [
-                'document-save.png', 'Save connection configuration',
-                'Ctrl+S', self.save_connection],
+                'document-save.png',
+                'Save connection configuration',
+                'Ctrl+S',
+                self.save_connection,
+            ],
             'quit': [
-                'application-exit.png', 'Quit application',
-                'Ctrl+Q', self.close],
+                'application-exit.png',
+                'Quit application',
+                'Ctrl+Q',
+                self.close,
+            ],
         }
         self.actions = {}
         for name, action in list(actions_def.items()):
@@ -128,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtGui.QIcon(
                     resource_filename(__name__, 'data/icons/%s' % action[0])),
                 name.capitalize(), self)
-            self.actions[name].setStatusTip(action[1])
+            self.actions[name].setToolTip(f'{action[1]} ({action[2]})')
             self.actions[name].setShortcut(action[2])
             self.actions[name].triggered.connect(action[3])
 
@@ -168,16 +183,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # open debug dialog
         if self.config.getboolean('look', 'debug'):
-            self.open_debug_dialog()
+            self.network.open_debug_dialog()
 
         # auto-connect to relay
         if self.config.getboolean('relay', 'autoconnect'):
-            self.network.connect_weechat(self.config.get('relay', 'server'),
-                                         self.config.get('relay', 'port'),
-                                         self.config.getboolean('relay',
-                                                                'ssl'),
-                                         self.config.get('relay', 'password'),
-                                         self.config.get('relay', 'lines'))
+            self.network.connect_weechat(
+                server=self.config.get('relay', 'server'),
+                port=self.config.get('relay', 'port'),
+                ssl=self.config.getboolean('relay', 'ssl'),
+                password=self.config.get('relay', 'password'),
+                totp=None,
+                lines=self.config.get('relay', 'lines'),
+            )
 
         self.show()
 
@@ -192,14 +209,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.network.is_connected():
             message = 'input %s %s\n' % (full_name, text)
             self.network.send_to_weechat(message)
-            self.debug_display(0, '<==', message, forcecolor='#AA0000')
+            self.network.debug_print(0, '<==', message, forcecolor='#AA0000')
 
     def open_preferences_dialog(self):
         """Open a dialog with preferences."""
         # TODO: implement the preferences dialog box
-        messages = ['Not yet implemented!',
-                    '']
-        self.preferences_dialog = AboutDialog('Preferences', messages, self)
+        self.preferences_dialog = PreferencesDialog(self)
 
     def save_connection(self):
         """Save connection configuration."""
@@ -207,39 +222,6 @@ class MainWindow(QtWidgets.QMainWindow):
             options = self.network.get_options()
             for option in options:
                 self.config.set('relay', option, options[option])
-
-    def debug_display(self, *args, **kwargs):
-        """Display a debug message."""
-        self.debug_lines.append((args, kwargs))
-        self.debug_lines = self.debug_lines[-DEBUG_NUM_LINES:]
-        if self.debug_dialog:
-            self.debug_dialog.chat.display(*args, **kwargs)
-
-    def open_debug_dialog(self):
-        """Open a dialog with debug messages."""
-        if not self.debug_dialog:
-            self.debug_dialog = DebugDialog(self)
-            self.debug_dialog.input.textSent.connect(
-                self.debug_input_text_sent)
-            self.debug_dialog.finished.connect(self._debug_dialog_closed)
-            self.debug_dialog.display_lines(self.debug_lines)
-            self.debug_dialog.chat.scroll_bottom()
-
-    def debug_input_text_sent(self, text):
-        """Send debug buffer input to WeeChat."""
-        if self.network.is_connected():
-            text = str(text)
-            pos = text.find(')')
-            if text.startswith('(') and pos >= 0:
-                text = '(debug_%s)%s' % (text[1:pos], text[pos+1:])
-            else:
-                text = '(debug) %s' % text
-            self.debug_display(0, '<==', text, forcecolor='#AA0000')
-            self.network.send_to_weechat(text + '\n')
-
-    def _debug_dialog_closed(self, result):
-        """Called when debug dialog is closed."""
-        self.debug_dialog = None
 
     def open_about_dialog(self):
         """Open a dialog with info about QWeeChat."""
@@ -257,18 +239,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def connect_weechat(self):
         """Connect to WeeChat."""
         self.network.connect_weechat(
-            self.connection_dialog.fields['server'].text(),
-            self.connection_dialog.fields['port'].text(),
-            self.connection_dialog.fields['ssl'].isChecked(),
-            self.connection_dialog.fields['password'].text(),
-            int(self.connection_dialog.fields['lines'].text()))
+            server=self.connection_dialog.fields['server'].text(),
+            port=self.connection_dialog.fields['port'].text(),
+            ssl=self.connection_dialog.fields['ssl'].isChecked(),
+            password=self.connection_dialog.fields['password'].text(),
+            totp=self.connection_dialog.fields['totp'].text(),
+            lines=int(self.connection_dialog.fields['lines'].text()),
+        )
         self.connection_dialog.close()
 
     def _network_status_changed(self, status, extra):
         """Called when the network status has changed."""
         if self.config.getboolean('look', 'statusbar'):
             self.statusBar().showMessage(status)
-        self.debug_display(0, '', status, forcecolor='#0000AA')
+        self.network.debug_print(0, '', status, forcecolor='#0000AA')
         self.network_status_set(status)
 
     def network_status_set(self, status):
@@ -296,30 +280,40 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _network_weechat_msg(self, message):
         """Called when a message is received from WeeChat."""
-        self.debug_display(0, '==>',
-                           'message (%d bytes):\n%s'
-                           % (len(message),
-                              protocol.hex_and_ascii(message.data(), 20)),
-                           forcecolor='#008800')
+        self.network.debug_print(
+            0, '==>',
+            'message (%d bytes):\n%s'
+            % (len(message),
+               protocol.hex_and_ascii(message.data(), 20)),
+            forcecolor='#008800',
+        )
         try:
             proto = protocol.Protocol()
             message = proto.decode(message.data())
             if message.uncompressed:
-                self.debug_display(
+                self.network.debug_print(
                     0, '==>',
                     'message uncompressed (%d bytes):\n%s'
                     % (message.size_uncompressed,
                        protocol.hex_and_ascii(message.uncompressed, 20)),
                     forcecolor='#008800')
-            self.debug_display(0, '', 'Message: %s' % message)
+            self.network.debug_print(0, '', 'Message: %s' % message)
             self.parse_message(message)
         except Exception:  # noqa: E722
             print('Error while decoding message from WeeChat:\n%s'
                   % traceback.format_exc())
             self.network.disconnect_weechat()
 
+    def _parse_handshake(self, message):
+        """Parse a WeeChat message with handshake response."""
+        for obj in message.objects:
+            if obj.objtype != 'htb':
+                continue
+            self.network.init_with_handshake(obj.value)
+            break
+
     def _parse_listbuffers(self, message):
-        """Parse a WeeChat with list of buffers."""
+        """Parse a WeeChat message with list of buffers."""
         for obj in message.objects:
             if obj.objtype != 'hda' or obj.value['path'][-1] != 'buffer':
                 continue
@@ -462,7 +456,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def parse_message(self, message):
         """Parse a WeeChat message."""
         if message.msgid.startswith('debug'):
-            self.debug_display(0, '', '(debug message, ignored)')
+            self.network.debug_print(0, '', '(debug message, ignored)')
+        elif message.msgid == 'handshake':
+            self._parse_handshake(message)
         elif message.msgid == 'listbuffers':
             self._parse_listbuffers(message)
         elif message.msgid in ('listlines', '_buffer_line_added'):
@@ -526,8 +522,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         """Called when QWeeChat window is closed."""
         self.network.disconnect_weechat()
-        if self.debug_dialog:
-            self.debug_dialog.close()
+        if self.network.debug_dialog:
+            self.network.debug_dialog.close()
         config.write(self.config)
         QtWidgets.QMainWindow.closeEvent(self, event)
 

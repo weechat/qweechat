@@ -45,6 +45,7 @@ In QWeeChat, click on connect and enter fields:
 - `server`: the IP address or hostname of your machine with WeeChat running
 - `port`: the relay port (defined in WeeChat)
 - `password`: the relay password (defined in WeeChat)
+- `totp`: the Time-Based One-Time Password (optional, to set if required by WeeChat)
 
 Options can be changed in file `~/.config/qweechat/qweechat.conf`.
 
