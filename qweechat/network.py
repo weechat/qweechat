@@ -83,7 +83,6 @@ class Network(QtCore.QObject):
         self._buffer = QtCore.QByteArray()
         self._socket = QtNetwork.QSslSocket()
         self._socket.connected.connect(self._socket_connected)
-        # self._socket.error.connect(self._socket_error)
         self._socket.readyRead.connect(self._socket_read)
         self._socket.disconnected.connect(self._socket_disconnected)
 
@@ -94,12 +93,6 @@ class Network(QtCore.QObject):
             self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
                                  % {'password': str(self._password),
                                     'lines': self._lines})
-
-    def _socket_error(self, error):
-        """Slot: socket error."""
-        self.statusChanged.emit(
-            STATUS_DISCONNECTED,
-            'Failed, error: %s' % self._socket.errorString())
 
     def _socket_read(self):
         """Slot: data available on socket."""
