@@ -43,7 +43,7 @@ from qweechat import config
 from qweechat.about import AboutDialog
 from qweechat.buffer import BufferListWidget, Buffer
 from qweechat.connection import ConnectionDialog
-from qweechat.network import Network, STATUS_DISCONNECTED, NETWORK_STATUS
+from qweechat.network import Network, STATUS_DISCONNECTED
 from qweechat.preferences import PreferencesDialog
 from qweechat.weechat import protocol
 
