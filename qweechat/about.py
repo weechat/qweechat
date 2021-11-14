@@ -24,14 +24,16 @@
 
 from PySide6 import QtCore, QtWidgets as QtGui
 
+from qweechat.version import qweechat_version
+
 
 class AboutDialog(QtGui.QDialog):
     """About dialog."""
 
-    def __init__(self, name, messages, *args):
+    def __init__(self, app_name, author, weechat_site, *args):
         QtGui.QDialog.__init__(*(self,) + args)
         self.setModal(True)
-        self.setWindowTitle(name)
+        self.setWindowTitle(app_name)
 
         close_button = QtGui.QPushButton('Close')
         close_button.pressed.connect(self.close)
@@ -42,6 +44,13 @@ class AboutDialog(QtGui.QDialog):
         hbox.addStretch(1)
 
         vbox = QtGui.QVBoxLayout()
+        messages = [
+            f'<b>{app_name}</b> {qweechat_version()}',
+            f'© 2011-2021 {author}',
+            '',
+            f'<a href="{weechat_site}">{weechat_site}</a>',
+            '',
+        ]
         for msg in messages:
             label = QtGui.QLabel(msg)
             label.setAlignment(QtCore.Qt.AlignHCenter)

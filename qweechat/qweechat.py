@@ -46,12 +46,10 @@ from qweechat.connection import ConnectionDialog
 from qweechat.buffer import BufferListWidget, Buffer
 from qweechat.debug import DebugDialog
 from qweechat.about import AboutDialog
-from qweechat.version import qweechat_version
 
 
-NAME = 'QWeeChat'
+APP_NAME = 'QWeeChat'
 AUTHOR = 'Sébastien Helleu'
-AUTHOR_MAIL = 'flashcode@flashtux.org'
 WEECHAT_SITE = 'https://weechat.org/'
 
 # number of lines in buffer for debug window
@@ -67,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.config = config.read()
 
         self.resize(1000, 600)
-        self.setWindowTitle(NAME)
+        self.setWindowTitle(APP_NAME)
 
         self.debug_dialog = None
         self.debug_lines = []
@@ -245,14 +243,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def open_about_dialog(self):
         """Open a dialog with info about QWeeChat."""
-        messages = ['<b>%s</b> %s' % (NAME, qweechat_version()),
-                    '&copy; 2011-2020 %s &lt;<a href="mailto:%s">%s</a>&gt;'
-                    % (AUTHOR, AUTHOR_MAIL, AUTHOR_MAIL),
-                    '',
-                    'WeeChat site: <a href="%s">%s</a>'
-                    % (WEECHAT_SITE, WEECHAT_SITE),
-                    '']
-        self.about_dialog = AboutDialog(NAME, messages, self)
+        self.about_dialog = AboutDialog(APP_NAME, AUTHOR, WEECHAT_SITE, self)
 
     def open_connection_dialog(self):
         """Open a dialog with connection settings."""
