@@ -47,7 +47,7 @@ _HASH_ALGOS = ':'.join(_HASH_ALGOS_LIST)
 _PROTO_HANDSHAKE = f'(handshake) handshake password_hash_algo={_HASH_ALGOS}\n'
 
 # initialize with the password (plain text)
-_PROTO_INIT_PWD = 'init password=%(password)s%(totp)s\n'
+_PROTO_INIT_PWD = 'init password=%(password)s%(totp)s\n'  # nosec
 
 # initialize with the hashed password
 _PROTO_INIT_HASH = ('init password_hash='
