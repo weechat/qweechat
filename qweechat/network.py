@@ -53,7 +53,7 @@ _PROTO_INIT_PWD = 'init password=%(password)s%(totp)s\n'
 _PROTO_INIT_HASH = ('init password_hash='
                     '%(algo)s:%(salt)s%(iter)s:%(hash)s%(totp)s\n')
 
-_PROTO_SYNC = [
+_PROTO_SYNC_CMDS = [
     # get buffers
     '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,'
     'type,nicklist,title,local_variables',
@@ -179,7 +179,7 @@ class Network(QtCore.QObject):
 
     def _build_sync_command(self):
         """Build the sync commands to send to WeeChat."""
-        cmd =  '\n'.join(_PROTO_SYNC) + '\n'
+        cmd = '\n'.join(_PROTO_SYNC_CMDS) + '\n'
         return cmd % {'lines': self._lines}
 
     def handshake_timer_expired(self):
