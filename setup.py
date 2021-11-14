@@ -57,5 +57,5 @@ setup(
     },
     install_requires=[
         'PySide6',
-    ]
+    ],
 )
