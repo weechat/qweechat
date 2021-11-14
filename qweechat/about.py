@@ -33,7 +33,7 @@ class AboutDialog(QtGui.QDialog):
     def __init__(self, app_name, author, weechat_site, *args):
         QtGui.QDialog.__init__(*(self,) + args)
         self.setModal(True)
-        self.setWindowTitle(app_name)
+        self.setWindowTitle('About')
 
         close_button = QtGui.QPushButton('Close')
         close_button.pressed.connect(self.close)
