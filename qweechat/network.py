@@ -29,20 +29,22 @@ from PySide6 import QtCore, QtNetwork
 from qweechat import config
 
 
-_PROTO_INIT_CMD = ['init password=%(password)s']
+_PROTO_INIT_CMD = [
+    # initialize with the password
+    'init password=%(password)s',
+]
 
 _PROTO_SYNC_CMDS = [
+    # get buffers
     '(listbuffers) hdata buffer:gui_buffers(*) number,full_name,short_name,'
     'type,nicklist,title,local_variables',
-
+    # get lines
     '(listlines) hdata buffer:gui_buffers(*)/own_lines/last_line(-%(lines)d)/'
     'data date,displayed,prefix,message',
-
+    # get nicklist for all buffers
     '(nicklist) nicklist',
-
+    # enable synchronization
     'sync',
-
-    ''
 ]
 
 STATUS_DISCONNECTED = 'disconnected'
@@ -86,13 +88,22 @@ class Network(QtCore.QObject):
         self._socket.readyRead.connect(self._socket_read)
         self._socket.disconnected.connect(self._socket_disconnected)
 
+    def _build_init_command(self):
+        """Build the init command to send to WeeChat."""
+        cmd = '\n'.join(_PROTO_INIT_CMD) + '\n'
+        return cmd % {'password': self._password}
+
+    def _build_sync_command(self):
+        """Build the sync commands to send to WeeChat."""
+        cmd =  '\n'.join(_PROTO_SYNC_CMDS) + '\n'
+        return cmd % {'lines': self._lines}
+
     def _socket_connected(self):
         """Slot: socket connected."""
         self.statusChanged.emit(STATUS_CONNECTED, None)
         if self._password:
-            self.send_to_weechat('\n'.join(_PROTO_INIT_CMD + _PROTO_SYNC_CMDS)
-                                 % {'password': str(self._password),
-                                    'lines': self._lines})
+            cmd = self._build_init_command() + self._build_sync_command()
+            self.send_to_weechat(cmd)
 
     def _socket_read(self):
         """Slot: data available on socket."""
@@ -177,8 +188,7 @@ class Network(QtCore.QObject):
 
     def sync_weechat(self):
         """Synchronize with WeeChat."""
-        self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS)
-                             % {'lines': self._lines})
+        self.send_to_weechat(self._build_sync_command())
 
     def status_label(self, status):
         """Return the label for a given status."""
