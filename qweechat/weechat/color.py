@@ -31,7 +31,7 @@ RE_COLOR_EXT = r'(?:@%s\d{5})' % RE_COLOR_ATTRS
 RE_COLOR_ANY = r'(?:%s|%s)' % (RE_COLOR_STD, RE_COLOR_EXT)
 # \x19: color code, \x1A: set attribute, \x1B: remove attribute, \x1C: reset
 RE_COLOR = re.compile(
-    r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|E|\\*%s(,%s)?|@\d{5}|b.|\x1C))|\x1A.|'
+    r'(\x19(?:\d{2}|F%s|B\d{2}|B@\d{5}|E|\\*%s(~%s)?|@\d{5}|b.|\x1C))|\x1A.|'
     r'\x1B.|\x1C'
     % (RE_COLOR_ANY, RE_COLOR_ANY, RE_COLOR_ANY))
 
