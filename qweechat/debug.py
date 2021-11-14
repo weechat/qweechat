@@ -33,7 +33,7 @@ class DebugDialog(QtWidgets.QDialog):
 
     def __init__(self, *args):
         QtWidgets.QDialog.__init__(*(self,) + args)
-        self.resize(640, 480)
+        self.resize(1024, 768)
         self.setWindowTitle('Debug console')
 
         self.chat = ChatTextEdit(debug=True)
