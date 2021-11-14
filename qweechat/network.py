@@ -184,7 +184,8 @@ class Network(QtCore.QObject):
 
     def sync_weechat(self):
         """Synchronize with WeeChat."""
-        self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS))
+        self.send_to_weechat('\n'.join(_PROTO_SYNC_CMDS)
+                             % {'lines': self._lines})
 
     def status_label(self, status):
         """Return the label for a given status."""
