@@ -2,7 +2,7 @@
 #
 # about.py - about dialog box
 #
-# Copyright (C) 2011-2021 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2022 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
@@ -46,7 +46,7 @@ class AboutDialog(QtGui.QDialog):
         vbox = QtGui.QVBoxLayout()
         messages = [
             f'<b>{app_name}</b> {qweechat_version()}',
-            f'© 2011-2021 {author}',
+            f'© 2011-2022 {author}',
             '',
             f'<a href="{weechat_site}">{weechat_site}</a>',
             '',
