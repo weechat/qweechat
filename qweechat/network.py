@@ -144,7 +144,7 @@ class Network(QtCore.QObject):
     def _build_init_command(self):
         """Build the init command to send to WeeChat."""
         totp = f',totp={self._totp}' if self._totp else ''
-        if self._pwd_hash_algo == 'plain':
+        if self._pwd_hash_algo == 'plain':  # nosec
             cmd = _PROTO_INIT_PWD % {
                 'password': self._password,
                 'totp': totp,
@@ -154,16 +154,16 @@ class Network(QtCore.QObject):
             salt = self._server_nonce + client_nonce
             pwd_hash = None
             iterations = ''
-            if self._pwd_hash_algo == 'pbkdf2+sha512':
+            if self._pwd_hash_algo == 'pbkdf2+sha512':  # nosec
                 pwd_hash = self.pbkdf2('sha512', salt)
                 iterations = f':{self._pwd_hash_iter}'
-            elif self._pwd_hash_algo == 'pbkdf2+sha256':
+            elif self._pwd_hash_algo == 'pbkdf2+sha256':  # nosec
                 pwd_hash = self.pbkdf2('sha256', salt)
                 iterations = f':{self._pwd_hash_iter}'
-            elif self._pwd_hash_algo == 'sha512':
+            elif self._pwd_hash_algo == 'sha512':  # nosec
                 pwd = salt + self._password.encode('utf-8')
                 pwd_hash = hashlib.sha512(pwd).hexdigest()
-            elif self._pwd_hash_algo == 'sha256':
+            elif self._pwd_hash_algo == 'sha256':  # nosec
                 pwd = salt + self._password.encode('utf-8')
                 pwd_hash = hashlib.sha256(pwd).hexdigest()
             if not pwd_hash:
@@ -184,7 +184,7 @@ class Network(QtCore.QObject):
 
     def handshake_timer_expired(self):
         if self.status == STATUS_AUTHENTICATING:
-            self._pwd_hash_algo = 'plain'
+            self._pwd_hash_algo = 'plain'  # nosec
             self.send_to_weechat(self._build_init_command())
             self.sync_weechat()
             self.set_status(STATUS_CONNECTED)
