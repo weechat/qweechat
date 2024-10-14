@@ -51,7 +51,7 @@ Options can be changed in file `~/.config/qweechat/qweechat.conf`.
 
 ## Copyright
 
-Copyright © 2011-2022 [Sébastien Helleu](https://github.com/flashcode)
+Copyright © 2011-2024 [Sébastien Helleu](https://github.com/flashcode)
 
 This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 

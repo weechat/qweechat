@@ -2,7 +2,7 @@
 #
 # color.py - remove/replace colors in WeeChat strings
 #
-# Copyright (C) 2011-2022 Sébastien Helleu <flashcode@flashtux.org>
+# Copyright (C) 2011-2024 Sébastien Helleu <flashcode@flashtux.org>
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
