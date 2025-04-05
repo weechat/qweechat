@@ -1,5 +1,7 @@
 #
-# Copyright (C) 2021-2024 Sébastien Helleu <flashcode@flashtux.org>
+# SPDX-FileCopyrightText: 2021-2025 Sébastien Helleu <flashcode@flashtux.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of QWeeChat, a Qt remote GUI for WeeChat.
 #
