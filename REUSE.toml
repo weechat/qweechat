@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+version = 1
+
+[[annotations]]
+path = [
+    ".gitignore",
+    ".mailmap",
+    "AUTHORS",
+    "CHANGELOG.md",
+    "MANIFEST.in",
+    "README.md",
+    "qweechat/data/icons/bullet_green_8x8.png",
+    "qweechat/data/icons/bullet_yellow_8x8.png",
+    "qweechat/data/icons/weechat.png",
+    "requirements.txt",
+    "setup.py",
+]
+SPDX-FileCopyrightText = "2011-2025 Sébastien Helleu <flashcode@flashtux.org>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = [
+    "qweechat/data/icons/application-exit.png",
+    "qweechat/data/icons/dialog-close.png",
+    "qweechat/data/icons/dialog-ok-apply.png",
+    "qweechat/data/icons/dialog-password.png",
+    "qweechat/data/icons/dialog-warning.png",
+    "qweechat/data/icons/document-save.png",
+    "qweechat/data/icons/edit-find.png",
+    "qweechat/data/icons/help-about.png",
+    "qweechat/data/icons/network-connect.png",
+    "qweechat/data/icons/network-disconnect.png",
+    "qweechat/data/icons/preferences-other.png",
+]
+SPDX-FileCopyrightText = [
+    "2007 Nuno Pinheiro <nuno@oxygen-icons.org>",
+    "2007 David Vignoni <david@icon-king.com>",
+    "2007 David Miller <miller@oxygen-icons.org>",
+    "2007 Johann Ollivier Lapeyre <johann@oxygen-icons.org>",
+    "2007 Kenneth Wimer <kwwii@bootsplash.org>",
+    "2007 Riccardo Iaconelli <riccardo@oxygen-icons.org>",
+]
+SPDX-License-Identifier = "GPL-3.0-or-later"
