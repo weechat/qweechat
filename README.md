@@ -1,6 +1,7 @@
 # WeeChat Qt remote GUI
 
 [![Build Status](https://github.com/weechat/qweechat/workflows/CI/badge.svg)](https://github.com/weechat/qweechat/actions?query=workflow%3A%22CI%22)
+[![REUSE status](https://api.reuse.software/badge/github.com/weechat/qweechat)](https://api.reuse.software/info/github.com/weechat/qweechat)
 
 QWeeChat is a Qt remote GUI for WeeChat written in Python.
 
