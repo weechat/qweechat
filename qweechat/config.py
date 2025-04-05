@@ -134,5 +134,4 @@ def write(config):
 
 def color_options():
     """Return color options."""
-    global config_color_options
     return config_color_options
