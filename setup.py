@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
 #

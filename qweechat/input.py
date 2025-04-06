@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # input.py - input line for chat and debug window
 #

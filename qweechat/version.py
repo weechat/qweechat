@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # version.py - version of QWeeChat
 #

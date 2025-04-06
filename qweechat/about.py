@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # about.py - about dialog box
 #

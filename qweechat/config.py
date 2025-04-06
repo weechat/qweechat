@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # config.py - configuration for QWeeChat
 #

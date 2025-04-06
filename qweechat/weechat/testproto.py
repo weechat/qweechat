@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # testproto.py - command-line program for testing WeeChat/relay protocol
 #

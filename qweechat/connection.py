@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # connection.py - connection window
 #

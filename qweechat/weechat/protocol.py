@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # protocol.py - decode binary messages received from WeeChat/relay
 #
