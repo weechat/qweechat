@@ -19,6 +19,8 @@
 # along with QWeeChat.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""Qt remote GUI for WeeChat."""
+
 from setuptools import setup
 from qweechat.version import qweechat_version
 
