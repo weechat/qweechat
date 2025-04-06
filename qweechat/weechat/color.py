@@ -1,6 +1,4 @@
 #
-# color.py - remove/replace colors in WeeChat strings
-#
 # SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

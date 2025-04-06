@@ -1,6 +1,4 @@
 #
-# testproto.py - command-line program for testing WeeChat/relay protocol
-#
 # SPDX-FileCopyrightText: 2013-2025 Sébastien Helleu <flashcode@flashtux.org>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

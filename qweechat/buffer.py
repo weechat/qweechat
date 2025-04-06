@@ -1,6 +1,4 @@
 #
-# buffer.py - management of WeeChat buffers/nicklist
-#
 # SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

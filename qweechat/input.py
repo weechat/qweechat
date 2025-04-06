@@ -1,6 +1,4 @@
 #
-# input.py - input line for chat and debug window
-#
 # SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
