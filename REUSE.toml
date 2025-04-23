@@ -18,6 +18,7 @@ path = [
     "requirements.txt",
     "setup.py",
 ]
+precedence = "override"
 SPDX-FileCopyrightText = "2011-2025 Sébastien Helleu <flashcode@flashtux.org>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
@@ -35,6 +36,7 @@ path = [
     "qweechat/data/icons/network-disconnect.png",
     "qweechat/data/icons/preferences-other.png",
 ]
+precedence = "override"
 SPDX-FileCopyrightText = [
     "2007 Nuno Pinheiro <nuno@oxygen-icons.org>",
     "2007 David Vignoni <david@icon-king.com>",
