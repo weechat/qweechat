@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2011-2025 Sébastien Helleu <flashcode@flashtux.org>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # WeeChat Qt remote GUI
 
 [![Build Status](https://github.com/weechat/qweechat/workflows/CI/badge.svg)](https://github.com/weechat/qweechat/actions?query=workflow%3A%22CI%22)
@@ -52,6 +58,7 @@ Options can be changed in file `~/.config/qweechat/qweechat.conf`.
 
 ## Copyright
 
+<!-- REUSE-IgnoreStart -->
 Copyright © 2011-2025 [Sébastien Helleu](https://github.com/flashcode)
 
 This file is part of QWeeChat, a Qt remote GUI for WeeChat.
@@ -68,3 +75,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with QWeeChat.  If not, see <https://www.gnu.org/licenses/>.
+<!-- REUSE-IgnoreEnd -->
